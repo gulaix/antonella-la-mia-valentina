@@ -46,7 +46,7 @@
         100% { transform: translateY(-100vh) rotate(45deg) scale(1.2); opacity: 0; }
     }
 
-    /* --- IL LUPO (Desktop: A Destra) --- */
+    /* --- IL LUPO (Default Desktop) --- */
     #wolfCharacter {
         position: fixed;
         bottom: -20px; 
@@ -65,7 +65,7 @@
         opacity: 1;
     }
 
-    /* --- LA CARD (Desktop: Si sposta a Sinistra) --- */
+    /* --- LA CARD (Default Desktop) --- */
     .card {
         background: rgba(255, 255, 255, 0.95);
         padding: 30px;
@@ -110,41 +110,45 @@
     }
 
     /* ========================================= */
-    /* === VERSIONE MOBILE (SCHERMI PICCOLI) === */
+    /* === OTTIMIZZAZIONE MOBILE (SARTORIA) === */
     /* ========================================= */
     @media (max-width: 768px) {
         
-        /* 1. Il Lupo va SOTTO invece che a destra */
+        /* 1. Il Lupo: Più piccolo e sbuca da destra */
         body.game-active #wolfCharacter {
-            right: -20px !important; /* Resetta la destra */
-            bottom: -10px !important;
-            height: 200px !important; /* Più piccolo */
+            right: -50px !important; /* Esce un po' dallo schermo (circa 1-2cm) */
+            height: 35vh !important; /* Molto più piccolo rispetto al desktop */
+            bottom: 20px !important; /* Sollevato un po' */
             opacity: 1;
         }
 
-        /* 2. La Card va IN ALTO invece che a sinistra */
+        /* 2. La Card: Più stretta, font più piccoli e spostata a sinistra */
         body.game-active .card {
-            margin-right: 0 !important; /* Niente spostamento laterale */
-            margin-bottom: 180px !important; /* Spazio sotto per il lupo */
+            margin-right: 100px !important; /* Lascia spazio a destra per il lupo */
+            width: 65vw !important; /* Occupa circa il 65% della larghezza */
+            min-height: 400px !important; /* Meno alta */
+            padding: 15px !important; /* Meno padding interno */
+            margin-left: 10px !important; /* Un po' di margine dal bordo sinistro */
         }
 
-        /* 3. Il Fumetto punta in BASSO */
+        /* Testi più piccoli su mobile per far entrare tutto */
+        body.game-active h2 { font-size: 18px !important; margin-bottom: 10px !important; }
+        body.game-active .question-box { font-size: 14px !important; padding: 10px !important; }
+        body.game-active button { padding: 8px 16px !important; font-size: 14px !important; }
+
+        /* 3. Il Fumetto: Punta sempre a destra, ma adattato */
         body.game-active .card::before {
-            top: auto !important; /* Non in alto */
-            bottom: -30px !important; /* Ma in basso */
-            right: 40px !important; /* Posizionato sopra il lupo */
-            /* Triangolo verso il basso */
-            border-width: 30px 15px 0 15px !important;
-            border-color: rgba(255, 255, 255, 0.95) transparent transparent transparent !important;
+            top: auto !important;
+            bottom: 80px !important; /* La punta è più in basso, vicino al muso del lupo piccolo */
+            right: -20px !important; /* Punta più corta */
+            border-width: 10px 0 10px 20px !important;
         }
 
         body.game-active .card::after {
             top: auto !important;
-            bottom: -36px !important;
-            right: 37px !important;
-            /* Triangolo rosa verso il basso */
-            border-width: 36px 18px 0 18px !important;
-            border-color: #ff4d88 transparent transparent transparent !important;
+            bottom: 78px !important;
+            right: -24px !important;
+            border-width: 12px 0 12px 24px !important;
         }
     }
     /* ========================================= */
