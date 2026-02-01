@@ -7,6 +7,10 @@
 <link rel="preload" as="image" href="lupocut.png">
 <link rel="preload" as="image" href="lupocut1.png">
 <link rel="preload" as="image" href="noo.png">
+<link rel="preload" as="image" href="walking.png">
+<link rel="preload" as="image" href="stand.png">
+<link rel="preload" as="image" href="standspeak.png">
+<link rel="preload" as="image" href="rare.png">
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
@@ -49,15 +53,46 @@
     .heart-bg span { position: absolute; display: block; width: 20px; height: 20px; background: rgba(255, 255, 255, 0.6); transform: rotate(45deg); animation: animate 25s linear infinite; bottom: -150px; }
     @keyframes animate { 0% { transform: translateY(0) rotate(45deg) scale(0.3); opacity: 1; } 100% { transform: translateY(-100vh) rotate(45deg) scale(1.2); opacity: 0; } }
 
-    /* LUPO */
-    #wolfCharacter { position: fixed; bottom: -20px; right: -400px; height: 65vh; max-height: 550px; z-index: 50; transition: right 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s; pointer-events: none; opacity: 0; backface-visibility: hidden; transform: translateZ(0); }
-    body.game-active #wolfCharacter { right: -40px; opacity: 1; }
+    /* --- IL LUPO E LE SUE ANIMAZIONI --- */
+    #wolfCharacter { 
+        position: fixed; 
+        bottom: -20px; 
+        right: -400px; /* Default nascosto a destra */
+        height: 65vh; 
+        max-height: 550px; 
+        z-index: 50; 
+        transition: right 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s; 
+        pointer-events: none; 
+        opacity: 0; 
+        backface-visibility: hidden; 
+        transform: translateZ(0); 
+    }
+
+    /* Stato normale del lupo (esce da destra) */
+    body.game-active #wolfCharacter.normal-pos { 
+        right: -40px; 
+        opacity: 1; 
+    }
+
+    /* Override per la cinematica del livello Slider */
+    #wolfCharacter.cinematic-pos {
+        transition: top 3s linear, left 3s linear !important; /* Camminata lenta */
+        right: auto !important;
+        bottom: auto !important;
+        opacity: 1 !important;
+    }
 
     /* CARD */
     .card { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); max-width: 420px; width: 90vw; min-height: 550px; position: relative; border: 3px solid #ffebf0; overflow: hidden; display: flex; flex-direction: column; align-items: center; z-index: 10; transition: all 0.5s ease; }
     body.game-active .card { margin-right: 220px; overflow: visible; border-color: #ff4d88; }
     body.game-active .card::before { content: ''; position: absolute; top: 150px; right: -30px; border-width: 15px 0 15px 30px; border-style: solid; border-color: transparent transparent transparent rgba(255, 255, 255, 0.95); z-index: 1; }
     body.game-active .card::after { content: ''; position: absolute; top: 147px; right: -36px; border-width: 18px 0 18px 36px; border-style: solid; border-color: transparent transparent transparent #ff4d88; z-index: 0; }
+
+    /* Quando c'è la cinematica, spostiamo la card un po' più giù o al centro per non coprire il lupo in alto */
+    body.game-active.cinematic-active .card {
+        margin-right: 0 !important; /* Centra la card */
+        margin-top: 150px; /* Spazio per il lupo sopra */
+    }
 
     /* POPUP AVVISO */
     #warningPopup { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 99999; display: none; justify-content: center; align-items: center; flex-direction: column; text-align: center; }
@@ -73,8 +108,12 @@
 
     /* MEDIA QUERIES MOBILE */
     @media (max-width: 768px) {
-        body.game-active #wolfCharacter { right: -75px !important; height: 35vh !important; bottom: 20px !important; opacity: 1; }
+        body.game-active #wolfCharacter.normal-pos { right: -75px !important; height: 35vh !important; bottom: 20px !important; opacity: 1; }
         body.game-active .card { margin-right: 90px !important; width: 60vw !important; min-height: 380px !important; padding: 12px !important; margin-left: 5px !important; }
+        
+        /* Adattamento cinematica mobile */
+        body.game-active.cinematic-active .card { margin-right: 0 !important; margin-top: 120px; }
+        
         body.game-active h2 { font-size: 16px !important; margin-bottom: 8px !important; }
         body.game-active .question-box { font-size: 13px !important; padding: 8px !important; }
         body.game-active button { padding: 6px 14px !important; font-size: 13px !important; }
@@ -243,7 +282,7 @@ const audioFiles = [
     'audio3.mp3'
 ]; 
 
-// --- DATI DELLA CACCIA AL TESORO (ORDINE TEST: VELOCI PRIMA, TRICK DOPO) ---
+// --- DATI DELLA CACCIA AL TESORO ---
 const questions = [
     {   // 1. CLASSICA (Index 0)
         question: "La sera in cui ci siamo baciati la prima volta perchè volevo salire da te??",
@@ -264,7 +303,7 @@ const questions = [
         clue: "Guarda dietro la TV in salotto! 📺",
         type: "redirect" 
     },
-    {   // 4. SLIDER (Index 3) - Spostato qui per essere prima dei trick lunghi
+    {   // 4. SLIDER (Index 3) - ORA CON CINEMATICA
         question: "Quanto ti amo da 1 a 10? 📈",
         options: [], 
         correct: 999, 
@@ -308,16 +347,30 @@ let lastAudioIndex = -1;
 let wrongAnswersCount = 0; 
 let beddraAudio = null; 
 
-// --- GESTIONE KILL SWITCH ---
+// --- GESTIONE KILL SWITCH E RESET ---
 function stopEverything() {
-    if (currentAudio) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0; 
-        currentAudio.onplay = null; 
-        currentAudio.onended = null;
-    }
+    // Stop audio standard e speciali
+    if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; currentAudio.onplay = null; currentAudio.onended = null; }
+    if (beddraAudio) { beddraAudio.pause(); beddraAudio.currentTime = 0; }
+    
+    // Stop timer
     if (talkingInterval) clearInterval(talkingInterval);
     if (stopTimeout) clearTimeout(stopTimeout);
+    
+    // RESET GRAFICA LUPO (Importante per il livello 4)
+    wolf.classList.remove('normal-pos');
+    wolf.classList.remove('cinematic-pos');
+    document.body.classList.remove('cinematic-active');
+    
+    // Reset stile inline che potrebbe essere rimasto dalla cinematica
+    wolf.style.transition = '';
+    wolf.style.top = '';
+    wolf.style.left = '';
+    wolf.style.transform = '';
+    wolf.style.right = '';
+    wolf.style.bottom = '';
+    
+    // Reset immagine default
     wolf.src = "lupocut.png";
 }
 
@@ -342,8 +395,8 @@ function launchConfetti() {
 
 function startGame() {
     // Reset stati speciali
-    questions[4].correct = -1; // Piedi (index 4)
-    questions[5].correct = -1; // Beddra (index 5)
+    questions[4].correct = -1; 
+    questions[5].correct = -1; 
 
     document.body.classList.add('game-active');
     setTimeout(() => {
@@ -353,9 +406,15 @@ function startGame() {
     }, 300); 
 }
 
-// --- LOGICA PARLATO ---
+// --- LOGICA PARLATO NORMALE (Livelli Standard) ---
 function startTalking() {
+    // Se siamo nel livello 3 (Slider), non usiamo questa funzione ma quella speciale
+    if (currentLevel === 3) return;
+
     stopEverything(); 
+    
+    // Riattiva posizione normale del lupo
+    wolf.classList.add('normal-pos');
 
     if (audioFiles.length === 0) return;
 
@@ -384,14 +443,72 @@ function startTalking() {
         const duration = Math.random() * (8000 - 4000) + 4000;
         stopTimeout = setTimeout(() => {
             stopEverything();
+            wolf.classList.add('normal-pos'); // Assicura che resti visibile
         }, duration);
     };
 
     currentAudio.onended = function() {
         stopEverything();
+        wolf.classList.add('normal-pos');
     };
 
     currentAudio.play().catch(e => console.log("Audio autoplay bloccato:", e));
+}
+
+// --- LOGICA CINEMATICA SPECIALE (LIVELLO 4 - SLIDER) ---
+function startCinematicSequence() {
+    stopEverything(); // Pulisce tutto
+    document.body.classList.add('cinematic-active'); // Sposta la card
+
+    // 1. Setup Iniziale (Fuori schermo, alto sx)
+    wolf.style.top = '-300px';
+    wolf.style.left = '-300px';
+    wolf.style.right = 'auto'; // Disabilita posizionamento standard
+    wolf.style.bottom = 'auto';
+    wolf.src = 'walking.png'; // Immagine camminata
+    wolf.classList.add('cinematic-pos'); // Attiva classe per transizioni top/left
+
+    // 2. Start Camminata (Dopo 1s)
+    setTimeout(() => {
+        // Coordinate arrivo (Centro-Alto)
+        wolf.style.top = '10px';
+        wolf.style.left = '50%';
+        wolf.style.transform = 'translateX(-50%)'; // Centra orizzontalmente
+        
+        // Tempo di camminata (3s) e poi parla
+        setTimeout(() => {
+            // 3. Arrivato: Parla
+            wolf.src = 'stand.png';
+            
+            // Audio Voce
+            currentAudio = new Audio('voce.mp3');
+            currentAudio.play();
+            
+            let isOpen = false;
+            // Loop parlato con "Rare"
+            talkingInterval = setInterval(() => {
+                const rand = Math.random();
+                if (rand < 0.05) { // 5% chance immagine rara
+                    wolf.src = 'rare.png';
+                } else {
+                    if (isOpen) {
+                        wolf.src = 'stand.png'; 
+                    } else {
+                        wolf.src = 'standspeak.png'; 
+                    }
+                    isOpen = !isOpen;
+                }
+            }, 150);
+
+            // Fine Audio
+            currentAudio.onended = function() {
+                clearInterval(talkingInterval);
+                wolf.src = 'stand.png'; // Rimane fermo
+                // Non chiamiamo stopEverything per non far sparire il lupo
+            };
+
+        }, 3000); // 3000ms = tempo transizione CSS
+    }, 1000);
 }
 
 function loadQuestion() {
@@ -410,7 +527,7 @@ function loadQuestion() {
     const container = document.getElementById("optionsContainer");
     container.innerHTML = ""; 
 
-    // GESTIONE SLIDER
+    // GESTIONE SLIDER (LIVELLO 4)
     if (q.type === "slider") {
         container.innerHTML = `
             <div class="slider-wrapper">
@@ -422,6 +539,8 @@ function loadQuestion() {
             </div>
             <button class="option-btn" onclick="checkSlider()">Conferma</button>
         `;
+        // AVVIA SEQUENZA CINEMATICA
+        startCinematicSequence();
     } 
     // GESTIONE PULSANTI NORMALI
     else {
@@ -432,9 +551,9 @@ function loadQuestion() {
             btn.onclick = () => checkAnswer(index, btn);
             container.appendChild(btn);
         });
+        // AVVIA PARLATO STANDARD
+        startTalking();
     }
-
-    startTalking();
 }
 
 // --- GESTIONE SLIDER ---
@@ -444,6 +563,11 @@ function checkSlider() {
     
     // Se il valore è nell'area visibile (0-100 circa)
     if (val <= 100) {
+        // Errore: ferma l'animazione speciale se sta andando e fa il suono errore
+        if (talkingInterval) clearInterval(talkingInterval);
+        if (currentAudio) currentAudio.pause();
+        wolf.src = 'rare.png'; // Faccia strana quando sbaglia
+        
         triggerError(document.querySelector("#optionsContainer button")); 
     } else {
         // Se ha trascinato nel vuoto (>100)
@@ -490,7 +614,14 @@ function showClue() {
 // --- FUNZIONE COMUNE ERRORE ---
 function triggerError(btnElement) {
     if(btnElement) btnElement.classList.add("wrong");
-    stopEverything(); 
+    
+    // NON chiamiamo stopEverything qui nel livello slider per non resettare posizione,
+    // ma gestiamo audio manualmente. Per gli altri livelli va bene.
+    if (currentLevel !== 3) {
+        stopEverything();
+        wolf.classList.add('normal-pos'); // Riporta lupo visibile
+    }
+
     errorOverlay.classList.remove('fade-out');
     errorOverlay.style.display = 'flex';
     errorSound.currentTime = 0;
