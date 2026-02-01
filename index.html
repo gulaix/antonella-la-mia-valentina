@@ -253,6 +253,15 @@
     .option-btn.correct { background: #d4edda; border-color: #28a745; color: #155724; }
     .option-btn.wrong { background: #f8d7da; border-color: #dc3545; color: #721c24; animation: shake 0.5s; }
 
+    /* Stile speciale per la risposta che si trasforma */
+    .option-btn.transformed {
+        background: #fff3cd;
+        border-color: #ffc107;
+        font-weight: bold;
+        transform: scale(1.05);
+        transition: all 0.3s ease;
+    }
+
     .clue-box {
         display: none; background: #fff3cd; border: 2px solid #ffeeba; color: #856404;
         padding: 15px; border-radius: 10px; margin-bottom: 15px; width: 90%;
@@ -350,9 +359,10 @@ const questions = [
         clue: "Cerca dove tieni le scarpe... c'è un bigliettino nascosto lì! 👟"
     },
     {
+        // LIVELLO SPECIALE "I PIEDI"
         question: "Qual è il mio piatto preferito che cucini tu?",
         options: ["pasta col tonno", "insalata e limone", "macinato bollito", "i broccoli"],
-        correct: 0, 
+        correct: -1, // INIZIALMENTE NESSUNA È GIUSTA!
         clue: "Controlla dentro il frigo, vicino al latte! 🥛"
     },
     {
@@ -432,6 +442,9 @@ function launchConfetti() {
 }
 
 function startGame() {
+    // Reset dello stato della domanda "piedi" nel caso si ricominci
+    questions[1].correct = -1;
+
     document.body.classList.add('game-active');
     setTimeout(() => {
         proposalSection.style.display = "none"; 
@@ -483,6 +496,14 @@ function startTalking() {
 
 function loadQuestion() {
     const q = questions[currentLevel];
+    
+    // Assicuriamoci che il testo sia "i broccoli" quando si carica la domanda, prima della trasformazione
+    let optionsToShow = [...q.options];
+    if (currentLevel === 1) {
+        // Reset manuale per essere sicuri
+        questions[1].correct = -1;
+    }
+
     document.getElementById("levelTitle").innerText = "Livello " + (currentLevel + 1);
     document.getElementById("questionText").innerText = q.question;
     document.getElementById("clueBox").style.display = "none";
@@ -491,7 +512,7 @@ function loadQuestion() {
     const container = document.getElementById("optionsContainer");
     container.innerHTML = ""; 
 
-    q.options.forEach((opt, index) => {
+    optionsToShow.forEach((opt, index) => {
         const btn = document.createElement("button");
         btn.innerText = opt;
         btn.className = "option-btn";
@@ -505,8 +526,9 @@ function loadQuestion() {
 // --- GESTIONE RISPOSTA E ERRORE ---
 function checkAnswer(selectedIndex, btnElement) {
     const q = questions[currentLevel];
+
     if (selectedIndex === q.correct) {
-        // RISPOSTA GIUSTA
+        // --- RISPOSTA GIUSTA ---
         btnElement.classList.add("correct");
         const allBtns = document.querySelectorAll(".option-btn");
         allBtns.forEach(b => b.disabled = true);
@@ -515,7 +537,11 @@ function checkAnswer(selectedIndex, btnElement) {
         document.getElementById("nextBtn").style.display = "inline-block";
         launchConfetti(); 
     } else {
-        // RISPOSTA SBAGLIATA
+        // --- RISPOSTA SBAGLIATA ---
+        
+        // Segnala come sbagliato
+        btnElement.classList.add("wrong");
+        
         // 1. Zittisci il lupo
         stopEverything();
         
@@ -526,12 +552,35 @@ function checkAnswer(selectedIndex, btnElement) {
         errorSound.currentTime = 0;
         errorSound.play();
 
-        // 3. Quando l'audio errore finisce, chiudi
+        // 3. LOGICA SPECIALE LIVELLO PIEDI
+        // Se siamo al livello 1 e tutte le risposte sono diventate rosse...
+        if (currentLevel === 1) {
+            const wrongButtons = document.querySelectorAll('#optionsContainer .option-btn.wrong');
+            if (wrongButtons.length === 4) {
+                // Aspetta un secondo (mentre suona l'errore) e poi trasforma il pulsante
+                setTimeout(() => {
+                    const allBtns = document.querySelectorAll('#optionsContainer .option-btn');
+                    // L'indice 3 è "i broccoli"
+                    const feetBtn = allBtns[3]; 
+                    
+                    feetBtn.classList.remove('wrong');
+                    feetBtn.classList.add('transformed');
+                    feetBtn.innerHTML = "i tuoi piedi 🦶";
+                    
+                    // Rendi questo pulsante la risposta corretta!
+                    questions[1].correct = 3;
+                    
+                    // Nota: Non disabilito i pulsanti, così l'utente può cliccarlo
+                }, 1000);
+            }
+        }
+
+        // 4. Quando l'audio errore finisce, chiudi
         errorSound.onended = function() {
             errorOverlay.classList.add('fade-out');
             setTimeout(() => {
                 errorOverlay.style.display = 'none';
-            }, 500); // tempo della dissolvenza CSS
+            }, 500); 
         };
     }
 }
