@@ -333,7 +333,7 @@
 </div>
 
 
-<img src="lupocut.png" id="wolfCharacter" alt="Lupo Cowboy">
+<img src="lupocut.jpg" id="wolfCharacter" alt="Lupo Cowboy">
 
 
 <div class="card" id="mainCard">
@@ -477,7 +477,7 @@ function startGame() {
 function stopTalking() {
     clearInterval(talkingInterval);
     clearTimeout(stopTalkingTimeout);
-    wolf.src = "lupocut.png"; // Reset bocca chiusa
+    wolf.src = "lupocut.jpg"; // Reset bocca chiusa
     if (currentAudio) {
         currentAudio.pause();
         currentAudio.currentTime = 0;
@@ -503,9 +503,9 @@ function startTalking() {
     let isOpen = false;
     talkingInterval = setInterval(() => {
         if (isOpen) {
-            wolf.src = "lupocut.png"; // Bocca chiusa
+            wolf.src = "lupocut.jpg"; // Bocca chiusa
         } else {
-            wolf.src = "lupocut1.png"; // Bocca aperta
+            wolf.src = "lupocut1.jpg"; // Bocca aperta
         }
         isOpen = !isOpen;
     }, 250);
