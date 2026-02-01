@@ -46,26 +46,26 @@
         100% { transform: translateY(-100vh) rotate(45deg) scale(1.2); opacity: 0; }
     }
 
-    /* --- STILI PER IL LUPO (LATO DESTRO) --- */
+    /* --- IL LUPO (Desktop: A Destra) --- */
     #wolfCharacter {
         position: fixed;
         bottom: -20px; 
-        right: -400px; /* Nascosto a destra inizialmente */
-        height: 65vh; /* Altezza dinamica */
+        right: -400px; /* Nascosto */
+        height: 65vh; 
         max-height: 550px;
         z-index: 50; 
-        transition: right 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s;
+        transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         pointer-events: none; 
-        opacity: 0; /* Invisibile all'inizio */
+        opacity: 0;
     }
 
-    /* Quando il gioco è attivo, il lupo entra */
+    /* Entrata Lupo su PC */
     body.game-active #wolfCharacter {
-        right: -40px; /* Entra bene nello schermo (più centrale) */
+        right: -40px; 
         opacity: 1;
     }
 
-    /* --- LA CARD (FUMETTO A SINISTRA) --- */
+    /* --- LA CARD (Desktop: Si sposta a Sinistra) --- */
     .card {
         background: rgba(255, 255, 255, 0.95);
         padding: 30px;
@@ -84,52 +84,71 @@
         transition: all 0.5s ease;
     }
 
-    /* In modalità gioco, la card si sposta a SINISTRA */
+    /* PC: Sposta card a sinistra */
     body.game-active .card {
-        margin-right: 220px; /* Spinge verso sinistra per fare spazio al lupo */
+        margin-right: 220px; 
         overflow: visible; 
         border-color: #ff4d88;
     }
 
-    /* Punta del fumetto (VERSO DESTRA) */
+    /* PC: Punta a destra */
     body.game-active .card::before {
-        content: '';
-        position: absolute;
-        top: 150px;
-        right: -30px; /* Esce a destra */
-        left: auto;
-        /* Triangolo che punta a destra */
+        content: ''; position: absolute;
+        top: 150px; right: -30px;
         border-width: 15px 0 15px 30px;
         border-style: solid;
         border-color: transparent transparent transparent rgba(255, 255, 255, 0.95);
         z-index: 1;
     }
-
-    /* Bordo rosa della punta */
     body.game-active .card::after {
-        content: '';
-        position: absolute;
-        top: 147px;
-        right: -36px;
-        left: auto;
+        content: ''; position: absolute;
+        top: 147px; right: -36px;
         border-width: 18px 0 18px 36px;
         border-style: solid;
         border-color: transparent transparent transparent #ff4d88;
         z-index: 0;
     }
 
-    /* Media query per schermi piccoli (Mobile) */
+    /* ========================================= */
+    /* === VERSIONE MOBILE (SCHERMI PICCOLI) === */
+    /* ========================================= */
     @media (max-width: 768px) {
-        body.game-active .card {
-            margin-right: 80px; /* Meno spostamento su mobile */
-        }
+        
+        /* 1. Il Lupo va SOTTO invece che a destra */
         body.game-active #wolfCharacter {
-            right: -80px; /* Lupo un po' più defilato su mobile */
-            height: 50vh;
+            right: -20px !important; /* Resetta la destra */
+            bottom: -10px !important;
+            height: 200px !important; /* Più piccolo */
+            opacity: 1;
+        }
+
+        /* 2. La Card va IN ALTO invece che a sinistra */
+        body.game-active .card {
+            margin-right: 0 !important; /* Niente spostamento laterale */
+            margin-bottom: 180px !important; /* Spazio sotto per il lupo */
+        }
+
+        /* 3. Il Fumetto punta in BASSO */
+        body.game-active .card::before {
+            top: auto !important; /* Non in alto */
+            bottom: -30px !important; /* Ma in basso */
+            right: 40px !important; /* Posizionato sopra il lupo */
+            /* Triangolo verso il basso */
+            border-width: 30px 15px 0 15px !important;
+            border-color: rgba(255, 255, 255, 0.95) transparent transparent transparent !important;
+        }
+
+        body.game-active .card::after {
+            top: auto !important;
+            bottom: -36px !important;
+            right: 37px !important;
+            /* Triangolo rosa verso il basso */
+            border-width: 36px 18px 0 18px !important;
+            border-color: #ff4d88 transparent transparent transparent !important;
         }
     }
+    /* ========================================= */
 
-    /* -------------------------------------------------- */
 
     .poop-trail {
         position: absolute;
