@@ -53,14 +53,14 @@
     .heart-bg span { position: absolute; display: block; width: 20px; height: 20px; background: rgba(255, 255, 255, 0.6); transform: rotate(45deg); animation: animate 25s linear infinite; bottom: -150px; }
     @keyframes animate { 0% { transform: translateY(0) rotate(45deg) scale(0.3); opacity: 1; } 100% { transform: translateY(-100vh) rotate(45deg) scale(1.2); opacity: 0; } }
 
-    /* --- IL LUPO E LE SUE ANIMAZIONI (SCALATO PIU' PICCOLO) --- */
+    /* --- IL LUPO STANDARD (GRANDE) --- */
     #wolfCharacter { 
         position: fixed; 
         bottom: -20px; 
-        right: -300px; /* Nascosto a destra */
-        /* DIMENSIONI RIDOTTE PER NON COPRIRE IL BOX */
-        height: 30vh; 
-        max-height: 250px; 
+        right: -400px; /* Nascosto a destra */
+        /* DIMENSIONI ORIGINALI GRANDI */
+        height: 65vh; 
+        max-height: 550px;
         z-index: 50; 
         transition: right 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s; 
         pointer-events: none; 
@@ -69,31 +69,33 @@
         transform: translateZ(0); 
     }
 
-    /* Stato normale del lupo (esce da destra in basso) */
+    /* Stato visibile normale */
     body.game-active #wolfCharacter.normal-pos { 
-        right: -20px; 
+        right: -40px; 
         opacity: 1; 
     }
 
-    /* Override per la cinematica del livello Slider */
-    #wolfCharacter.cinematic-pos {
-        transition: left 3s linear !important; /* Solo transizione orizzontale */
-        right: auto !important;
-        bottom: auto !important;
+    /* --- IL LUPO CINEMATICO (PICCOLO - SOLO LIV 4) --- */
+    /* Questa classe sovrascrive le dimensioni solo quando serve */
+    #wolfCharacter.cinematic-wolf {
+        height: 30vh !important; 
+        max-height: 250px !important;
+        bottom: auto !important; /* Rimuove ancoraggio in basso */
+        right: auto !important;  /* Rimuove ancoraggio a destra */
         opacity: 1 !important;
-        /* La posizione verticale (top) sarà fissa via JS */
+        transition: left 3s linear !important; /* Camminata lineare */
     }
 
     /* CARD */
     .card { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); max-width: 420px; width: 90vw; min-height: 550px; position: relative; border: 3px solid #ffebf0; overflow: hidden; display: flex; flex-direction: column; align-items: center; z-index: 10; transition: all 0.5s ease; }
-    body.game-active .card { margin-right: 180px; overflow: visible; border-color: #ff4d88; }
+    body.game-active .card { margin-right: 220px; overflow: visible; border-color: #ff4d88; }
     body.game-active .card::before { content: ''; position: absolute; top: 150px; right: -30px; border-width: 15px 0 15px 30px; border-style: solid; border-color: transparent transparent transparent rgba(255, 255, 255, 0.95); z-index: 1; }
     body.game-active .card::after { content: ''; position: absolute; top: 147px; right: -36px; border-width: 18px 0 18px 36px; border-style: solid; border-color: transparent transparent transparent #ff4d88; z-index: 0; }
 
     /* Quando c'è la cinematica, centra la card */
     body.game-active.cinematic-active .card {
         margin-right: 0 !important; /* Centra la card */
-        margin-top: 50px; /* Un po' di spazio dall'alto */
+        margin-top: 100px; /* Spazio per il lupo sopra */
     }
 
     /* POPUP AVVISO */
@@ -110,11 +112,17 @@
 
     /* MEDIA QUERIES MOBILE */
     @media (max-width: 768px) {
-        body.game-active #wolfCharacter.normal-pos { right: -40px !important; height: 25vh !important; bottom: 20px !important; opacity: 1; }
-        body.game-active .card { margin-right: 80px !important; width: 60vw !important; min-height: 380px !important; padding: 12px !important; margin-left: 5px !important; }
+        body.game-active #wolfCharacter.normal-pos { 
+            right: -75px !important; 
+            height: 35vh !important; 
+            bottom: 20px !important; 
+            opacity: 1; 
+        }
+        
+        body.game-active .card { margin-right: 90px !important; width: 60vw !important; min-height: 380px !important; padding: 12px !important; margin-left: 5px !important; }
         
         /* Adattamento cinematica mobile */
-        body.game-active.cinematic-active .card { margin-right: 0 !important; margin-top: 80px; }
+        body.game-active.cinematic-active .card { margin-right: 0 !important; margin-top: 150px; }
         
         body.game-active h2 { font-size: 16px !important; margin-bottom: 8px !important; }
         body.game-active .question-box { font-size: 13px !important; padding: 8px !important; }
@@ -344,6 +352,7 @@ const warningPopup = document.getElementById("warningPopup");
 let currentLevel = 0;
 let currentAudio = null; 
 let talkingInterval = null; 
+let cinematicInterval = null; // Variabile dedicata per l'intervallo cinematica
 let stopTimeout = null; 
 let lastAudioIndex = -1; 
 let wrongAnswersCount = 0; 
@@ -357,20 +366,23 @@ function stopEverything() {
     
     // Stop timer
     if (talkingInterval) clearInterval(talkingInterval);
+    if (cinematicInterval) clearInterval(cinematicInterval);
     if (stopTimeout) clearTimeout(stopTimeout);
     
-    // RESET GRAFICA LUPO
+    // RESET COMPLETO GRAFICA LUPO
+    // Rimuoviamo la classe cinematica per farlo tornare grande
+    wolf.classList.remove('cinematic-wolf'); 
+    // Rimuoviamo classi di stato
     wolf.classList.remove('normal-pos');
-    wolf.classList.remove('cinematic-pos');
     document.body.classList.remove('cinematic-active');
     
-    // Reset stile inline che potrebbe essere rimasto dalla cinematica
-    wolf.style.transition = '';
+    // Reset forzato degli stili inline (fondamentale per ripristinare il CSS originale)
     wolf.style.top = '';
     wolf.style.left = '';
     wolf.style.transform = '';
     wolf.style.right = '';
     wolf.style.bottom = '';
+    wolf.style.transition = '';
     
     // Reset immagine default
     wolf.src = "lupocut.png";
@@ -408,14 +420,14 @@ function startGame() {
     }, 300); 
 }
 
-// --- LOGICA PARLATO NORMALE (Livelli Standard) ---
+// --- LOGICA PARLATO NORMALE (Lupo Grande) ---
 function startTalking() {
     // Se siamo nel livello 3 (Slider), il lupo non parla all'inizio
     if (currentLevel === 3) return;
 
     stopEverything(); 
     
-    // Riattiva posizione normale del lupo (in basso a destra, ma scalato piccolo)
+    // Riattiva posizione normale del lupo (Grande, in basso a destra)
     wolf.classList.add('normal-pos');
 
     if (audioFiles.length === 0) return;
@@ -434,6 +446,7 @@ function startTalking() {
     currentAudio.onplay = function() {
         let isOpen = false;
         talkingInterval = setInterval(() => {
+            // QUI USIAMO SOLO LE IMMAGINI ORIGINALI
             if (isOpen) {
                 wolf.src = "lupocut.png"; 
             } else {
@@ -457,24 +470,24 @@ function startTalking() {
     currentAudio.play().catch(e => console.log("Audio autoplay bloccato:", e));
 }
 
-// --- LOGICA CINEMATICA SPECIALE (LIVELLO 4 - SLIDER ERROR) ---
+// --- LOGICA CINEMATICA SPECIALE (Lupo Piccolo - Solo Livello 4) ---
 function startCinematicSequence() {
-    stopEverything(); // Pulisce tutto
-    document.body.classList.add('cinematic-active'); // Sposta la card per fare spazio in alto
+    stopEverything(); // Pulisce tutto e resetta
+    
+    // Aggiungi classe per rimpicciolire il lupo SOLO ORA
+    wolf.classList.add('cinematic-wolf');
+    document.body.classList.add('cinematic-active'); 
 
     // 1. Setup Iniziale (Fuori schermo a SINISTRA, altezza fissa)
-    wolf.style.top = '50px'; // Altezza fissa sopra la card
-    wolf.style.left = '-300px'; // Fuori schermo a sinistra
-    wolf.style.right = 'auto'; 
-    wolf.style.bottom = 'auto';
+    wolf.style.top = '50px'; 
+    wolf.style.left = '-300px'; 
     wolf.src = 'walking.png'; // Immagine camminata
-    wolf.classList.add('cinematic-pos'); // Attiva classe per transizione orizzontale
 
-    // 2. Start Camminata Orizzontale (Dopo piccolissimo delay per attivare CSS)
+    // 2. Start Camminata Orizzontale
     setTimeout(() => {
-        // Coordinate arrivo (Centro orizzontale, stessa altezza top)
+        // Coordinate arrivo (Centro orizzontale)
         wolf.style.left = '50%';
-        wolf.style.transform = 'translateX(-50%)'; // Centra perfettamente
+        wolf.style.transform = 'translateX(-50%)'; 
         
         // Tempo di camminata (3s) e poi parla
         setTimeout(() => {
@@ -486,10 +499,10 @@ function startCinematicSequence() {
             currentAudio.play();
             
             let isOpen = false;
-            // Loop parlato con "Rare"
-            talkingInterval = setInterval(() => {
+            // Loop parlato SPECIALE con "Rare" (usa una variabile intervallo diversa)
+            cinematicInterval = setInterval(() => {
                 const rand = Math.random();
-                if (rand < 0.05) { // 5% chance immagine rara
+                if (rand < 0.05) { 
                     wolf.src = 'rare.png';
                 } else {
                     if (isOpen) {
@@ -503,10 +516,9 @@ function startCinematicSequence() {
 
             // Fine Audio -> LANCIA ERRORE STANDARD
             currentAudio.onended = function() {
-                clearInterval(talkingInterval);
+                clearInterval(cinematicInterval);
                 wolf.src = 'stand.png'; 
-                // Triggera l'errore standard (NOO + suono)
-                // Passiamo 'true' per dire a triggerError che siamo in cinematica e non deve resettare la posizione del lupo
+                // Triggera l'errore standard. 'true' impedisce a triggerError di resettare subito la posizione
                 triggerError(document.querySelector("#optionsContainer button"), true); 
             };
 
@@ -613,14 +625,13 @@ function showClue() {
 function triggerError(btnElement, isCinematic = false) {
     if(btnElement) btnElement.classList.add("wrong");
     
-    // Se NON siamo in cinematica, resetta la posizione del lupo a normale.
-    // Se SIAMO in cinematica, non fare nulla (il lupo resta dov'è finito la cinematica)
+    // Se NON siamo in cinematica, resetta tutto (Lupo torna normale).
+    // Se SIAMO in cinematica, non resettare ancora posizione, ferma solo audio.
     if (!isCinematic) {
         stopEverything();
         wolf.classList.add('normal-pos'); 
     } else {
-         // Se siamo in cinematica, dobbiamo comunque fermare i timer del parlato
-         if (talkingInterval) clearInterval(talkingInterval);
+         if (cinematicInterval) clearInterval(cinematicInterval);
          if (currentAudio) currentAudio.pause();
     }
 
@@ -628,9 +639,23 @@ function triggerError(btnElement, isCinematic = false) {
     errorOverlay.style.display = 'flex';
     errorSound.currentTime = 0;
     errorSound.play();
+    
+    // Quando finisce il suono "auu", chiudiamo overlay
     errorSound.onended = function() {
         errorOverlay.classList.add('fade-out');
-        setTimeout(() => { errorOverlay.style.display = 'none'; }, 500); 
+        setTimeout(() => { 
+            errorOverlay.style.display = 'none'; 
+            
+            // SE ERAVAMO IN CINEMATICA, ORA DOBBIAMO RIPRISTINARE IL LUPO GRANDE
+            // PERCHE' L'ANIMAZIONE È FINITA
+            if (isCinematic) {
+                stopEverything(); 
+                // Non aggiungo normal-pos subito perché siamo nel livello slider
+                // e vogliamo che il lupo sparisca fino al prossimo tentativo o livello.
+                // Se vuoi che riappaia grande subito, decommenta la riga sotto:
+                // wolf.classList.add('normal-pos'); 
+            }
+        }, 500); 
     };
 }
 
