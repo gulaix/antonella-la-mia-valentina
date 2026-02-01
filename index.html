@@ -121,29 +121,26 @@
     
     .slider-labels { 
         display: flex; justify-content: space-between; 
-        width: 77%; /* Allineato con la fine visibile della barra (che è il 77% di 130) */
-        margin: 0 auto 5px auto; /* Centrato */
+        width: 77%; 
+        margin: 0 auto 5px auto; 
         font-weight: bold; color: #ff4d88; font-size: 18px;
     }
     
     input[type=range].love-slider {
         -webkit-appearance: none;
-        width: 100%; /* Occupa tutto, anche la parte invisibile */
+        width: 100%; 
         background: transparent;
     }
     
-    /* Il binario */
     input[type=range].love-slider::-webkit-slider-runnable-track {
         width: 100%;
         height: 12px;
         cursor: pointer;
-        /* Colore pieno fino al 77% (valore 100), poi trasparente */
         background: linear-gradient(to right, #ff4d88 0%, #ff4d88 77%, rgba(0,0,0,0.05) 77%);
         border-radius: 10px;
         border: 1px solid rgba(0,0,0,0.1);
     }
 
-    /* Il pallino */
     input[type=range].love-slider::-webkit-slider-thumb {
         -webkit-appearance: none;
         height: 28px;
@@ -152,7 +149,7 @@
         background: #fff;
         border: 4px solid #ff2e6e;
         cursor: grab;
-        margin-top: -9px; /* Per centrarlo verticalmente */
+        margin-top: -9px; 
         box-shadow: 0 2px 6px rgba(0,0,0,0.3);
         position: relative;
         z-index: 2;
@@ -246,45 +243,45 @@ const audioFiles = [
     'audio3.mp3'
 ]; 
 
-// --- DATI DELLA CACCIA AL TESORO (6 LIVELLI ORA) ---
+// --- DATI DELLA CACCIA AL TESORO (ORDINE TEST: VELOCI PRIMA, TRICK DOPO) ---
 const questions = [
-    {   // 1. CLASSICA
+    {   // 1. CLASSICA (Index 0)
         question: "La sera in cui ci siamo baciati la prima volta perchè volevo salire da te??",
         options: ["I piedi", "Per fare segso", "Perchè avevo sete", "Per le coccole"],
         correct: 3, 
         clue: "Cerca dove tieni le scarpe... c'è un bigliettino nascosto lì! 👟"
     },
-    {   // 2. PIEDI (Trick)
-        question: "Qual è il mio piatto preferito che cucini tu?",
-        options: ["pasta col tonno", "insalata e limone", "macinato bollito", "i broccoli"],
-        correct: -1, 
-        clue: "Controlla dentro il frigo, vicino al latte! 🥛"
+    {   // 2. PELUCHE (Index 1)
+        question: "Come si chiama il nostro peluche preferito? 🧸",
+        options: ["Bubu", "Orso", "Pippo", "Stitch"],
+        correct: 3, 
+        clue: "Vai in bagno e guarda dietro lo specchio! 🚿"
     },
-    {   // 3. WIKIPEDIA (Nuova)
+    {   // 3. WIKIPEDIA (Index 2)
         question: "Chi è che ha SEMPRE ragione nelle discussioni?",
         options: ["Tu (Antonella) 🙄", "Io (Giulio) 😎"],
         correct: 1, 
         clue: "Guarda dietro la TV in salotto! 📺",
         type: "redirect" 
     },
-    {   // 4. PELUCHE (Relax)
-        question: "Come si chiama il nostro peluche preferito? 🧸",
-        options: ["Bubu", "Orso", "Pippo", "Stitch"],
-        correct: 3, 
-        clue: "Vai in bagno e guarda dietro lo specchio! 🚿"
+    {   // 4. SLIDER (Index 3) - Spostato qui per essere prima dei trick lunghi
+        question: "Quanto ti amo da 1 a 10? 📈",
+        options: [], 
+        correct: 999, 
+        clue: "L'ultimo indizio è... addosso a me! Vieni a prendertelo! ❤️",
+        type: "slider"
     },
-    {   // 5. BEDDRA (Strobo) - Spostata qui
+    {   // 5. PIEDI (Trick) (Index 4)
+        question: "Qual è il mio piatto preferito che cucini tu?",
+        options: ["pasta col tonno", "insalata e limone", "macinato bollito", "i broccoli"],
+        correct: -1, 
+        clue: "Controlla dentro il frigo, vicino al latte! 🥛"
+    },
+    {   // 6. BEDDRA (Strobo/Audio) (Index 5)
         question: "Giulio è il miglior fidanzato a fare i regali??",
         options: ["SI", "...si", "NO", "forse"],
         correct: -1, 
         clue: "Cerca sotto il tuo cuscino! 🛏️"
-    },
-    {   // 6. SLIDER (Finale)
-        question: "Quanto ti amo da 1 a 10? 📈",
-        options: [], // Vuoto, useremo lo slider
-        correct: 999, // Speciale
-        clue: "L'ultimo indizio è... addosso a me! Vieni a prendertelo! ❤️",
-        type: "slider"
     }
 ];
 
@@ -344,9 +341,9 @@ function launchConfetti() {
 }
 
 function startGame() {
-    // Reset stati
-    questions[1].correct = -1;
-    questions[4].correct = -1; // Beddra è ora index 4
+    // Reset stati speciali
+    questions[4].correct = -1; // Piedi (index 4)
+    questions[5].correct = -1; // Beddra (index 5)
 
     document.body.classList.add('game-active');
     setTimeout(() => {
@@ -401,9 +398,9 @@ function loadQuestion() {
     const q = questions[currentLevel];
     wrongAnswersCount = 0; 
     
-    // Reset specifici (Aggiornati gli indici)
-    if (currentLevel === 1) questions[1].correct = -1;
+    // Reset specifici per ricaricamenti
     if (currentLevel === 4) questions[4].correct = -1;
+    if (currentLevel === 5) questions[5].correct = -1;
     
     document.getElementById("levelTitle").innerText = "Livello " + (currentLevel + 1);
     document.getElementById("questionText").innerText = q.question;
@@ -525,21 +522,21 @@ function checkAnswer(selectedIndex, btnElement) {
         // Sbagliato
         triggerError(btnElement);
 
-        // LOGICA PIEDI (Lv 1 - Index 1)
-        if (currentLevel === 1) {
+        // LOGICA PIEDI (Lv 5 -> Index 4)
+        if (currentLevel === 4) {
             const wrongButtons = document.querySelectorAll('#optionsContainer .option-btn.wrong');
             if (wrongButtons.length === 4) {
                 setTimeout(() => {
                     const allBtns = document.querySelectorAll('#optionsContainer .option-btn');
                     const feetBtn = allBtns[3]; 
                     feetBtn.innerHTML = "i tuoi piedi 🦶";
-                    questions[1].correct = 3;
+                    questions[4].correct = 3;
                 }, 200);
             }
         }
 
-        // LOGICA BEDDRA (Lv 4 - Index 4)
-        if (currentLevel === 4) {
+        // LOGICA BEDDRA (Lv 6 -> Index 5)
+        if (currentLevel === 5) {
             wrongAnswersCount++;
             if (wrongAnswersCount === 2) {
                 const container = document.getElementById("optionsContainer");
