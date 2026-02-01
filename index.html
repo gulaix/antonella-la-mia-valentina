@@ -31,25 +31,30 @@
         transition: background-color 0.2s;
     }
 
-    /* === ANIMAZIONI DISCO POTENTI === */
-    @keyframes discoFlash {
-        0% { background-color: #ff0000; }
-        15% { background-color: #00ff00; }
-        30% { background-color: #0000ff; }
-        45% { background-color: #ffff00; }
-        60% { background-color: #ff00ff; }
-        75% { background-color: #00ffff; }
-        90% { background-color: #ffffff; }
-        100% { background-color: #ff0000; }
+    /* === NUOVA ANIMAZIONE STROBO POTENTE (RGB + BIANCO) === */
+    @keyframes superStrobe {
+        0%   { background-color: rgba(255, 0, 0, 0.4); }   /* Rosso */
+        15%  { background-color: rgba(255, 255, 255, 0.8); } /* FLASH BIANCO */
+        30%  { background-color: rgba(0, 0, 255, 0.4); }   /* Blu */
+        45%  { background-color: rgba(255, 255, 0, 0.4); } /* Giallo */
+        60%  { background-color: rgba(255, 255, 255, 0.8); } /* FLASH BIANCO */
+        75%  { background-color: rgba(0, 255, 0, 0.4); }   /* Verde */
+        90%  { background-color: rgba(255, 0, 255, 0.4); } /* Viola */
+        100% { background-color: rgba(0, 255, 255, 0.4); } /* Ciano */
     }
 
-    /* Animazione specifica per il box del popup (bordi e ombra colorata) */
-    @keyframes boxFlash {
-        0% { box-shadow: 0 0 50px #ff0000; border-color: #ff0000; background-color: #fff0f0; }
-        25% { box-shadow: 0 0 50px #00ff00; border-color: #00ff00; background-color: #f0fff0; }
-        50% { box-shadow: 0 0 50px #0000ff; border-color: #0000ff; background-color: #f0f0ff; }
-        75% { box-shadow: 0 0 50px #ffff00; border-color: #ffff00; background-color: #fffff0; }
-        100% { box-shadow: 0 0 50px #ff0000; border-color: #ff0000; background-color: #fff0f0; }
+    @keyframes shakeBox {
+        0% { transform: translate(1px, 1px) rotate(0deg); border-color: red; }
+        10% { transform: translate(-1px, -2px) rotate(-1deg); border-color: blue; }
+        20% { transform: translate(-3px, 0px) rotate(1deg); border-color: yellow; }
+        30% { transform: translate(3px, 2px) rotate(0deg); border-color: green; }
+        40% { transform: translate(1px, -1px) rotate(1deg); border-color: purple; }
+        50% { transform: translate(-1px, 2px) rotate(-1deg); border-color: orange; }
+        60% { transform: translate(-3px, 1px) rotate(0deg); border-color: cyan; }
+        70% { transform: translate(3px, 1px) rotate(-1deg); border-color: white; }
+        80% { transform: translate(-1px, -1px) rotate(1deg); border-color: magenta; }
+        90% { transform: translate(1px, 2px) rotate(0deg); border-color: lime; }
+        100% { transform: translate(1px, -2px) rotate(-1deg); border-color: red; }
     }
 
     /* Overlay che copre TUTTO tranne il popup */
@@ -59,22 +64,23 @@
         z-index: 90000; 
         display: none;
         pointer-events: none;
-        mix-blend-mode: hard-light; /* Rende i colori vibranti */
+        /* Niente mix-blend-mode scuro, usiamo l'alpha channel per colorare tutto */
     }
 
     .active-disco {
         display: block !important;
-        animation: discoFlash 0.1s infinite; 
+        animation: superStrobe 0.05s infinite; /* Velocità massima */
     }
 
-    /* Quando il disco è attivo, il popup sfondo diventa trasparente per far passare i colori */
+    /* Quando il disco è attivo, il popup sfondo diventa trasparente */
     body.disco-active #warningPopup {
-        background: rgba(0,0,0,0.1); /* Molto trasparente */
+        background: rgba(0,0,0,0) !important; 
     }
     
-    /* E il box del popup inizia a lampeggiare */
+    /* E il box del popup inizia a tremare e cambiare colore */
     body.disco-active .warning-box {
-        animation: boxFlash 0.1s infinite;
+        animation: shakeBox 0.1s infinite;
+        box-shadow: 0 0 30px rgba(255,255,255,0.8);
     }
 
     /* SFONDO ANIMATO */
@@ -97,18 +103,21 @@
         transform: translateZ(0); 
     }
 
-    body.game-active #wolfCharacter.normal-pos { 
+    body.game-active #wolfCharacter.wolf-visible { 
         right: -40px; 
         opacity: 1; 
     }
 
     /* --- IL RAGAZZO CINEMATICO (PICCOLO - SOLO LIV 4) --- */
-    #wolfCharacter.cinematic-wolf {
-        height: 30vh !important; 
-        max-height: 250px !important;
-        bottom: auto !important; 
-        right: auto !important; 
-        opacity: 1 !important;
+    #boyCharacter {
+        position: fixed;
+        top: 50px; 
+        left: -400px; 
+        height: 30vh; 
+        max-height: 250px;
+        z-index: 60;
+        display: none; 
+        pointer-events: none;
     }
 
     /* CARD */
@@ -117,23 +126,15 @@
     body.game-active .card::before { content: ''; position: absolute; top: 150px; right: -30px; border-width: 15px 0 15px 30px; border-style: solid; border-color: transparent transparent transparent rgba(255, 255, 255, 0.95); z-index: 1; }
     body.game-active .card::after { content: ''; position: absolute; top: 147px; right: -36px; border-width: 18px 0 18px 36px; border-style: solid; border-color: transparent transparent transparent #ff4d88; z-index: 0; }
 
-    /* Quando c'è la cinematica, centra la card */
+    /* Quando c'è la cinematica (Boy), centra la card */
     body.game-active.cinematic-active .card {
         margin-right: 0 !important; 
         margin-top: 100px; 
     }
 
-    /* POPUP AVVISO */
-    #warningPopup { 
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-        background: rgba(0,0,0,0.8); /* Scuro normalmente */
-        z-index: 99999; display: none; justify-content: center; align-items: center; flex-direction: column; text-align: center; 
-        transition: background 0.1s;
-    }
-    .warning-box { 
-        background: white; padding: 25px; border-radius: 15px; border: 4px solid red; max-width: 80%; 
-        position: relative; z-index: 100000;
-    }
+    /* POPUP */
+    #warningPopup { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 99999; display: none; justify-content: center; align-items: center; flex-direction: column; text-align: center; transition: background 0.1s; }
+    .warning-box { background: white; padding: 25px; border-radius: 15px; border: 4px solid red; max-width: 80%; position: relative; z-index: 100000; transition: all 0.1s; }
     .warning-btn { margin-top: 15px; padding: 10px 30px; background: red; color: white; border: none; font-size: 18px; cursor: pointer; border-radius: 5px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); transition: transform 0.1s; }
     .warning-btn:active { transform: scale(0.95); background: #cc0000; }
 
@@ -145,18 +146,9 @@
 
     /* MEDIA QUERIES MOBILE */
     @media (max-width: 768px) {
-        body.game-active #wolfCharacter.normal-pos { 
-            right: -75px !important; 
-            height: 35vh !important; 
-            bottom: 20px !important; 
-            opacity: 1; 
-        }
-        
+        body.game-active #wolfCharacter.wolf-visible { right: -75px !important; height: 35vh !important; bottom: 20px !important; opacity: 1; }
         body.game-active .card { margin-right: 90px !important; width: 60vw !important; min-height: 380px !important; padding: 12px !important; margin-left: 5px !important; }
-        
-        /* Adattamento cinematica mobile */
         body.game-active.cinematic-active .card { margin-right: 0 !important; margin-top: 150px; }
-        
         body.game-active h2 { font-size: 16px !important; margin-bottom: 8px !important; }
         body.game-active .question-box { font-size: 13px !important; padding: 8px !important; }
         body.game-active button { padding: 6px 14px !important; font-size: 13px !important; }
@@ -198,53 +190,12 @@
     .clue-box { display: none; background: #fff3cd; border: 2px solid #ffeeba; color: #856404; padding: 15px; border-radius: 10px; margin-bottom: 15px; width: 90%; font-size: 16px; animation: slideDown 0.5s; }
     .next-level-btn { display: none; background: #28a745; color: white; }
 
-    /* === STILI SLIDER PULITO & TRICKY === */
-    .slider-wrapper { 
-        width: 85%; /* Larghezza contenitore visibile */
-        position: relative; 
-        padding: 20px 0; 
-        margin: 0 auto 20px auto; 
-    }
-    
-    .slider-labels { 
-        display: flex; justify-content: space-between; 
-        width: 100%; /* Le label 0 e 100 stanno agli estremi della barra visibile */
-        margin-bottom: 5px;
-        font-weight: bold; color: #ff4d88; font-size: 18px;
-    }
-    
-    input[type=range].love-slider {
-        -webkit-appearance: none;
-        width: 130%; /* L'input è più largo del contenitore (sborda a destra) */
-        margin-left: 0; /* Allineato a sinistra */
-        background: transparent;
-        display: block;
-    }
-    
-    input[type=range].love-slider::-webkit-slider-runnable-track {
-        width: 100%;
-        height: 12px;
-        cursor: pointer;
-        /* La barra è ROSA PIENO fino al 77% (che corrisponde al valore 100/130). 
-           Dopo diventa trasparente, quindi sembra finire lì. */
-        background: linear-gradient(to right, #ff4d88 0%, #ff4d88 76.9%, transparent 76.9%);
-        border-radius: 10px;
-        /* Nessun bordo per pulizia */
-    }
-
-    input[type=range].love-slider::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        height: 28px;
-        width: 28px;
-        border-radius: 50%;
-        background: #fff;
-        border: 4px solid #ff2e6e;
-        cursor: grab;
-        margin-top: -8px; /* Centrato */
-        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-        position: relative;
-        z-index: 2;
-    }
+    /* === STILI SLIDER === */
+    .slider-wrapper { width: 85%; position: relative; padding: 20px 0; margin: 0 auto 20px auto; }
+    .slider-labels { display: flex; justify-content: space-between; width: 100%; margin-bottom: 5px; font-weight: bold; color: #ff4d88; font-size: 18px; }
+    input[type=range].love-slider { -webkit-appearance: none; width: 130%; margin-left: 0; background: transparent; display: block; }
+    input[type=range].love-slider::-webkit-slider-runnable-track { width: 100%; height: 12px; cursor: pointer; background: linear-gradient(to right, #ff4d88 0%, #ff4d88 76.9%, transparent 76.9%); border-radius: 10px; }
+    input[type=range].love-slider::-webkit-slider-thumb { -webkit-appearance: none; height: 28px; width: 28px; border-radius: 50%; background: #fff; border: 4px solid #ff2e6e; cursor: grab; margin-top: -8px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); position: relative; z-index: 2; }
 
     @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } 100% { transform: translateX(0); } }
     @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
@@ -277,18 +228,15 @@
     </div>
 </div>
 
-<img src="lupocut.png" id="wolfCharacter" alt="Lupo Cowboy">
-
+<img src="lupocut.png" id="wolfCharacter" alt="Lupo">
+<img src="walking.png" id="boyCharacter" alt="Ragazzo">
 
 <div class="card" id="mainCard">
-    
     <div id="proposalSection" style="width: 100%; display:flex; flex-direction:column; align-items:center;">
         <img id="mainImage" class="main-photo" src="fotooo1.jpg" alt="Amore">
         <h1 id="mainTitle">Amore mio, vuoi essere la mia Valentine? 💖</h1>
-
         <button id="yesBtn" class="btn-proposal">Sì, certo! ❤️</button>
         <button id="noBtn" class="btn-proposal">No 💩</button>
-
         <div class="celebration" id="celebrationText">
             YEEEEE! 💃🕺 Ti amo tantissimo!!! 💕<br>
             Ma non è finita qui... 😏<br>
@@ -299,86 +247,34 @@
     <div id="gameSection">
         <img src="https://cdn-icons-png.flaticon.com/512/1256/1256617.png" style="width:60px; height:60px; margin-bottom:10px;" alt="Thinking">
         <h2 id="levelTitle" style="margin: 0 0 15px 0;">Livello 1</h2>
-        
-        <div class="question-box" id="questionText">
-            Caricamento domanda...
-        </div>
-
-        <div class="options-grid" id="optionsContainer">
-        </div>
-
+        <div class="question-box" id="questionText">Caricamento domanda...</div>
+        <div class="options-grid" id="optionsContainer"></div>
         <div class="clue-box" id="clueBox">
             <strong>✨ BRAVA! Ecco il tuo indizio:</strong><br>
             <span id="clueText">...</span>
         </div>
-
         <button class="next-level-btn" id="nextBtn" onclick="nextLevel()">Prossimo Livello ➡️</button>
     </div>
 
     <div id="finalSection">
         <img src="https://i.imgur.com/jRf6Y7R.png" class="main-photo" alt="Party">
         <h1>COMPLIMENTI! 🎉</h1>
-        <p style="font-size: 18px; color: #555;">
-            Hai trovato tutti gli indizi! <br>
-            Ora corri da me per il tuo premio speciale! 🎁💏
-        </p>
+        <p style="font-size: 18px; color: #555;">Hai trovato tutti gli indizi! <br>Ora corri da me per il tuo premio speciale! 🎁💏</p>
     </div>
-
 </div>
 
 <script>
-// ==========================================================
-// CONFIGURAZIONE AUDIO
-// ==========================================================
-const audioFiles = [
-    'audio1.mp3', 
-    'audio2.mp3', 
-    'audio3.mp3'
-]; 
+const audioFiles = ['audio1.mp3', 'audio2.mp3', 'audio3.mp3']; 
 
-// --- DATI DELLA CACCIA AL TESORO ---
 const questions = [
-    {   // 1. CLASSICA (Index 0)
-        question: "La sera in cui ci siamo baciati la prima volta perchè volevo salire da te??",
-        options: ["I piedi", "Per fare segso", "Perchè avevo sete", "Per le coccole"],
-        correct: 3, 
-        clue: "Cerca dove tieni le scarpe... c'è un bigliettino nascosto lì! 👟"
-    },
-    {   // 2. PELUCHE (Index 1)
-        question: "Come si chiama il nostro peluche preferito? 🧸",
-        options: ["Bubu", "Orso", "Pippo", "Stitch"],
-        correct: 3, 
-        clue: "Vai in bagno e guarda dietro lo specchio! 🚿"
-    },
-    {   // 3. WIKIPEDIA (Index 2)
-        question: "Chi è che ha SEMPRE ragione nelle discussioni?",
-        options: ["Tu (Antonella) 🙄", "Io (Giulio) 😎"],
-        correct: 1, 
-        clue: "Guarda dietro la TV in salotto! 📺",
-        type: "redirect" 
-    },
-    {   // 4. SLIDER (Index 3) - CON CINEMATICA RAGAZZO SU ERRORE
-        question: "Quanto ti amo da 1 a 10? 📈",
-        options: [], 
-        correct: 999, 
-        clue: "L'ultimo indizio è... addosso a me! Vieni a prendertelo! ❤️",
-        type: "slider"
-    },
-    {   // 5. PIEDI (Trick) (Index 4)
-        question: "Qual è il mio piatto preferito che cucini tu?",
-        options: ["pasta col tonno", "insalata e limone", "macinato bollito", "i broccoli"],
-        correct: -1, 
-        clue: "Controlla dentro il frigo, vicino al latte! 🥛"
-    },
-    {   // 6. BEDDRA (Strobo/Audio) (Index 5)
-        question: "Giulio è il miglior fidanzato a fare i regali??",
-        options: ["SI", "...si", "NO", "forse"],
-        correct: -1, 
-        clue: "Cerca sotto il tuo cuscino! 🛏️"
-    }
+    { question: "La sera in cui ci siamo baciati la prima volta perchè volevo salire da te??", options: ["I piedi", "Per fare segso", "Perchè avevo sete", "Per le coccole"], correct: 3, clue: "Cerca dove tieni le scarpe... c'è un bigliettino nascosto lì! 👟" },
+    { question: "Come si chiama il nostro peluche preferito? 🧸", options: ["Bubu", "Orso", "Pippo", "Stitch"], correct: 3, clue: "Vai in bagno e guarda dietro lo specchio! 🚿" },
+    { question: "Chi è che ha SEMPRE ragione nelle discussioni?", options: ["Tu (Antonella) 🙄", "Io (Giulio) 😎"], correct: 1, clue: "Guarda dietro la TV in salotto! 📺", type: "redirect" },
+    { question: "Quanto ti amo da 1 a 10? 📈", options: [], correct: 999, clue: "L'ultimo indizio è... addosso a me! Vieni a prendertelo! ❤️", type: "slider" },
+    { question: "Qual è il mio piatto preferito che cucini tu?", options: ["pasta col tonno", "insalata e limone", "macinato bollito", "i broccoli"], correct: -1, clue: "Controlla dentro il frigo, vicino al latte! 🥛" },
+    { question: "Giulio è il miglior fidanzato a fare i regali??", options: ["SI", "...si", "NO", "forse"], correct: -1, clue: "Cerca sotto il tuo cuscino! 🛏️" }
 ];
 
-// Riferimenti DOM
 const proposalSection = document.getElementById("proposalSection");
 const gameSection = document.getElementById("gameSection");
 const finalSection = document.getElementById("finalSection");
@@ -388,12 +284,12 @@ const celebration = document.getElementById("celebrationText");
 const mainImage = document.getElementById("mainImage");
 const card = document.getElementById("mainCard");
 const wolf = document.getElementById("wolfCharacter");
+const boy = document.getElementById("boyCharacter");
 const errorOverlay = document.getElementById("errorOverlay");
 const errorSound = document.getElementById("errorSound");
 const warningPopup = document.getElementById("warningPopup");
 const discoOverlay = document.getElementById("discoOverlay");
 
-// Variabili di Stato
 let currentLevel = 0;
 let currentAudio = null; 
 let talkingInterval = null; 
@@ -402,37 +298,24 @@ let stopTimeout = null;
 let lastAudioIndex = -1; 
 let wrongAnswersCount = 0; 
 let beddraAudio = null; 
-let sliderLocked = true; // STATO DEL BLOCCO SLIDER
+let sliderLocked = true; 
 
-// --- GESTIONE KILL SWITCH E RESET ---
 function stopEverything() {
-    // Stop audio standard e speciali
     if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; currentAudio.onplay = null; currentAudio.onended = null; }
     if (beddraAudio) { beddraAudio.pause(); beddraAudio.currentTime = 0; }
-    
-    // Stop timer
     if (talkingInterval) clearInterval(talkingInterval);
     if (cinematicInterval) clearInterval(cinematicInterval);
     if (stopTimeout) clearTimeout(stopTimeout);
     
-    // RESET COMPLETO GRAFICA PERSONAGGIO
-    wolf.classList.remove('cinematic-wolf'); 
-    wolf.classList.remove('normal-pos');
+    // RESET GRAFICA
     document.body.classList.remove('cinematic-active');
-    
-    // RESET OVERLAY
-    discoOverlay.classList.remove('active-disco');
     document.body.classList.remove('disco-active');
+    discoOverlay.classList.remove('active-disco');
     
-    // Reset forzato degli stili inline
-    wolf.style.top = '';
-    wolf.style.left = '';
-    wolf.style.transform = '';
-    wolf.style.right = '';
-    wolf.style.bottom = '';
-    wolf.style.transition = '';
+    // Reset Boy
+    boy.style.display = 'none';
     
-    // Reset immagine default (Lupo)
+    // Reset Wolf
     wolf.src = "lupocut.png";
 }
 
@@ -456,11 +339,9 @@ function launchConfetti() {
 }
 
 function startGame() {
-    // Reset stati speciali
     questions[4].correct = -1; 
     questions[5].correct = -1; 
-    sliderLocked = true; // Reset lock
-
+    sliderLocked = true; 
     document.body.classList.add('game-active');
     setTimeout(() => {
         proposalSection.style.display = "none"; 
@@ -469,14 +350,11 @@ function startGame() {
     }, 300); 
 }
 
-// --- LOGICA PARLATO NORMALE (Lupo Grande) ---
 function startTalking() {
     if (currentLevel === 3) return; // Salta se livello slider
 
     stopEverything(); 
-    
-    // Riattiva posizione normale del lupo
-    wolf.classList.add('normal-pos');
+    wolf.classList.add('wolf-visible'); // Mostra il lupo
 
     if (audioFiles.length === 0) return;
 
@@ -494,103 +372,85 @@ function startTalking() {
     currentAudio.onplay = function() {
         let isOpen = false;
         talkingInterval = setInterval(() => {
-            if (isOpen) {
-                wolf.src = "lupocut.png"; 
-            } else {
-                wolf.src = "lupocut1.png"; 
-            }
+            if (isOpen) { wolf.src = "lupocut.png"; } else { wolf.src = "lupocut1.png"; }
             isOpen = !isOpen;
         }, 120);
 
         const duration = Math.random() * (8000 - 4000) + 4000;
         stopTimeout = setTimeout(() => {
             stopEverything();
-            wolf.classList.add('normal-pos'); // Assicura che resti visibile
+            wolf.classList.add('wolf-visible'); 
         }, duration);
     };
 
     currentAudio.onended = function() {
         stopEverything();
-        wolf.classList.add('normal-pos');
+        wolf.classList.add('wolf-visible');
     };
 
     currentAudio.play().catch(e => console.log("Audio autoplay bloccato:", e));
 }
 
-// --- LOGICA CINEMATICA SPECIALE (Ragazzo Piccolo - Solo Livello 4) ---
+// --- LOGICA CINEMATICA RAGAZZO ---
 function startCinematicSequence() {
-    stopEverything(); // Pulisce tutto
+    stopEverything(); // Nasconde lupo e resetta tutto
     
-    wolf.classList.add('cinematic-wolf');
-    document.body.classList.add('cinematic-active'); 
+    // Mostra il ragazzo
+    boy.style.display = 'block';
+    boy.src = 'walking.png';
+    boy.style.left = '-400px'; 
+    boy.style.transition = 'none'; // Reset transizione
+    boy.style.transform = 'scaleX(-1)'; // Guarda a destra
 
-    // 1. Setup Iniziale
-    wolf.style.top = '50px'; 
-    wolf.style.left = '-300px'; 
-    wolf.style.transform = 'translateY(0) scaleX(-1)'; // Flip per guardare a destra
-    
-    // Forza il reflow
-    void wolf.offsetWidth;
+    document.body.classList.add('cinematic-active'); // Sposta la card
 
-    // Attiva transizione e immagine
-    wolf.style.transition = 'left 5s linear'; // Camminata in 5s
-    wolf.src = 'walking.png'; 
+    // Forza reflow
+    void boy.offsetWidth;
 
-    // 2. Start Camminata
+    // Start camminata
+    boy.style.transition = 'left 5s linear';
+    boy.style.left = '50%';
+    boy.style.transform = 'translateX(-50%) scaleX(-1)';
+
+    // Quando arriva al centro
     setTimeout(() => {
-        // Coordinate arrivo (Centro orizzontale)
-        wolf.style.left = '50%';
-        wolf.style.transform = 'translateX(-50%) scaleX(-1)'; // Mantiene flip e centra
-        
-        // Tempo di camminata (5s)
+        boy.style.transition = 'none';
+        boy.style.transform = 'translateX(-50%) scaleX(1)'; // Fronte
+        boy.src = 'stand.png';
+
+        // Attesa 1s prima di parlare
         setTimeout(() => {
-            // 3. Arrivato: Ferma tutto, gira e aspetta
-            wolf.style.transition = 'none'; // FERMA LA TRANSIZIONE PER EVITARE SCATTI
-            wolf.style.transform = 'translateX(-50%) scaleX(1)'; // Gira frontale
-            wolf.src = 'stand.png';
+            currentAudio = new Audio('voce.mp3');
+            currentAudio.play();
             
-            // 4. ATTESA DI 1 SECONDO PRIMA DI PARLARE
-            setTimeout(() => {
-                // Audio Voce
-                currentAudio = new Audio('voce.mp3');
-                currentAudio.play();
-                
-                let isOpen = false;
-                // Loop parlato SPECIALE
-                cinematicInterval = setInterval(() => {
-                    const rand = Math.random();
-                    if (rand < 0.10) {  // 10% chance
-                        wolf.src = 'rare.png';
-                    } else {
-                        if (isOpen) {
-                            wolf.src = 'stand.png'; 
-                        } else {
-                            wolf.src = 'standspeak.png'; 
-                        }
-                        isOpen = !isOpen;
-                    }
-                }, 150);
+            let isOpen = false;
+            cinematicInterval = setInterval(() => {
+                const rand = Math.random();
+                if (rand < 0.10) { 
+                    boy.src = 'rare.png';
+                } else {
+                    if (isOpen) { boy.src = 'stand.png'; } else { boy.src = 'standspeak.png'; }
+                    isOpen = !isOpen;
+                }
+            }, 150);
 
-                // Fine Audio -> LANCIA ERRORE STANDARD
-                currentAudio.onended = function() {
-                    clearInterval(cinematicInterval);
-                    wolf.src = 'stand.png'; 
-                    triggerError(document.querySelector("#optionsContainer button"), true); 
-                };
-            }, 1000); // Attesa 1s
-
-        }, 5000); // 5000ms = tempo camminata
-    }, 50);
+            currentAudio.onended = function() {
+                clearInterval(cinematicInterval);
+                boy.src = 'stand.png'; 
+                // Errore finale
+                triggerError(document.querySelector("#optionsContainer button"), true); 
+            };
+        }, 1000);
+    }, 5000);
 }
 
 function loadQuestion() {
     const q = questions[currentLevel];
     wrongAnswersCount = 0; 
     
-    // Reset specifici per ricaricamenti
     if (currentLevel === 4) questions[4].correct = -1;
     if (currentLevel === 5) questions[5].correct = -1;
-    if (currentLevel === 3) sliderLocked = true; // Reset lock quando carica lv slider
+    if (currentLevel === 3) sliderLocked = true; 
     
     document.getElementById("levelTitle").innerText = "Livello " + (currentLevel + 1);
     document.getElementById("questionText").innerText = q.question;
@@ -600,32 +460,21 @@ function loadQuestion() {
     const container = document.getElementById("optionsContainer");
     container.innerHTML = ""; 
 
-    // GESTIONE SLIDER (LIVELLO 4)
     if (q.type === "slider") {
         container.innerHTML = `
             <div class="slider-wrapper">
-                <div class="slider-labels">
-                    <span>0</span>
-                    <span>100</span>
-                </div>
+                <div class="slider-labels"><span>0</span><span>100</span></div>
                 <input type="range" id="loveRange" class="love-slider" min="0" max="130" value="0">
             </div>
             <button class="option-btn" onclick="checkSlider()">Conferma</button>
         `;
-        
-        // AGGIUNTA EVENTO INPUT PER BLOCCARE IL CURSORE
         const sliderInput = document.getElementById("loveRange");
         sliderInput.oninput = function() {
-            // Se è bloccato e prova ad andare oltre 90 (prima della fine rosa)
-            if (sliderLocked && parseInt(this.value) > 90) {
-                this.value = 90; // Bloccalo fisicamente
-            }
+            if (sliderLocked && parseInt(this.value) > 90) { this.value = 90; }
         };
-
-        // Nessun parlato iniziale qui
-        stopEverything();
+        stopEverything(); // Niente lupo
+        wolf.classList.remove('wolf-visible'); // Nascondi lupo esplicitamente
     } 
-    // GESTIONE PULSANTI NORMALI
     else {
         q.options.forEach((opt, index) => {
             const btn = document.createElement("button");
@@ -634,85 +483,75 @@ function loadQuestion() {
             btn.onclick = () => checkAnswer(index, btn);
             container.appendChild(btn);
         });
-        // AVVIA PARLATO STANDARD
         startTalking();
     }
 }
 
-// --- GESTIONE SLIDER ---
 function checkSlider() {
     const slider = document.getElementById("loveRange");
     const val = parseInt(slider.value);
-    
-    // Se il valore è nell'area visibile (0-100 circa) -> ERRORE -> CINEMATICA
     if (val <= 100) {
         startCinematicSequence();
     } else {
-        // Se ha trascinato nel vuoto (>100) -> GIUSTO
         showClue();
     }
 }
 
-// --- GESTIONE WIKIPEDIA ---
 function handleRedirect() {
     window.open("https://it.wikipedia.org/wiki/Delirio_di_onnipotenza", "_blank");
     triggerError(null); 
 }
 
-// --- GESTIONE SPECIALE BEDDRA (DOPPIA RIPRODUZIONE + OVERLAY SOPRA CARD) ---
 function handleSpecialGiulioAnswer(btn) {
     btn.classList.add("correct");
     stopEverything(); 
+    wolf.classList.remove('wolf-visible'); // Nascondi lupo durante il delirio
     
-    // 1. INIZIA LO STROBO (SOPRA LA CARD)
     discoOverlay.classList.add('active-disco');
-    document.body.classList.add('disco-active'); // Per gestire il popup trasparente
-
-    // 2. MOSTRA IL POPUP
+    document.body.classList.add('disco-active');
     warningPopup.style.display = 'flex';
 
-    // 3. LOGICA AUDIO LOOP (2 VOLTE)
     let playCount = 0;
-    
     beddraAudio = new Audio('beddra.mp3');
     beddraAudio.play();
 
     beddraAudio.onended = () => {
         playCount++;
         if (playCount < 2) {
-            // RIPETI AUDIO
             beddraAudio.currentTime = 0;
             beddraAudio.play();
         } else {
-            // FINE (dopo 2 volte)
-            discoOverlay.classList.remove('active-disco'); // Ferma strobo
+            discoOverlay.classList.remove('active-disco'); 
             document.body.classList.remove('disco-active');
-            warningPopup.style.display = 'none'; // Chiudi popup
+            warningPopup.style.display = 'none'; 
             showClue();
         }
     };
 }
 
-function fakeOkButton() {
-    console.log("Cliccato OK, ma è una trappola!");
-}
+function fakeOkButton() { console.log("Cliccato OK, ma è una trappola!"); }
 
-// --- FUNZIONE COMUNE PER MOSTRARE INDIZIO ---
 function showClue() {
     const q = questions[currentLevel];
     document.getElementById("clueText").innerText = q.clue;
     document.getElementById("clueBox").style.display = "block";
     document.getElementById("nextBtn").style.display = "inline-block";
+    
+    // Se siamo nel livello 3, nascondiamo il ragazzo, mostriamo il lupo festante se vuoi, o niente
+    if (currentLevel === 3) {
+        boy.style.display = 'none';
+        wolf.classList.add('wolf-visible'); // Torna il lupo
+    }
+    
     launchConfetti(); 
 }
 
-// --- FUNZIONE COMUNE ERRORE ---
 function triggerError(btnElement, isCinematic = false) {
     if(btnElement) btnElement.classList.add("wrong");
     
     if (!isCinematic) {
         stopEverything();
-        wolf.classList.add('normal-pos'); 
+        wolf.classList.add('wolf-visible'); 
     } else {
          if (cinematicInterval) clearInterval(cinematicInterval);
          if (currentAudio) currentAudio.pause();
@@ -727,17 +566,16 @@ function triggerError(btnElement, isCinematic = false) {
         errorOverlay.classList.add('fade-out');
         setTimeout(() => { 
             errorOverlay.style.display = 'none'; 
-            
-            // SE ERAVAMO IN CINEMATICA (Livello Slider)
             if (isCinematic) {
                 stopEverything(); 
-                sliderLocked = false; // SBLOCCA LO SLIDER
+                sliderLocked = false; 
+                // Finito errore cinematico, torna il lupo normale per riprovare
+                wolf.classList.add('wolf-visible');
             }
         }, 500); 
     };
 }
 
-// --- GESTIONE RISPOSTA GENERALE ---
 function checkAnswer(selectedIndex, btnElement) {
     const q = questions[currentLevel];
 
@@ -755,7 +593,7 @@ function checkAnswer(selectedIndex, btnElement) {
     } else {
         triggerError(btnElement);
 
-        if (currentLevel === 4) { // PIEDI
+        if (currentLevel === 4) { 
             const wrongButtons = document.querySelectorAll('#optionsContainer .option-btn.wrong');
             if (wrongButtons.length === 4) {
                 setTimeout(() => {
@@ -767,7 +605,7 @@ function checkAnswer(selectedIndex, btnElement) {
             }
         }
 
-        if (currentLevel === 5) { // BEDDRA
+        if (currentLevel === 5) { 
             wrongAnswersCount++;
             if (wrongAnswersCount === 2) {
                 const container = document.getElementById("optionsContainer");
@@ -789,14 +627,12 @@ function checkAnswer(selectedIndex, btnElement) {
 
 function nextLevel() {
     stopEverything(); 
-
     currentLevel++;
     if (currentLevel < questions.length) {
         loadQuestion(); 
     } else {
         document.body.classList.remove('game-active');
         stopEverything();
-        
         gameSection.style.display = "none";
         finalSection.style.display = "flex";
         launchConfetti();
