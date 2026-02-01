@@ -16,7 +16,7 @@
         align-items: center;
         min-height: 100vh;
         text-align: center;
-        overflow: hidden;
+        overflow: hidden; /* Mantiene tutto pulito */
     }
 
     /* SFONDO ANIMATO */
@@ -46,7 +46,24 @@
         100% { transform: translateY(-100vh) rotate(45deg) scale(1.2); opacity: 0; }
     }
 
-    /* LA CARD PRINCIPALE */
+    /* --- STILI PER IL LUPO --- */
+    #wolfCharacter {
+        position: fixed;
+        bottom: -50px; /* Un po' più in basso per nascondere il taglio */
+        left: -300px; /* Inizialmente nascosto fuori schermo a sinistra */
+        height: 70vh; /* Altezza relativa allo schermo */
+        max-height: 600px;
+        z-index: 50; /* Sopra lo sfondo, sotto la card */
+        transition: left 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Animazione di entrata elastica */
+        pointer-events: none; /* Non blocca i click */
+    }
+
+    /* Classe aggiunta col JS per far entrare il lupo */
+    body.game-active #wolfCharacter {
+        left: -50px; /* Si ferma parzialmente visibile a sinistra */
+    }
+
+    /* --- MODIFICHE ALLA CARD PER L'EFFETTO FUMETTO --- */
     .card {
         background: rgba(255, 255, 255, 0.95);
         padding: 30px;
@@ -54,7 +71,6 @@
         box-shadow: 0 15px 35px rgba(0,0,0,0.1);
         max-width: 420px;
         width: 90vw;
-        /* Altezza minima per contenere il gioco */
         min-height: 550px; 
         position: relative;
         border: 3px solid #ffebf0;
@@ -62,9 +78,42 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        z-index: 10;
+        z-index: 100; /* Card sopra il lupo */
         transition: all 0.5s ease;
     }
+
+    /* Quando il gioco è attivo, la card si sposta e diventa un fumetto */
+    body.game-active .card {
+        margin-left: 250px; /* Fa spazio al lupo */
+        overflow: visible; /* Necessario per far uscire la punta del fumetto */
+        border-color: #ff4d88; /* Bordo più deciso */
+    }
+
+    /* La punta bianca del fumetto */
+    body.game-active .card::before {
+        content: '';
+        position: absolute;
+        top: 150px;
+        left: -30px; /* Esce a sinistra */
+        border-width: 15px 30px 15px 0;
+        border-style: solid;
+        border-color: transparent rgba(255, 255, 255, 0.95) transparent transparent;
+        z-index: 1;
+    }
+
+    /* Il bordo rosa della punta del fumetto */
+    body.game-active .card::after {
+        content: '';
+        position: absolute;
+        top: 147px;
+        left: -36px; /* Leggermente più esterno per fare il bordo */
+        border-width: 18px 36px 18px 0;
+        border-style: solid;
+        border-color: transparent #ff4d88 transparent transparent;
+        z-index: 0;
+    }
+    /* -------------------------------------------------- */
+
 
     /* SCIA DI CACCA */
     .poop-trail {
@@ -80,7 +129,7 @@
         100% { opacity: 0; transform: scale(0.5) translateY(20px); }
     }
 
-    img {
+    img.main-photo {
         width: 140px;
         height: 140px;
         object-fit: cover;
@@ -253,10 +302,13 @@
     <span style="left: 90%; animation-duration: 19s; animation-delay: 4s;"></span>
 </div>
 
+<img src="lupocut.png" id="wolfCharacter" alt="Lupo Cowboy">
+
+
 <div class="card" id="mainCard">
     
     <div id="proposalSection" style="width: 100%; display:flex; flex-direction:column; align-items:center;">
-        <img id="mainImage" src="fotooo1.jpg" alt="Amore">
+        <img id="mainImage" class="main-photo" src="fotooo1.jpg" alt="Amore">
         <h1 id="mainTitle">Amore mio, vuoi essere la mia Valentine? 💖</h1>
 
         <button id="yesBtn" class="btn-proposal">Sì, certo! ❤️</button>
@@ -270,8 +322,8 @@
     </div>
 
     <div id="gameSection">
-        <img src="https://media.giphy.com/media/l0HlOaQcLJ2hHpYdy/giphy.gif" style="width:100px; height:100px; border:none; box-shadow:none;" alt="Thinking">
-        <h2 id="levelTitle">Livello 1</h2>
+        <img src="https://cdn-icons-png.flaticon.com/512/1256/1256617.png" style="width:60px; height:60px; margin-bottom:10px;" alt="Thinking">
+        <h2 id="levelTitle" style="margin: 0 0 15px 0;">Livello 1</h2>
         
         <div class="question-box" id="questionText">
             Caricamento domanda...
@@ -289,7 +341,7 @@
     </div>
 
     <div id="finalSection">
-        <img src="https://i.imgur.com/jRf6Y7R.png" alt="Party">
+        <img src="https://i.imgur.com/jRf6Y7R.png" class="main-photo" alt="Party">
         <h1>COMPLIMENTI! 🎉</h1>
         <p style="font-size: 18px; color: #555;">
             Hai trovato tutti gli indizi! <br>
@@ -301,20 +353,17 @@
 
 <script>
 // --- DATI DELLA CACCIA AL TESORO (MODIFICA QUI!) ---
-// Puoi cambiare le domande, le risposte e gli indizi qui sotto.
-// 'correct': 0 significa la prima risposta, 1 la seconda, 2 la terza.
-
 const questions = [
     {
         question: "Dove ci siamo dati il primo bacio? 😘",
         options: ["Al cinema", "Sotto casa tua", "Al parco", "In macchina"],
-        correct: 1, // È "Sotto casa tua"
+        correct: 1, 
         clue: "Cerca dove tieni le scarpe... c'è un bigliettino nascosto lì! 👟"
     },
     {
         question: "Qual è il mio piatto preferito che cucini tu? 🍝",
         options: ["Carbonara", "Lasagna", "Tiramisù", "Toast bruciato"],
-        correct: 0, // È "Carbonara"
+        correct: 0, 
         clue: "Controlla dentro il frigo, vicino al latte! 🥛"
     },
     {
@@ -336,27 +385,24 @@ const questions = [
         clue: "L'ultimo indizio è... addosso a me! Vieni a prendertelo! ❤️"
     }
 ];
-
 // ---------------------------------------------------
 
 const proposalSection = document.getElementById("proposalSection");
 const gameSection = document.getElementById("gameSection");
 const finalSection = document.getElementById("finalSection");
-
 const yesBtn = document.getElementById("yesBtn");
 const noBtn = document.getElementById("noBtn");
 const celebration = document.getElementById("celebrationText");
 const mainImage = document.getElementById("mainImage");
 const card = document.getElementById("mainCard");
+const wolf = document.getElementById("wolfCharacter");
 
-// Variabili di stato del gioco
 let currentLevel = 0;
 
 // --- LOGICA INIZIALE (Sì/No) ---
-
 yesBtn.addEventListener("click", () => {
     celebration.style.display = "block";
-    mainImage.src = "https://i.imgur.com/jRf6Y7R.png"; // Immagine felice
+    mainImage.src = "https://i.imgur.com/jRf6Y7R.png"; 
     yesBtn.style.display = "none";
     noBtn.style.display = "none";
     document.querySelectorAll('.poop-trail').forEach(el => el.remove());
@@ -373,13 +419,19 @@ function launchConfetti() {
     }());
 }
 
-// --- LOGICA DEL GIOCO ---
+// --- LOGICA DEL GIOCO E DEL LUPO ---
 
 function startGame() {
-    proposalSection.style.display = "none"; // Nasconde la intro
-    gameSection.style.display = "flex";     // Mostra il gioco
-    loadQuestion();
+    // Attiva la modalità gioco: entra il lupo e la card diventa fumetto
+    document.body.classList.add('game-active');
+    
+    setTimeout(() => {
+        proposalSection.style.display = "none"; // Nasconde la intro
+        gameSection.style.display = "flex";     // Mostra il gioco
+        loadQuestion();
+    }, 300); // Piccolo ritardo per fluidità
 }
+
 
 function loadQuestion() {
     const q = questions[currentLevel];
@@ -389,7 +441,7 @@ function loadQuestion() {
     document.getElementById("nextBtn").style.display = "none";
     
     const container = document.getElementById("optionsContainer");
-    container.innerHTML = ""; // Pulisce vecchie opzioni
+    container.innerHTML = ""; 
 
     q.options.forEach((opt, index) => {
         const btn = document.createElement("button");
@@ -402,27 +454,17 @@ function loadQuestion() {
 
 function checkAnswer(selectedIndex, btnElement) {
     const q = questions[currentLevel];
-    
     if (selectedIndex === q.correct) {
-        // RISPOSTA GIUSTA
         btnElement.classList.add("correct");
-        
-        // Disabilita tutti i bottoni per non far cliccare ancora
         const allBtns = document.querySelectorAll(".option-btn");
         allBtns.forEach(b => b.disabled = true);
-
-        // Mostra indizio
         document.getElementById("clueText").innerText = q.clue;
         document.getElementById("clueBox").style.display = "block";
         document.getElementById("nextBtn").style.display = "inline-block";
-        
-        launchConfetti(); // Un po' di coriandoli per ogni risposta giusta
+        launchConfetti(); 
     } else {
-        // RISPOSTA SBAGLIATA
         btnElement.classList.add("wrong");
-        setTimeout(() => {
-            btnElement.classList.remove("wrong"); // Rimuove il rosso dopo un po'
-        }, 500);
+        setTimeout(() => { btnElement.classList.remove("wrong"); }, 500);
     }
 }
 
@@ -432,15 +474,17 @@ function nextLevel() {
         loadQuestion();
     } else {
         // GIOCO FINITO
+        // Rimuovi la modalità gioco (il lupo se ne va, il fumetto sparisce)
+        document.body.classList.remove('game-active');
+
         gameSection.style.display = "none";
         finalSection.style.display = "flex";
         launchConfetti();
-        setInterval(launchConfetti, 4000); // Coriandoli infiniti alla fine
+        setInterval(launchConfetti, 4000); 
     }
 }
 
-// --- LOGICA TASTO NO (La tua preferita 💩) ---
-
+// --- LOGICA TASTO NO (Cacca 💩) ---
 function dropPoop(x, y) {
     const poop = document.createElement('span');
     poop.textContent = '💩';
@@ -456,13 +500,13 @@ function moveNoButton() {
     const currentTop = noBtn.offsetTop;
     dropPoop(currentLeft + 20, currentTop + 10);
 
-    const maxX = card.clientWidth - noBtn.offsetWidth - 20;
-    const maxY = card.clientHeight - noBtn.offsetHeight - 20;
-    // Area riservata per la testa (titolo e immagine) per non coprirli
-    const safeZoneTop = 250; 
+    // Usiamo clientWidth/Height per stare dentro i bordi
+    const maxX = card.clientWidth - noBtn.offsetWidth - 30;
+    const maxY = card.clientHeight - noBtn.offsetHeight - 30;
+    const safeZoneTop = 280; 
 
-    const newX = Math.random() * (maxX - 20) + 20;
-    let newY = Math.random() * (maxY - safeZoneTop) + safeZoneTop;
+    const newX = Math.max(20, Math.random() * maxX);
+    let newY = Math.max(safeZoneTop, Math.random() * maxY);
 
     noBtn.style.left = newX + "px";
     noBtn.style.top = newY + "px";
