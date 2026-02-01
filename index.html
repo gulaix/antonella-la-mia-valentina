@@ -75,15 +75,15 @@
         opacity: 1; 
     }
 
-    /* --- IL LUPO CINEMATICO (PICCOLO - SOLO LIV 4) --- */
-    /* Questa classe sovrascrive le dimensioni solo quando serve */
+    /* --- IL RAGAZZO CINEMATICO (PICCOLO - SOLO LIV 4) --- */
     #wolfCharacter.cinematic-wolf {
         height: 30vh !important; 
         max-height: 250px !important;
         bottom: auto !important; /* Rimuove ancoraggio in basso */
         right: auto !important;  /* Rimuove ancoraggio a destra */
         opacity: 1 !important;
-        transition: left 3s linear !important; /* Camminata lineare */
+        /* RALLENTATA LA CAMMINATA A 5 SECONDI */
+        transition: left 5s linear !important; 
     }
 
     /* CARD */
@@ -95,7 +95,7 @@
     /* Quando c'è la cinematica, centra la card */
     body.game-active.cinematic-active .card {
         margin-right: 0 !important; /* Centra la card */
-        margin-top: 100px; /* Spazio per il lupo sopra */
+        margin-top: 100px; /* Spazio per il ragazzo sopra */
     }
 
     /* POPUP AVVISO */
@@ -313,7 +313,7 @@ const questions = [
         clue: "Guarda dietro la TV in salotto! 📺",
         type: "redirect" 
     },
-    {   // 4. SLIDER (Index 3) - CON CINEMATICA SU ERRORE
+    {   // 4. SLIDER (Index 3) - CON CINEMATICA RAGAZZO SU ERRORE
         question: "Quanto ti amo da 1 a 10? 📈",
         options: [], 
         correct: 999, 
@@ -352,7 +352,7 @@ const warningPopup = document.getElementById("warningPopup");
 let currentLevel = 0;
 let currentAudio = null; 
 let talkingInterval = null; 
-let cinematicInterval = null; // Variabile dedicata per l'intervallo cinematica
+let cinematicInterval = null; 
 let stopTimeout = null; 
 let lastAudioIndex = -1; 
 let wrongAnswersCount = 0; 
@@ -369,14 +369,12 @@ function stopEverything() {
     if (cinematicInterval) clearInterval(cinematicInterval);
     if (stopTimeout) clearTimeout(stopTimeout);
     
-    // RESET COMPLETO GRAFICA LUPO
-    // Rimuoviamo la classe cinematica per farlo tornare grande
+    // RESET COMPLETO GRAFICA PERSONAGGIO
     wolf.classList.remove('cinematic-wolf'); 
-    // Rimuoviamo classi di stato
     wolf.classList.remove('normal-pos');
     document.body.classList.remove('cinematic-active');
     
-    // Reset forzato degli stili inline (fondamentale per ripristinare il CSS originale)
+    // Reset forzato degli stili inline
     wolf.style.top = '';
     wolf.style.left = '';
     wolf.style.transform = '';
@@ -384,7 +382,7 @@ function stopEverything() {
     wolf.style.bottom = '';
     wolf.style.transition = '';
     
-    // Reset immagine default
+    // Reset immagine default (Lupo)
     wolf.src = "lupocut.png";
 }
 
@@ -446,7 +444,7 @@ function startTalking() {
     currentAudio.onplay = function() {
         let isOpen = false;
         talkingInterval = setInterval(() => {
-            // QUI USIAMO SOLO LE IMMAGINI ORIGINALI
+            // QUI USIAMO SOLO LE IMMAGINI ORIGINALI DEL LUPO
             if (isOpen) {
                 wolf.src = "lupocut.png"; 
             } else {
@@ -470,59 +468,67 @@ function startTalking() {
     currentAudio.play().catch(e => console.log("Audio autoplay bloccato:", e));
 }
 
-// --- LOGICA CINEMATICA SPECIALE (Lupo Piccolo - Solo Livello 4) ---
+// --- LOGICA CINEMATICA SPECIALE (Ragazzo Piccolo - Solo Livello 4) ---
 function startCinematicSequence() {
     stopEverything(); // Pulisce tutto e resetta
     
-    // Aggiungi classe per rimpicciolire il lupo SOLO ORA
+    // Aggiungi classe per rimpicciolire il ragazzo SOLO ORA
     wolf.classList.add('cinematic-wolf');
     document.body.classList.add('cinematic-active'); 
 
     // 1. Setup Iniziale (Fuori schermo a SINISTRA, altezza fissa)
     wolf.style.top = '50px'; 
     wolf.style.left = '-300px'; 
+    // FLIP ORIZZONTALE PER FARLO CAMMINARE VERSO DESTRA
+    wolf.style.transform = 'scaleX(-1)'; 
     wolf.src = 'walking.png'; // Immagine camminata
 
-    // 2. Start Camminata Orizzontale
+    // 2. Start Camminata Orizzontale (dopo breve delay per applicare CSS)
     setTimeout(() => {
         // Coordinate arrivo (Centro orizzontale)
         wolf.style.left = '50%';
-        wolf.style.transform = 'translateX(-50%)'; 
+        // MANTENIAMO IL FLIP DURANTE LA CAMMINATA E CENTRIAMO
+        wolf.style.transform = 'translateX(50%) scaleX(-1)'; 
         
-        // Tempo di camminata (3s) e poi parla
+        // Tempo di camminata (ORA 5 SECONDI)
         setTimeout(() => {
-            // 3. Arrivato: Parla
+            // 3. Arrivato: Si gira frontale e si ferma
+            // RIMUOVIAMO IL FLIP (scaleX(1)) E CENTRIAMO NORMALMENTE
+            wolf.style.transform = 'translateX(-50%) scaleX(1)'; 
             wolf.src = 'stand.png';
             
-            // Audio Voce
-            currentAudio = new Audio('voce.mp3');
-            currentAudio.play();
-            
-            let isOpen = false;
-            // Loop parlato SPECIALE con "Rare" (usa una variabile intervallo diversa)
-            cinematicInterval = setInterval(() => {
-                const rand = Math.random();
-                if (rand < 0.05) { 
-                    wolf.src = 'rare.png';
-                } else {
-                    if (isOpen) {
-                        wolf.src = 'stand.png'; 
+            // 4. ATTESA DI 2 SECONDI PRIMA DI PARLARE
+            setTimeout(() => {
+                // Audio Voce
+                currentAudio = new Audio('voce.mp3');
+                currentAudio.play();
+                
+                let isOpen = false;
+                // Loop parlato SPECIALE con "Rare" (Aumentata probabilità al 10%)
+                cinematicInterval = setInterval(() => {
+                    const rand = Math.random();
+                    if (rand < 0.10) {  // 10% chance di "rare"
+                        wolf.src = 'rare.png';
                     } else {
-                        wolf.src = 'standspeak.png'; 
+                        if (isOpen) {
+                            wolf.src = 'stand.png'; 
+                        } else {
+                            wolf.src = 'standspeak.png'; 
+                        }
+                        isOpen = !isOpen;
                     }
-                    isOpen = !isOpen;
-                }
-            }, 150);
+                }, 150);
 
-            // Fine Audio -> LANCIA ERRORE STANDARD
-            currentAudio.onended = function() {
-                clearInterval(cinematicInterval);
-                wolf.src = 'stand.png'; 
-                // Triggera l'errore standard. 'true' impedisce a triggerError di resettare subito la posizione
-                triggerError(document.querySelector("#optionsContainer button"), true); 
-            };
+                // Fine Audio -> LANCIA ERRORE STANDARD
+                currentAudio.onended = function() {
+                    clearInterval(cinematicInterval);
+                    wolf.src = 'stand.png'; 
+                    // Triggera l'errore standard. 'true' impedisce reset immediato
+                    triggerError(document.querySelector("#optionsContainer button"), true); 
+                };
+            }, 2000); // Fine attesa 2 secondi
 
-        }, 3000); // 3000ms = tempo transizione CSS
+        }, 5000); // 5000ms = tempo camminata (più lenta)
     }, 50);
 }
 
@@ -647,13 +653,8 @@ function triggerError(btnElement, isCinematic = false) {
             errorOverlay.style.display = 'none'; 
             
             // SE ERAVAMO IN CINEMATICA, ORA DOBBIAMO RIPRISTINARE IL LUPO GRANDE
-            // PERCHE' L'ANIMAZIONE È FINITA
             if (isCinematic) {
                 stopEverything(); 
-                // Non aggiungo normal-pos subito perché siamo nel livello slider
-                // e vogliamo che il lupo sparisca fino al prossimo tentativo o livello.
-                // Se vuoi che riappaia grande subito, decommenta la riga sotto:
-                // wolf.classList.add('normal-pos'); 
             }
         }, 500); 
     };
