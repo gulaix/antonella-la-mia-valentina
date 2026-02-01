@@ -22,7 +22,6 @@
         overflow: hidden;
     }
 
-    /* SFONDO ANIMATO */
     .heart-bg {
         position: absolute;
         width: 100%;
@@ -49,11 +48,11 @@
         100% { transform: translateY(-100vh) rotate(45deg) scale(1.2); opacity: 0; }
     }
 
-    /* --- IL LUPO (Desktop) --- */
+    /* --- IL LUPO --- */
     #wolfCharacter {
         position: fixed;
         bottom: -20px; 
-        right: -400px; /* Nascosto */
+        right: -400px;
         height: 65vh; 
         max-height: 550px;
         z-index: 50; 
@@ -64,13 +63,12 @@
         transform: translateZ(0);
     }
 
-    /* Entrata Lupo su PC */
     body.game-active #wolfCharacter {
         right: -40px; 
         opacity: 1;
     }
 
-    /* --- LA CARD (Desktop) --- */
+    /* --- LA CARD --- */
     .card {
         background: rgba(255, 255, 255, 0.95);
         padding: 30px;
@@ -89,14 +87,12 @@
         transition: all 0.5s ease;
     }
 
-    /* PC: Sposta card a sinistra */
     body.game-active .card {
         margin-right: 220px; 
         overflow: visible; 
         border-color: #ff4d88;
     }
 
-    /* PC: Punta a destra */
     body.game-active .card::before {
         content: ''; position: absolute;
         top: 150px; right: -30px;
@@ -114,12 +110,8 @@
         z-index: 0;
     }
 
-    /* ========================================= */
-    /* === OTTIMIZZAZIONE MOBILE === */
-    /* ========================================= */
+    /* === MOBILE === */
     @media (max-width: 768px) {
-        
-        /* 1. Il Lupo Mobile */
         body.game-active #wolfCharacter {
             right: -75px !important; 
             height: 35vh !important; 
@@ -127,7 +119,6 @@
             opacity: 1;
         }
 
-        /* 2. La Card Mobile */
         body.game-active .card {
             margin-right: 90px !important; 
             width: 60vw !important; 
@@ -141,7 +132,6 @@
         body.game-active button { padding: 6px 14px !important; font-size: 13px !important; }
         body.game-active #gameSection img { width: 40px !important; height: 40px !important; }
 
-        /* 3. Il Fumetto Mobile */
         body.game-active .card::before {
             top: auto !important;
             bottom: 80px !important; 
@@ -158,171 +148,74 @@
     }
 
     .poop-trail {
-        position: absolute;
-        font-size: 24px;
-        pointer-events: none;
-        z-index: 5; 
+        position: absolute; font-size: 24px; pointer-events: none; z-index: 5; 
         animation: fadeOutPoop 1.5s forwards;
     }
-
     @keyframes fadeOutPoop {
         0% { opacity: 1; transform: scale(1); }
         100% { opacity: 0; transform: scale(0.5) translateY(20px); }
     }
 
     img.main-photo {
-        width: 140px;
-        height: 140px;
-        object-fit: cover;
-        border-radius: 50%;
-        margin-bottom: 20px;
-        border: 5px solid #ff4d88;
-        box-shadow: 0 5px 15px rgba(255, 77, 136, 0.3);
-        z-index: 20;
-        transition: transform 0.3s;
+        width: 140px; height: 140px; object-fit: cover; border-radius: 50%;
+        margin-bottom: 20px; border: 5px solid #ff4d88;
+        box-shadow: 0 5px 15px rgba(255, 77, 136, 0.3); z-index: 20; transition: transform 0.3s;
     }
 
-    h1, h2 {
-        color: #ff4d88;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-        z-index: 20;
-        width: 100%;
-    }
-    
+    h1, h2 { color: #ff4d88; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); z-index: 20; width: 100%; }
     h1 { font-size: 24px; margin-bottom: 20px; }
     h2 { font-size: 20px; margin-bottom: 15px; }
 
     button {
-        padding: 12px 24px;
-        border-radius: 25px;
-        border: none;
-        font-size: 16px;
-        font-weight: bold;
-        cursor: pointer;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-        transition: transform 0.2s, background 0.3s;
+        padding: 12px 24px; border-radius: 25px; border: none; font-size: 16px; font-weight: bold;
+        cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.15); transition: transform 0.2s, background 0.3s;
     }
-    
     button:active { transform: scale(0.95); }
 
     .btn-proposal { position: absolute; }
-
     #yesBtn {
-        background: linear-gradient(45deg, #ff4d88, #ff2e6e);
-        color: white;
-        top: 380px; left: 20%;
-        z-index: 100;
-        animation: pulse 2s infinite;
+        background: linear-gradient(45deg, #ff4d88, #ff2e6e); color: white;
+        top: 380px; left: 20%; z-index: 100; animation: pulse 2s infinite;
+    }
+    #yesBtn:hover { transform: scale(1.1); }
+    
+    #noBtn {
+        background-color: #f0f0f0; color: #555; top: 380px; left: 60%; 
+        z-index: 100; transition: all 0.3s ease-out;
     }
     
-    #yesBtn:hover {
-        transform: scale(1.1);
-        cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='48' viewport='0 0 100 100' style='fill:black;font-size:24px;'><text y='50%'>❤️</text></svg>") 16 0, auto;
-    }
-
-    #noBtn {
-        background-color: #f0f0f0;
-        color: #555;
-        top: 380px; left: 60%; 
-        z-index: 100;
-        transition: all 0.3s ease-out;
-    }
-
     @keyframes pulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.05); }
-        100% { transform: scale(1); }
+        0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); }
     }
 
     .celebration {
-        display: none;
-        margin-top: 10px;
-        font-size: 18px;
-        color: #ff2e6e;
-        font-weight: bold;
-        animation: fadeIn 0.5s ease-in;
-        z-index: 150;
-        width: 100%;
+        display: none; margin-top: 10px; font-size: 18px; color: #ff2e6e; font-weight: bold;
+        animation: fadeIn 0.5s ease-in; z-index: 150; width: 100%;
     }
+    .start-game-btn { margin-top: 15px; background: #ffcc00; color: #d35400; font-size: 18px; display: inline-block; }
 
-    .start-game-btn {
-        margin-top: 15px;
-        background: #ffcc00;
-        color: #d35400;
-        font-size: 18px;
-        display: inline-block; 
-    }
-
-    #gameSection, #finalSection {
-        display: none;
-        width: 100%;
-        flex-direction: column;
-        align-items: center;
-    }
+    #gameSection, #finalSection { display: none; width: 100%; flex-direction: column; align-items: center; }
 
     .question-box {
-        background: #fff0f5;
-        padding: 15px;
-        border-radius: 15px;
-        width: 90%;
-        margin-bottom: 20px;
-        border: 2px dashed #ffb6c1;
+        background: #fff0f5; padding: 15px; border-radius: 15px; width: 90%;
+        margin-bottom: 20px; border: 2px dashed #ffb6c1;
     }
-
-    .options-grid {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        width: 100%;
-        margin-bottom: 20px;
-    }
-
-    .option-btn {
-        background: white;
-        border: 2px solid #ddd;
-        color: #555;
-        width: 100%;
-    }
-
+    .options-grid { display: flex; flex-direction: column; gap: 10px; width: 100%; margin-bottom: 20px; }
+    .option-btn { background: white; border: 2px solid #ddd; color: #555; width: 100%; }
     .option-btn:hover { background: #fff5f8; border-color: #ff4d88; }
     .option-btn.correct { background: #d4edda; border-color: #28a745; color: #155724; }
     .option-btn.wrong { background: #f8d7da; border-color: #dc3545; color: #721c24; animation: shake 0.5s; }
 
     .clue-box {
-        display: none;
-        background: #fff3cd;
-        border: 2px solid #ffeeba;
-        color: #856404;
-        padding: 15px;
-        border-radius: 10px;
-        margin-bottom: 15px;
-        width: 90%;
-        font-size: 16px;
-        animation: slideDown 0.5s;
+        display: none; background: #fff3cd; border: 2px solid #ffeeba; color: #856404;
+        padding: 15px; border-radius: 10px; margin-bottom: 15px; width: 90%;
+        font-size: 16px; animation: slideDown 0.5s;
     }
+    .next-level-btn { display: none; background: #28a745; color: white; }
 
-    .next-level-btn {
-        display: none;
-        background: #28a745;
-        color: white;
-    }
-
-    @keyframes shake {
-        0% { transform: translateX(0); }
-        25% { transform: translateX(-5px); }
-        50% { transform: translateX(5px); }
-        75% { transform: translateX(-5px); }
-        100% { transform: translateX(0); }
-    }
-    
-    @keyframes slideDown {
-        from { opacity: 0; transform: translateY(-10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    
-    @keyframes fadeIn {
-        from { opacity: 0; } to { opacity: 1; }
-    }
+    @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } 100% { transform: translateX(0); } }
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
 </style>
 </head>
@@ -336,7 +229,6 @@
     <span style="left: 70%; animation-duration: 17s; animation-delay: 2s;"></span>
     <span style="left: 90%; animation-duration: 19s; animation-delay: 4s;"></span>
 </div>
-
 
 <img src="lupocut.png" id="wolfCharacter" alt="Lupo Cowboy">
 
@@ -390,7 +282,6 @@
 <script>
 // ==========================================================
 // CONFIGURAZIONE AUDIO
-// Inserisci qui i nomi dei tuoi file audio!
 // ==========================================================
 const audioFiles = [
     'audio1.mp3', 
@@ -450,24 +341,23 @@ let talkingInterval = null;
 let stopTimeout = null; 
 let lastAudioIndex = -1; 
 
-// --- GESTIONE KILL SWITCH (FERMA TUTTO) ---
+// --- GESTIONE KILL SWITCH ---
 function stopEverything() {
-    // 1. Ferma l'audio se sta suonando
+    // 1. Ferma l'audio
     if (currentAudio) {
         currentAudio.pause();
-        currentAudio.currentTime = 0; // Riavvolgi
-        // Rimuoviamo l'evento onplay vecchio per sicurezza
-        currentAudio.onplay = null;
+        currentAudio.currentTime = 0; 
+        currentAudio.onplay = null; // Rimuovi listener vecchi
+        currentAudio.onended = null; // Rimuovi listener vecchi
     }
-    // 2. Cancella i timer
+    // 2. Ferma i timer
     if (talkingInterval) clearInterval(talkingInterval);
     if (stopTimeout) clearTimeout(stopTimeout);
     
-    // 3. Resetta l'immagine a bocca chiusa
+    // 3. Resetta bocca
     wolf.src = "lupocut.png";
 }
 
-// --- LOGICA SÌ/NO ---
 yesBtn.addEventListener("click", () => {
     celebration.style.display = "block";
     mainImage.src = "https://i.imgur.com/jRf6Y7R.png"; 
@@ -496,15 +386,13 @@ function startGame() {
     }, 300); 
 }
 
-// --- LOGICA PARLATO SINCRONIZZATO ---
+// --- LOGICA PARLATO SINCRONIZZATO E ADATTIVO ---
 function startTalking() {
-    // PRIMA DI TUTTO: RESET TOTALE
-    stopEverything();
+    stopEverything(); // Pulizia preliminare
 
-    // Se non ci sono file audio, non fare nulla
     if (audioFiles.length === 0) return;
 
-    // 1. Scegli Audio Random (diverso dal precedente)
+    // 1. Scelta Audio Random
     let newIndex;
     if (audioFiles.length > 1) {
         do { newIndex = Math.floor(Math.random() * audioFiles.length); } 
@@ -516,32 +404,38 @@ function startTalking() {
     
     currentAudio = new Audio(audioFiles[newIndex]);
 
-    // 2. IMPORTANTE: Aspetta che l'audio parta DAVVERO prima di muovere la bocca
+    // 2. QUANDO PARTE L'AUDIO (ONPLAY)
     currentAudio.onplay = function() {
-        // ORA parte l'animazione bocca
+        // Parte l'animazione bocca
         let isOpen = false;
         talkingInterval = setInterval(() => {
             if (isOpen) {
-                wolf.src = "lupocut.png"; // Chiusa
+                wolf.src = "lupocut.png"; 
             } else {
-                wolf.src = "lupocut1.png"; // Aperta
+                wolf.src = "lupocut1.png"; 
             }
             isOpen = !isOpen;
-        }, 120); // 120ms velocità cambio
+        }, 120); // 120ms = Veloce
 
-        // E parte il timer per fermarsi
+        // Imposta anche il timeout massimo randomico (4-8 sec)
+        // Se l'audio dura più di 8 secondi, questo timer lo fermerà.
         const duration = Math.random() * (8000 - 4000) + 4000;
         stopTimeout = setTimeout(() => {
-            stopEverything(); // Spegne audio e bocca insieme
+            stopEverything();
         }, duration);
     };
 
-    // 3. Lancia il play (che farà scattare onplay)
+    // 3. QUANDO FINISCE L'AUDIO (ONENDED)
+    // Se l'audio è breve (es. 2 secondi), questo evento scatta prima del timeout e ferma tutto.
+    currentAudio.onended = function() {
+        stopEverything();
+    };
+
+    // 4. Play effettivo
     currentAudio.play().catch(e => console.log("Audio autoplay bloccato:", e));
 }
 
 function loadQuestion() {
-    // Carica la domanda
     const q = questions[currentLevel];
     document.getElementById("levelTitle").innerText = "Livello " + (currentLevel + 1);
     document.getElementById("questionText").innerText = q.question;
@@ -559,7 +453,6 @@ function loadQuestion() {
         container.appendChild(btn);
     });
 
-    // START PARLATO
     startTalking();
 }
 
@@ -580,15 +473,13 @@ function checkAnswer(selectedIndex, btnElement) {
 }
 
 function nextLevel() {
-    // Appena clicco avanti, UCCIDO il parlato della domanda vecchia
-    stopEverything();
+    stopEverything(); // Ferma parlato vecchio
 
     currentLevel++;
     if (currentLevel < questions.length) {
         loadQuestion(); 
     } else {
         document.body.classList.remove('game-active');
-        
         stopEverything();
         
         gameSection.style.display = "none";
