@@ -30,6 +30,24 @@
         min-height: 100vh;
         text-align: center;
         overflow: hidden;
+        transition: background-color 0.2s;
+    }
+
+    /* EFFETTO DISCO PER BEDDRA.MP3 */
+    @keyframes discoFlash {
+        0% { background-color: #ff0000; }
+        15% { background-color: #00ff00; }
+        30% { background-color: #0000ff; }
+        45% { background-color: #ffff00; }
+        60% { background-color: #ff00ff; }
+        75% { background-color: #00ffff; }
+        90% { background-color: #ffffff; }
+        100% { background-color: #ff0000; }
+    }
+
+    body.disco-mode {
+        animation: discoFlash 0.2s infinite; /* Lampeggia veloce */
+        background-image: none; /* Rimuove le stelline per l'effetto pieno */
     }
 
     /* SFONDO ANIMATO (Cuori) */
@@ -252,6 +270,24 @@
     .option-btn.correct { background: #d4edda; border-color: #28a745; color: #155724; }
     .option-btn.wrong { background: #f8d7da; border-color: #dc3545; color: #721c24; animation: shake 0.5s; }
 
+    /* Stile speciale per la risposta che si trasforma */
+    .option-btn.transformed {
+        background: #fff3cd;
+        border-color: #ffc107;
+        font-weight: bold;
+        transform: scale(1.05);
+        transition: all 0.3s ease;
+    }
+
+    /* Stile per la risposta speciale siciliana */
+    .option-btn.beddra-btn {
+        background: linear-gradient(45deg, #FFD700, #ff8c00);
+        color: white;
+        border: 2px solid #B8860B;
+        font-weight: bold;
+        animation: popIn 0.5s;
+    }
+
     .clue-box {
         display: none; background: #fff3cd; border: 2px solid #ffeeba; color: #856404;
         padding: 15px; border-radius: 10px; margin-bottom: 15px; width: 90%;
@@ -362,9 +398,10 @@ const questions = [
         clue: "Vai in bagno e guarda dietro lo specchio! 🚿"
     },
     {
-        question: "Che giorno ci siamo messi insieme? 📅",
-        options: ["Il 14", "Il 21", "Boh non ricordo", "Il 5"],
-        correct: 1, 
+        // LIVELLO SPECIALE "BEDDRA"
+        question: "Giulio è il miglior fidanzato a fare i regali??",
+        options: ["SI", "...si", "NO", "forse"],
+        correct: -1, // TUTTE SBAGLIATE ALL'INIZIO
         clue: "Cerca sotto il tuo cuscino! 🛏️"
     },
     {
@@ -394,6 +431,7 @@ let currentAudio = null;
 let talkingInterval = null; 
 let stopTimeout = null; 
 let lastAudioIndex = -1; 
+let wrongAnswersCount = 0; // Contatore per la logica speciale
 
 // --- GESTIONE KILL SWITCH ---
 function stopEverything() {
@@ -432,8 +470,9 @@ function launchConfetti() {
 }
 
 function startGame() {
-    // Reset dello stato della domanda "piedi" nel caso si ricominci
+    // Reset dello stato delle domande speciali
     questions[1].correct = -1;
+    questions[3].correct = -1;
 
     document.body.classList.add('game-active');
     setTimeout(() => {
@@ -486,12 +525,15 @@ function startTalking() {
 
 function loadQuestion() {
     const q = questions[currentLevel];
+    wrongAnswersCount = 0; // Reset contatore errori per ogni livello
     
     // Assicuriamoci che il testo sia "i broccoli" quando si carica la domanda, prima della trasformazione
     let optionsToShow = [...q.options];
     if (currentLevel === 1) {
-        // Reset manuale per essere sicuri
         questions[1].correct = -1;
+    }
+    if (currentLevel === 3) {
+        questions[3].correct = -1; // Reset per il livello 4
     }
 
     document.getElementById("levelTitle").innerText = "Livello " + (currentLevel + 1);
@@ -513,12 +555,37 @@ function loadQuestion() {
     startTalking();
 }
 
+// --- GESTIONE SPECIALE BEDDRA ---
+function handleSpecialGiulioAnswer(btn) {
+    btn.classList.add("correct");
+    stopEverything(); // Zittisci il lupo
+    
+    // Play Beddra Audio
+    const beddraAudio = new Audio('beddra.mp3');
+    beddraAudio.play();
+    
+    // Attiva modalità Disco
+    document.body.classList.add('disco-mode');
+    
+    // Quando finisce l'audio
+    beddraAudio.onended = () => {
+        document.body.classList.remove('disco-mode');
+        
+        // Procedura standard successo
+        const q = questions[currentLevel];
+        document.getElementById("clueText").innerText = q.clue;
+        document.getElementById("clueBox").style.display = "block";
+        document.getElementById("nextBtn").style.display = "inline-block";
+        launchConfetti();
+    };
+}
+
 // --- GESTIONE RISPOSTA E ERRORE ---
 function checkAnswer(selectedIndex, btnElement) {
     const q = questions[currentLevel];
 
     if (selectedIndex === q.correct) {
-        // --- RISPOSTA GIUSTA ---
+        // --- RISPOSTA GIUSTA STANDARD ---
         btnElement.classList.add("correct");
         const allBtns = document.querySelectorAll(".option-btn");
         allBtns.forEach(b => b.disabled = true);
@@ -529,11 +596,8 @@ function checkAnswer(selectedIndex, btnElement) {
     } else {
         // --- RISPOSTA SBAGLIATA ---
         
-        // Segnala come sbagliato (diventa rossa)
         btnElement.classList.add("wrong");
-        
-        // 1. Zittisci il lupo
-        stopEverything();
+        stopEverything(); // 1. Zittisci il lupo
         
         // 2. Mostra Overlay e suona errore
         errorOverlay.classList.remove('fade-out');
@@ -542,25 +606,32 @@ function checkAnswer(selectedIndex, btnElement) {
         errorSound.currentTime = 0;
         errorSound.play();
 
-        // 3. LOGICA SPECIALE LIVELLO PIEDI
+        // 3. LOGICHE SPECIALI
+        
+        // A) LIVELLO "PIEDI" (Livello 1 / Indice array 1)
         if (currentLevel === 1) {
             const wrongButtons = document.querySelectorAll('#optionsContainer .option-btn.wrong');
             if (wrongButtons.length === 4) {
-                // CAMBIA TESTO VELOCEMENTE MENTRE L'UTENTE È DISTRATTO (200ms)
                 setTimeout(() => {
                     const allBtns = document.querySelectorAll('#optionsContainer .option-btn');
-                    // L'indice 3 è "i broccoli"
-                    const feetBtn = allBtns[3]; 
-                    
-                    // Cambia il testo
+                    const feetBtn = allBtns[3]; // Indice 3 è "i broccoli"
                     feetBtn.innerHTML = "i tuoi piedi 🦶";
-                    
-                    // Rendi questo pulsante la risposta corretta!
                     questions[1].correct = 3;
-                    
-                    // NOTA: NON RIMUOVO LA CLASSE 'wrong'. 
-                    // Il pulsante rimarrà ROSSO per confonderla.
                 }, 200);
+            }
+        }
+
+        // B) LIVELLO "BEDDRA" (Livello 4 / Indice array 3)
+        if (currentLevel === 3) {
+            wrongAnswersCount++;
+            if (wrongAnswersCount === 2) {
+                // Aggiungi pulsante speciale dopo 2 errori
+                const container = document.getElementById("optionsContainer");
+                const specialBtn = document.createElement("button");
+                specialBtn.innerText = "Ie chi viristi uancora beddra";
+                specialBtn.className = "option-btn beddra-btn"; // Classe speciale
+                specialBtn.onclick = () => handleSpecialGiulioAnswer(specialBtn);
+                container.appendChild(specialBtn);
             }
         }
 
