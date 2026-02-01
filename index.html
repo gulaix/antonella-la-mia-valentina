@@ -46,7 +46,7 @@
         100% { transform: translateY(-100vh) rotate(45deg) scale(1.2); opacity: 0; }
     }
 
-    /* --- IL LUPO (Default Desktop) --- */
+    /* --- IL LUPO (Desktop) --- */
     #wolfCharacter {
         position: fixed;
         bottom: -20px; 
@@ -54,7 +54,7 @@
         height: 65vh; 
         max-height: 550px;
         z-index: 50; 
-        transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        transition: right 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s;
         pointer-events: none; 
         opacity: 0;
     }
@@ -65,7 +65,7 @@
         opacity: 1;
     }
 
-    /* --- LA CARD (Default Desktop) --- */
+    /* --- LA CARD (Desktop) --- */
     .card {
         background: rgba(255, 255, 255, 0.95);
         padding: 30px;
@@ -110,40 +110,37 @@
     }
 
     /* ========================================= */
-    /* === OTTIMIZZAZIONE MOBILE (ULTIMA VERSIONE) === */
+    /* === OTTIMIZZAZIONE MOBILE === */
     /* ========================================= */
     @media (max-width: 768px) {
         
-        /* 1. Il Lupo: Spostato più a destra come richiesto */
+        /* 1. Il Lupo Mobile */
         body.game-active #wolfCharacter {
-            right: -75px !important; /* Spostato di altri 25px a destra */
+            right: -75px !important; 
             height: 35vh !important; 
             bottom: 20px !important; 
             opacity: 1;
         }
 
-        /* 2. La Card: Più piccola e compatta */
+        /* 2. La Card Mobile */
         body.game-active .card {
-            margin-right: 90px !important; /* Aggiustato margine */
-            width: 60vw !important; /* Ridotto dal 65% al 60% */
-            min-height: 380px !important; /* Leggermente meno alta */
-            padding: 12px !important; /* Padding ridotto */
+            margin-right: 90px !important; 
+            width: 60vw !important; 
+            min-height: 380px !important; 
+            padding: 12px !important; 
             margin-left: 5px !important; 
         }
 
-        /* Testi rimpiccioliti per stare meglio nel fumetto piccolo */
         body.game-active h2 { font-size: 16px !important; margin-bottom: 8px !important; }
         body.game-active .question-box { font-size: 13px !important; padding: 8px !important; }
         body.game-active button { padding: 6px 14px !important; font-size: 13px !important; }
-        
-        /* Immagine "thinking" più piccola */
         body.game-active #gameSection img { width: 40px !important; height: 40px !important; }
 
-        /* 3. Il Fumetto: Punta sempre a destra, ma adattato */
+        /* 3. Il Fumetto Mobile */
         body.game-active .card::before {
             top: auto !important;
             bottom: 80px !important; 
-            right: -18px !important; /* Punta un po' più corta */
+            right: -18px !important; 
             border-width: 8px 0 8px 18px !important;
         }
 
@@ -154,8 +151,6 @@
             border-width: 10px 0 10px 22px !important;
         }
     }
-    /* ========================================= */
-
 
     .poop-trail {
         position: absolute;
@@ -337,6 +332,7 @@
     <span style="left: 90%; animation-duration: 19s; animation-delay: 4s;"></span>
 </div>
 
+
 <img src="lupocut.png" id="wolfCharacter" alt="Lupo Cowboy">
 
 
@@ -387,6 +383,17 @@
 </div>
 
 <script>
+// ==========================================================
+// CONFIGURAZIONE AUDIO
+// Inserisci qui i nomi dei tuoi file audio!
+// ==========================================================
+const audioFiles = [
+    'audio1.mp3', 
+    'audio2.mp3', 
+    'audio3.mp3'
+]; 
+
+
 // --- DATI DELLA CACCIA AL TESORO ---
 const questions = [
     {
@@ -429,8 +436,13 @@ const noBtn = document.getElementById("noBtn");
 const celebration = document.getElementById("celebrationText");
 const mainImage = document.getElementById("mainImage");
 const card = document.getElementById("mainCard");
+const wolf = document.getElementById("wolfCharacter");
 
 let currentLevel = 0;
+// Variabili per il parlato
+let talkingInterval;
+let stopTalkingTimeout;
+let currentAudio = null; // Per gestire l'oggetto audio dinamicamente
 
 yesBtn.addEventListener("click", () => {
     celebration.style.display = "block";
@@ -461,8 +473,53 @@ function startGame() {
     }, 300); 
 }
 
+// --- FUNZIONE PER STOPPARE TUTTO ---
+function stopTalking() {
+    clearInterval(talkingInterval);
+    clearTimeout(stopTalkingTimeout);
+    wolf.src = "lupocut.png"; // Reset bocca chiusa
+    if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+    }
+}
+
+// --- FUNZIONE PER FAR PARLARE IL LUPO ---
+function startTalking() {
+    // 1. Resetta
+    stopTalking();
+
+    // 2. Scegli Audio Random dalla lista
+    if (audioFiles.length > 0) {
+        const randomSound = audioFiles[Math.floor(Math.random() * audioFiles.length)];
+        currentAudio = new Audio(randomSound);
+        currentAudio.play().catch(e => console.log("Audio bloccato:", e));
+    }
+
+    // 3. Calcola durata random tra 4 e 8 secondi (4000 - 8000 ms)
+    const duration = Math.random() * (8000 - 4000) + 4000;
+
+    // 4. Animazione bocca (cambia ogni 250ms)
+    let isOpen = false;
+    talkingInterval = setInterval(() => {
+        if (isOpen) {
+            wolf.src = "lupocut.png"; // Bocca chiusa
+        } else {
+            wolf.src = "lupocut1.png"; // Bocca aperta
+        }
+        isOpen = !isOpen;
+    }, 250);
+
+    // 5. Imposta lo stop dopo la durata random
+    stopTalkingTimeout = setTimeout(() => {
+        stopTalking();
+    }, duration);
+}
 
 function loadQuestion() {
+    // Appena carica la domanda, il lupo inizia a parlare!
+    startTalking();
+
     const q = questions[currentLevel];
     document.getElementById("levelTitle").innerText = "Livello " + (currentLevel + 1);
     document.getElementById("questionText").innerText = q.question;
@@ -503,6 +560,10 @@ function nextLevel() {
         loadQuestion();
     } else {
         document.body.classList.remove('game-active');
+        
+        // Ferma il parlato
+        stopTalking();
+        
         gameSection.style.display = "none";
         finalSection.style.display = "flex";
         launchConfetti();
