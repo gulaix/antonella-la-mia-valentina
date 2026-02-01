@@ -16,7 +16,7 @@
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         
         /* --- MODIFICA SFONDO: ROSA VERO (LIGHT PINK) CON STELLINE --- */
-        background-color: #ffc0cb; /* Rosa classico, molto più bello */
+        background-color: #ffc0cb; /* Rosa classico */
         
         /* Pattern SVG con stelline bianche */
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150' viewBox='0 0 150 150'%3E%3Cstyle%3E.st%7Bfill:%23fff;opacity:0.8%7D.sh%7Bstroke:%23fff;stroke-width:2;stroke-opacity:0.8;stroke-linecap:round%7D%3C/style%3E%3Ccircle class='st' cx='20' cy='20' r='2'/%3E%3Ccircle class='st' cx='120' cy='40' r='3'/%3E%3Ccircle class='st' cx='70' cy='90' r='2'/%3E%3Ccircle class='st' cx='10' cy='110' r='3'/%3E%3Ccircle class='st' cx='140' cy='130' r='2'/%3E%3Ccircle class='st' cx='50' cy='140' r='1.5'/%3E%3Ccircle class='st' cx='90' cy='10' r='2'/%3E%3Cpath class='sh' d='M40,10 L80,30'/%3E%3Ccircle fill='%23fff' opacity='0.9' cx='80' cy='30' r='3.5'/%3E%3Cpath class='sh' d='M100,70 L130,100'/%3E%3Ccircle fill='%23fff' opacity='0.9' cx='130' cy='100' r='3'/%3E%3C/svg%3E");
@@ -40,7 +40,7 @@
         top: 0;
         left: 0;
         pointer-events: none;
-        z-index: -1; /* Spinto indietro per non bloccare i click */
+        z-index: -1; 
     }
     
     .heart-bg span {
@@ -94,7 +94,7 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        z-index: 10; /* Z-index sicuro */
+        z-index: 10; 
         transition: all 0.5s ease;
     }
 
@@ -212,12 +212,11 @@
     }
     button:active { transform: scale(0.95); }
 
-    /* FIX PULSANTI CHE NON SI CLICCAVANO */
     .btn-proposal { position: absolute; }
     #yesBtn {
         background: linear-gradient(45deg, #ff4d88, #ff2e6e); color: white;
         top: 380px; left: 20%; 
-        z-index: 1000; /* Z-index altissimo per essere sicuro che funzioni */
+        z-index: 1000; 
         animation: pulse 2s infinite;
         cursor: pointer;
     }
@@ -226,7 +225,7 @@
     #noBtn {
         background-color: #f0f0f0; color: #555; 
         top: 380px; left: 60%; 
-        z-index: 1000; /* Z-index altissimo per essere sicuro che funzioni */
+        z-index: 1000; 
         transition: all 0.3s ease-out;
         cursor: pointer;
     }
@@ -252,15 +251,6 @@
     .option-btn:hover { background: #fff5f8; border-color: #ff4d88; }
     .option-btn.correct { background: #d4edda; border-color: #28a745; color: #155724; }
     .option-btn.wrong { background: #f8d7da; border-color: #dc3545; color: #721c24; animation: shake 0.5s; }
-
-    /* Stile speciale per la risposta che si trasforma */
-    .option-btn.transformed {
-        background: #fff3cd;
-        border-color: #ffc107;
-        font-weight: bold;
-        transform: scale(1.05);
-        transition: all 0.3s ease;
-    }
 
     .clue-box {
         display: none; background: #fff3cd; border: 2px solid #ffeeba; color: #856404;
@@ -539,7 +529,7 @@ function checkAnswer(selectedIndex, btnElement) {
     } else {
         // --- RISPOSTA SBAGLIATA ---
         
-        // Segnala come sbagliato
+        // Segnala come sbagliato (diventa rossa)
         btnElement.classList.add("wrong");
         
         // 1. Zittisci il lupo
@@ -553,25 +543,24 @@ function checkAnswer(selectedIndex, btnElement) {
         errorSound.play();
 
         // 3. LOGICA SPECIALE LIVELLO PIEDI
-        // Se siamo al livello 1 e tutte le risposte sono diventate rosse...
         if (currentLevel === 1) {
             const wrongButtons = document.querySelectorAll('#optionsContainer .option-btn.wrong');
             if (wrongButtons.length === 4) {
-                // Aspetta un secondo (mentre suona l'errore) e poi trasforma il pulsante
+                // CAMBIA TESTO VELOCEMENTE MENTRE L'UTENTE È DISTRATTO (200ms)
                 setTimeout(() => {
                     const allBtns = document.querySelectorAll('#optionsContainer .option-btn');
                     // L'indice 3 è "i broccoli"
                     const feetBtn = allBtns[3]; 
                     
-                    feetBtn.classList.remove('wrong');
-                    feetBtn.classList.add('transformed');
+                    // Cambia il testo
                     feetBtn.innerHTML = "i tuoi piedi 🦶";
                     
                     // Rendi questo pulsante la risposta corretta!
                     questions[1].correct = 3;
                     
-                    // Nota: Non disabilito i pulsanti, così l'utente può cliccarlo
-                }, 1000);
+                    // NOTA: NON RIMUOVO LA CLASSE 'wrong'. 
+                    // Il pulsante rimarrà ROSSO per confonderla.
+                }, 200);
             }
         }
 
