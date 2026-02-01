@@ -15,12 +15,12 @@
         margin: 0;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         
-        /* --- MODIFICA SFONDO: ROSA CON SAGOME BIANCHE --- */
-        background-color: #ffb7c5; /* Rosa Hello Kitty */
-        /* Pattern SVG semplice a forma di sagoma di gatto/Hello Kitty */
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%23ffffff' fill-opacity='0.4' d='M25,35 L15,10 L40,25 Q50,20 60,25 L85,10 L75,35 Q90,45 90,65 Q90,90 50,90 Q10,90 10,65 Q10,45 25,35 Z' /%3E%3C/svg%3E");
+        /* --- MODIFICA SFONDO: ROSA PASTELLO CON STELLE E STELLE CADENTI --- */
+        background-color: #ffe4e1; /* Rosa pastello tenue */
+        /* Pattern SVG con stelline (cerchi) e stelle cadenti (linee+cerchi) */
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150' viewBox='0 0 150 150'%3E%3Cstyle%3E.st%7Bfill:%23fff;opacity:0.6%7D.sh%7Bstroke:%23fff;stroke-width:2;stroke-opacity:0.5;stroke-linecap:round%7D%3C/style%3E%3Ccircle class='st' cx='20' cy='20' r='2'/%3E%3Ccircle class='st' cx='120' cy='40' r='3'/%3E%3Ccircle class='st' cx='70' cy='90' r='2'/%3E%3Ccircle class='st' cx='10' cy='110' r='3'/%3E%3Ccircle class='st' cx='140' cy='130' r='2'/%3E%3Ccircle class='st' cx='50' cy='140' r='1.5'/%3E%3Ccircle class='st' cx='90' cy='10' r='2'/%3E%3Cpath class='sh' d='M40,10 L80,30'/%3E%3Ccircle fill='%23fff' opacity='0.8' cx='80' cy='30' r='3.5'/%3E%3Cpath class='sh' d='M100,70 L130,100'/%3E%3Ccircle fill='%23fff' opacity='0.8' cx='130' cy='100' r='3'/%3E%3C/svg%3E");
         background-repeat: repeat;
-        background-size: 80px 80px;
+        background-size: 150px 150px;
         /* ------------------------------------------------ */
 
         display: flex;
@@ -31,7 +31,7 @@
         overflow: hidden;
     }
 
-    /* SFONDO ANIMATO (Cuori esistenti) */
+    /* SFONDO ANIMATO (Cuori esistenti - resi un po' più visibili sul nuovo rosa) */
     .heart-bg {
         position: absolute;
         width: 100%;
@@ -47,7 +47,7 @@
         display: block;
         width: 20px;
         height: 20px;
-        background: rgba(255, 255, 255, 0.6); /* Modificato in bianco semitrasparente per risaltare sul rosa */
+        background: rgba(255, 255, 255, 0.8); /* Più opachi per contrasto */
         transform: rotate(45deg);
         animation: animate 25s linear infinite;
         bottom: -150px;
@@ -475,106 +475,4 @@ function startTalking() {
 
 function loadQuestion() {
     const q = questions[currentLevel];
-    document.getElementById("levelTitle").innerText = "Livello " + (currentLevel + 1);
-    document.getElementById("questionText").innerText = q.question;
-    document.getElementById("clueBox").style.display = "none";
-    document.getElementById("nextBtn").style.display = "none";
-    
-    const container = document.getElementById("optionsContainer");
-    container.innerHTML = ""; 
-
-    q.options.forEach((opt, index) => {
-        const btn = document.createElement("button");
-        btn.innerText = opt;
-        btn.className = "option-btn";
-        btn.onclick = () => checkAnswer(index, btn);
-        container.appendChild(btn);
-    });
-
-    startTalking();
-}
-
-// --- GESTIONE RISPOSTA E ERRORE ---
-function checkAnswer(selectedIndex, btnElement) {
-    const q = questions[currentLevel];
-    if (selectedIndex === q.correct) {
-        // RISPOSTA GIUSTA
-        btnElement.classList.add("correct");
-        const allBtns = document.querySelectorAll(".option-btn");
-        allBtns.forEach(b => b.disabled = true);
-        document.getElementById("clueText").innerText = q.clue;
-        document.getElementById("clueBox").style.display = "block";
-        document.getElementById("nextBtn").style.display = "inline-block";
-        launchConfetti(); 
-    } else {
-        // RISPOSTA SBAGLIATA
-        // 1. Zittisci il lupo
-        stopEverything();
-        
-        // 2. Mostra Overlay e suona errore
-        errorOverlay.classList.remove('fade-out');
-        errorOverlay.style.display = 'flex';
-        
-        errorSound.currentTime = 0;
-        errorSound.play();
-
-        // 3. Quando l'audio errore finisce, chiudi
-        errorSound.onended = function() {
-            errorOverlay.classList.add('fade-out');
-            setTimeout(() => {
-                errorOverlay.style.display = 'none';
-            }, 500); // tempo della dissolvenza CSS
-        };
-    }
-}
-
-function nextLevel() {
-    stopEverything(); 
-
-    currentLevel++;
-    if (currentLevel < questions.length) {
-        loadQuestion(); 
-    } else {
-        document.body.classList.remove('game-active');
-        stopEverything();
-        
-        gameSection.style.display = "none";
-        finalSection.style.display = "flex";
-        launchConfetti();
-        setInterval(launchConfetti, 4000); 
-    }
-}
-
-function dropPoop(x, y) {
-    const poop = document.createElement('span');
-    poop.textContent = '💩';
-    poop.classList.add('poop-trail');
-    poop.style.left = x + 'px';
-    poop.style.top = y + 'px';
-    card.appendChild(poop);
-    setTimeout(() => poop.remove(), 1500);
-}
-
-function moveNoButton() {
-    const currentLeft = noBtn.offsetLeft;
-    const currentTop = noBtn.offsetTop;
-    dropPoop(currentLeft + 20, currentTop + 10);
-
-    const maxX = card.clientWidth - noBtn.offsetWidth - 30;
-    const maxY = card.clientHeight - noBtn.offsetHeight - 30;
-    const safeZoneTop = 280; 
-
-    const newX = Math.max(20, Math.random() * maxX);
-    let newY = Math.max(safeZoneTop, Math.random() * maxY);
-
-    noBtn.style.left = newX + "px";
-    noBtn.style.top = newY + "px";
-}
-
-noBtn.addEventListener("mouseover", moveNoButton);
-noBtn.addEventListener("touchstart", (e) => { e.preventDefault(); moveNoButton(); });
-
-</script>
-
-</body>
-</html>
+    document.getElementById("levelTitle").innerText
