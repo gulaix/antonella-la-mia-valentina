@@ -31,17 +31,7 @@
         transition: background-color 0.2s;
     }
 
-    /* === NUOVO OVERLAY DISCO (COPRE LA CARD MA STA SOTTO IL POPUP) === */
-    #discoOverlay {
-        position: fixed;
-        top: 0; left: 0; width: 100%; height: 100%;
-        z-index: 90000; /* Sopra la card (z-10), sotto il popup (z-99999) */
-        display: none;
-        pointer-events: none; /* Lascia cliccare il popup */
-        opacity: 0.9; /* Leggera trasparenza per vedere intravedere sotto */
-    }
-
-    /* Animazione applicata al div overlay invece che al body */
+    /* === ANIMAZIONI DISCO POTENTI === */
     @keyframes discoFlash {
         0% { background-color: #ff0000; }
         15% { background-color: #00ff00; }
@@ -53,9 +43,38 @@
         100% { background-color: #ff0000; }
     }
 
+    /* Animazione specifica per il box del popup (bordi e ombra colorata) */
+    @keyframes boxFlash {
+        0% { box-shadow: 0 0 50px #ff0000; border-color: #ff0000; background-color: #fff0f0; }
+        25% { box-shadow: 0 0 50px #00ff00; border-color: #00ff00; background-color: #f0fff0; }
+        50% { box-shadow: 0 0 50px #0000ff; border-color: #0000ff; background-color: #f0f0ff; }
+        75% { box-shadow: 0 0 50px #ffff00; border-color: #ffff00; background-color: #fffff0; }
+        100% { box-shadow: 0 0 50px #ff0000; border-color: #ff0000; background-color: #fff0f0; }
+    }
+
+    /* Overlay che copre TUTTO tranne il popup */
+    #discoOverlay {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        z-index: 90000; 
+        display: none;
+        pointer-events: none;
+        mix-blend-mode: hard-light; /* Rende i colori vibranti */
+    }
+
     .active-disco {
         display: block !important;
-        animation: discoFlash 0.1s infinite; /* Velocissimo */
+        animation: discoFlash 0.1s infinite; 
+    }
+
+    /* Quando il disco è attivo, il popup sfondo diventa trasparente per far passare i colori */
+    body.disco-active #warningPopup {
+        background: rgba(0,0,0,0.1); /* Molto trasparente */
+    }
+    
+    /* E il box del popup inizia a lampeggiare */
+    body.disco-active .warning-box {
+        animation: boxFlash 0.1s infinite;
     }
 
     /* SFONDO ANIMATO */
@@ -105,8 +124,16 @@
     }
 
     /* POPUP AVVISO */
-    #warningPopup { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 99999; display: none; justify-content: center; align-items: center; flex-direction: column; text-align: center; }
-    .warning-box { background: white; padding: 25px; border-radius: 15px; border: 4px solid red; max-width: 80%; }
+    #warningPopup { 
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+        background: rgba(0,0,0,0.8); /* Scuro normalmente */
+        z-index: 99999; display: none; justify-content: center; align-items: center; flex-direction: column; text-align: center; 
+        transition: background 0.1s;
+    }
+    .warning-box { 
+        background: white; padding: 25px; border-radius: 15px; border: 4px solid red; max-width: 80%; 
+        position: relative; z-index: 100000;
+    }
     .warning-btn { margin-top: 15px; padding: 10px 30px; background: red; color: white; border: none; font-size: 18px; cursor: pointer; border-radius: 5px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); transition: transform 0.1s; }
     .warning-btn:active { transform: scale(0.95); background: #cc0000; }
 
@@ -395,6 +422,7 @@ function stopEverything() {
     
     // RESET OVERLAY
     discoOverlay.classList.remove('active-disco');
+    document.body.classList.remove('disco-active');
     
     // Reset forzato degli stili inline
     wolf.style.top = '';
@@ -638,6 +666,7 @@ function handleSpecialGiulioAnswer(btn) {
     
     // 1. INIZIA LO STROBO (SOPRA LA CARD)
     discoOverlay.classList.add('active-disco');
+    document.body.classList.add('disco-active'); // Per gestire il popup trasparente
 
     // 2. MOSTRA IL POPUP
     warningPopup.style.display = 'flex';
@@ -657,6 +686,7 @@ function handleSpecialGiulioAnswer(btn) {
         } else {
             // FINE (dopo 2 volte)
             discoOverlay.classList.remove('active-disco'); // Ferma strobo
+            document.body.classList.remove('disco-active');
             warningPopup.style.display = 'none'; // Chiudi popup
             showClue();
         }
