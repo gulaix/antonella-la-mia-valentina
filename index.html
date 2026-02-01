@@ -333,7 +333,7 @@
 </div>
 
 
-<img src="lupocut.jpg" id="wolfCharacter" alt="Lupo Cowboy">
+<img src="lupocut.png" id="wolfCharacter" alt="Lupo Cowboy">
 
 
 <div class="card" id="mainCard">
@@ -443,7 +443,7 @@ let currentLevel = 0;
 let talkingInterval;
 let stopTalkingTimeout;
 let currentAudio = null; 
-let lastAudioIndex = -1; // VARIABILE FONDAMENTALE PER RICORDARE
+let lastAudioIndex = -1; // Per ricordare l'ultimo audio suonato
 
 yesBtn.addEventListener("click", () => {
     celebration.style.display = "block";
@@ -478,7 +478,7 @@ function startGame() {
 function stopTalking() {
     clearInterval(talkingInterval);
     clearTimeout(stopTalkingTimeout);
-    wolf.src = "lupocut.jpg"; // Reset bocca chiusa JPG
+    wolf.src = "lupocut.png"; // Reset bocca chiusa (PNG)
     if (currentAudio) {
         currentAudio.pause();
         currentAudio.currentTime = 0;
@@ -493,16 +493,16 @@ function startTalking() {
     // 2. Scegli Audio Random (diverso dal precedente)
     if (audioFiles.length > 0) {
         let newIndex;
-        // Se c'è più di un file, forza il cambio
+        // Se c'è più di un audio, cerca finché non ne trovi uno diverso dall'ultimo
         if (audioFiles.length > 1) {
             do {
                 newIndex = Math.floor(Math.random() * audioFiles.length);
-            } while (newIndex === lastAudioIndex); // Continua a pescare se è uguale all'ultimo
+            } while (newIndex === lastAudioIndex);
         } else {
-            newIndex = 0;
+            newIndex = 0; // Se c'è solo un file, usa quello
         }
         
-        lastAudioIndex = newIndex; // Salva per la prossima volta
+        lastAudioIndex = newIndex; // Salva questo indice per il prossimo controllo
         
         currentAudio = new Audio(audioFiles[newIndex]);
         currentAudio.play().catch(e => console.log("Audio bloccato:", e));
@@ -511,16 +511,16 @@ function startTalking() {
     // 3. Calcola durata random tra 4 e 8 secondi
     const duration = Math.random() * (8000 - 4000) + 4000;
 
-    // 4. Animazione bocca VELOCE (ogni 200ms = 5 volte al secondo)
+    // 4. Animazione bocca VELOCE (200ms = 5 volte al secondo)
     let isOpen = false;
     talkingInterval = setInterval(() => {
         if (isOpen) {
-            wolf.src = "lupocut.jpg"; // Bocca chiusa
+            wolf.src = "lupocut.png"; // Bocca chiusa (PNG)
         } else {
-            wolf.src = "lupocut1.jpg"; // Bocca aperta
+            wolf.src = "lupocut1.png"; // Bocca aperta (PNG)
         }
         isOpen = !isOpen;
-    }, 200); // 200ms
+    }, 200); 
 
     // 5. Imposta lo stop dopo la durata random
     stopTalkingTimeout = setTimeout(() => {
