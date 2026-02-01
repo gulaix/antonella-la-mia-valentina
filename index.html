@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Will you be my Valentine? ❤️</title>
+<link rel="preload" as="image" href="lupocut.png">
+<link rel="preload" as="image" href="lupocut1.png">
+
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <style>
@@ -57,6 +60,9 @@
         transition: right 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s;
         pointer-events: none; 
         opacity: 0;
+        /* Ottimizzazione rendering per evitare flickering */
+        backface-visibility: hidden; 
+        transform: translateZ(0);
     }
 
     /* Entrata Lupo su PC */
@@ -523,7 +529,7 @@ function startTalking() {
             wolf.src = "lupocut1.png"; // Aperta
         }
         isOpen = !isOpen;
-    }, 200); // 200ms velocità cambio
+    }, 120); // 120ms velocità cambio (PIÙ VELOCE)
 
     // 4. Programma la fine sincronizzata
     stopTimeout = setTimeout(() => {
