@@ -19,7 +19,7 @@
         overflow: hidden;
     }
 
-    /* Sfondo animato */
+    /* Sfondo cuori */
     .heart-bg {
         position: absolute;
         width: 100%;
@@ -27,9 +27,9 @@
         top: 0;
         left: 0;
         pointer-events: none;
-        z-index: -1;
+        z-index: 0;
     }
-
+    
     .heart-bg span {
         position: absolute;
         display: block;
@@ -40,21 +40,7 @@
         animation: animate 25s linear infinite;
         bottom: -150px;
     }
-
-    .heart-bg span:before,
-    .heart-bg span:after {
-        content: '';
-        position: absolute;
-        display: block;
-        width: 100%;
-        height: 100%;
-        background: inherit;
-        border-radius: 50%;
-    }
-
-    .heart-bg span:before { top: -50%; left: 0; }
-    .heart-bg span:after { top: 0; left: -50%; }
-
+    
     @keyframes animate {
         0% { transform: translateY(0) rotate(45deg) scale(0.3); opacity: 1; }
         100% { transform: translateY(-100vh) rotate(45deg) scale(1.2); opacity: 0; }
@@ -62,27 +48,27 @@
 
     .card {
         background: rgba(255, 255, 255, 0.95);
-        padding: 50px;
+        padding: 40px;
         border-radius: 30px;
         box-shadow: 0 15px 35px rgba(0,0,0,0.1);
         max-width: 420px;
-        width: 90%;
-        /* Altezza minima fissa per evitare che la card collassi */
-        min-height: 400px; 
+        width: 90vw;
+        height: 500px; /* Altezza fissa per area di movimento sicura */
         position: relative;
         border: 3px solid #ffebf0;
-        /* IMPORTANTE: overflow hidden taglierebbe il bottone se esce per errore, 
-           ma noi lo terremo dentro via codice. */
+        overflow: hidden;
         display: flex;
         flex-direction: column;
         align-items: center;
+        z-index: 10;
     }
-    
+
+    /* Scia di cacca */
     .poop-trail {
         position: absolute;
         font-size: 24px;
         pointer-events: none;
-        z-index: 1;
+        z-index: 5; 
         animation: fadeOutPoop 1.5s forwards;
     }
 
@@ -96,26 +82,19 @@
         height: 140px;
         object-fit: cover;
         border-radius: 50%;
-        margin-bottom: 25px;
+        margin-bottom: 20px;
         border: 5px solid #ff4d88;
         box-shadow: 0 5px 15px rgba(255, 77, 136, 0.3);
-        z-index: 2;
+        z-index: 20;
     }
 
     h1 {
-        font-size: 26px;
-        margin-bottom: 35px;
+        font-size: 24px;
+        margin-bottom: 20px;
         color: #ff4d88;
         text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-        z-index: 2;
+        z-index: 20;
         width: 100%;
-    }
-
-    .buttons-area {
-        position: relative;
-        width: 100%;
-        height: 150px; /* Area dedicata ai bottoni */
-        margin-top: auto; /* Spinge l'area in basso */
     }
 
     button {
@@ -124,49 +103,48 @@
         border: none;
         font-size: 18px;
         font-weight: bold;
-        cursor: pointer;
         white-space: nowrap;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        position: absolute; /* Assoluto rispetto alla card (non alla buttons-area) */
-    }
-    
-    button:hover {
-        cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'  width='40' height='48' viewport='0 0 100 100' style='fill:black;font-size:24px;'><text y='50%'>❤️</text></svg>") 16 0, auto;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        position: absolute; /* Fondamentale */
     }
 
+    /* STILI SOLO PER IL TASTO SÌ */
     #yesBtn {
         background: linear-gradient(45deg, #ff4d88, #ff2e6e);
         color: white;
-        bottom: 40px;
+        top: 380px; /* Posizione fissa iniziale dall'alto */
         left: 20%;
-        z-index: 20;
+        z-index: 100;
         animation: pulse 2s infinite;
-        transition: transform 0.2s;
+        cursor: pointer;
+    }
+    
+    /* Cursore a cuore SOLO sul sì */
+    #yesBtn:hover {
+        transform: scale(1.1);
+        cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'  width='40' height='48' viewport='0 0 100 100' style='fill:black;font-size:24px;'><text y='50%'>❤️</text></svg>") 16 0, auto;
     }
 
+    /* STILI SOLO PER IL TASTO NO */
     #noBtn {
         background-color: #f0f0f0;
         color: #555;
-        bottom: 40px;
+        top: 380px; /* Allineato col sì inizialmente */
         left: 60%; 
-        z-index: 20;
+        z-index: 100;
         /* Transizione fluida per il movimento */
-        transition: top 0.4s ease-out, left 0.4s ease-out, background-color 0.2s;
+        transition: all 0.3s ease-out;
+        cursor: default; /* Cursore normale, niente cuore! */
+    }
+
+    #noBtn:hover {
+        background-color: #e0e0e0;
     }
 
     @keyframes pulse {
-        0% { transform: scale(1); box-shadow: 0 4px 10px rgba(255, 77, 136, 0.3); }
-        50% { transform: scale(1.05); box-shadow: 0 8px 20px rgba(255, 77, 136, 0.5); }
-        100% { transform: scale(1); box-shadow: 0 4px 10px rgba(255, 77, 136, 0.3); }
-    }
-
-    #yesBtn:hover {
-        transform: scale(1.1) !important;
-        background: linear-gradient(45deg, #ff2e6e, #ff0a4d);
-    }
-    
-    #noBtn:hover {
-        background-color: #e0e0e0;
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
     }
 
     .celebration {
@@ -176,7 +154,8 @@
         color: #ff2e6e;
         font-weight: bold;
         animation: fadeIn 0.5s ease-in;
-        z-index: 2;
+        z-index: 150;
+        position: relative;
     }
     
     @keyframes fadeIn {
@@ -190,10 +169,10 @@
 
 <div class="heart-bg">
     <span style="left: 10%; animation-duration: 15s; animation-delay: 1s;"></span>
-    <span style="left: 30%; animation-duration: 18s; animation-delay: 3s; scale: 0.8;"></span>
+    <span style="left: 30%; animation-duration: 18s; animation-delay: 3s;"></span>
     <span style="left: 50%; animation-duration: 20s; animation-delay: 0s;"></span>
-    <span style="left: 70%; animation-duration: 17s; animation-delay: 2s; scale: 1.1;"></span>
-    <span style="left: 90%; animation-duration: 19s; animation-delay: 4s; scale: 0.9;"></span>
+    <span style="left: 70%; animation-duration: 17s; animation-delay: 2s;"></span>
+    <span style="left: 90%; animation-duration: 19s; animation-delay: 4s;"></span>
 </div>
 
 <div class="card" id="mainCard">
@@ -217,31 +196,27 @@ const celebration = document.getElementById("celebrationText");
 const mainImage = document.getElementById("mainImage");
 const card = document.getElementById("mainCard");
 
+// --- LOGICA TASTO SÌ ---
 yesBtn.addEventListener("click", () => {
     celebration.style.display = "block";
     mainImage.src = "https://i.imgur.com/jRf6Y7R.png";
     yesBtn.style.display = "none";
     noBtn.style.display = "none";
-
-    // Pulisci le cacche
+    
+    // Pulizia cacche
     document.querySelectorAll('.poop-trail').forEach(el => el.remove());
 
-    var duration = 3 * 1000;
-    var animationEnd = Date.now() + duration;
-    var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
-
-    function randomInRange(min, max) {
-      return Math.random() * (max - min) + min;
-    }
-
-    var interval = setInterval(function() {
-      var timeLeft = animationEnd - Date.now();
-      if (timeLeft <= 0) return clearInterval(interval);
-      var particleCount = 50 * (timeLeft / duration);
-      confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }, shapes: ['heart'], colors: ['#ff4d88', '#ff2e6e', '#ffffff'] }));
-      confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }, shapes: ['heart'], colors: ['#ff4d88', '#ff2e6e', '#ffffff'] }));
-    }, 250);
+    // Coriandoli
+    var duration = 3000;
+    var end = Date.now() + duration;
+    (function frame() {
+      confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 } });
+      confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 } });
+      if (Date.now() < end) requestAnimationFrame(frame);
+    }());
 });
+
+// --- LOGICA TASTO NO (Movimento e Cacca) ---
 
 function dropPoop(x, y) {
     const poop = document.createElement('span');
@@ -250,34 +225,52 @@ function dropPoop(x, y) {
     poop.style.left = x + 'px';
     poop.style.top = y + 'px';
     card.appendChild(poop);
-
-    setTimeout(() => {
-        poop.remove();
-    }, 1500);
+    setTimeout(() => poop.remove(), 1500);
 }
 
 function moveNoButton() {
-    // 1. Calcola posizione attuale per la cacca
-    // OffsetLeft/Top ci dà la posizione esatta rispetto alla card
-    const currentX = noBtn.offsetLeft;
-    const currentY = noBtn.offsetTop;
+    // 1. Prendi posizione attuale per la cacca
+    const currentLeft = noBtn.offsetLeft;
+    const currentTop = noBtn.offsetTop;
+    dropPoop(currentLeft + 20, currentTop + 10);
+
+    // 2. Calcola limiti sicuri
+    const cardRect = card.getBoundingClientRect();
+    const btnRect = noBtn.getBoundingClientRect();
     
-    dropPoop(currentX + 10, currentY + 10); // +10 per centrare un po' la cacca
+    // Larghezza e altezza disponibili dentro la card
+    // Sottraiamo la grandezza del bottone e un margine di 20px
+    const maxX = card.clientWidth - noBtn.offsetWidth - 20;
+    const maxY = card.clientHeight - noBtn.offsetHeight - 20;
 
-    // 2. Calcola limiti sicuri all'interno della card
-    const cardWidth = card.clientWidth;
-    const cardHeight = card.clientHeight;
-    const btnWidth = noBtn.offsetWidth;
-    const btnHeight = noBtn.offsetHeight;
+    // 3. Genera nuove coordinate random
+    // Math.random() * (Massimo - Minimo) + Minimo
+    const newX = Math.random() * (maxX - 20) + 20;
+    let newY = Math.random() * (maxY - 20) + 20;
 
-    // Definisci un'area sicura (padding di 20px dai bordi)
-    const maxX = cardWidth - btnWidth - 20;
-    const maxY = cardHeight - btnHeight - 20;
+    // Evita che finisca sopra la faccia o il titolo (zona alta proibita)
+    // Se capita nella parte alta (primi 180px), lo spingiamo giù
+    if (newY < 180) {
+        newY += 180;
+        // Se spingendolo giù esce dai bordi, correggiamo
+        if (newY > maxY) newY = maxY - 10;
+    }
 
-    // Genera coordinate random
-    const newX = Math.random() * maxX;
-    let newY = Math.random() * maxY;
-    
-    // Assicuriamoci che non vada sopra l'immagine (evita la parte alta al 20%)
-    if (newY < 150) newY += 150;
-    if (new
+    // 4. Applica il movimento
+    noBtn.style.left = newX + "px";
+    noBtn.style.top = newY + "px";
+}
+
+// Attiva il movimento quando il mouse ci passa sopra
+noBtn.addEventListener("mouseover", moveNoButton);
+
+// Attiva il movimento anche al tocco (per smartphone)
+noBtn.addEventListener("touchstart", (e) => {
+    e.preventDefault(); // Impedisce il click
+    moveNoButton();
+});
+
+</script>
+
+</body>
+</html>
