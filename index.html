@@ -110,45 +110,48 @@
     }
 
     /* ========================================= */
-    /* === OTTIMIZZAZIONE MOBILE (SARTORIA) === */
+    /* === OTTIMIZZAZIONE MOBILE (ULTIMA VERSIONE) === */
     /* ========================================= */
     @media (max-width: 768px) {
         
-        /* 1. Il Lupo: Più piccolo e sbuca da destra */
+        /* 1. Il Lupo: Spostato più a destra come richiesto */
         body.game-active #wolfCharacter {
-            right: -50px !important; /* Esce un po' dallo schermo (circa 1-2cm) */
-            height: 35vh !important; /* Molto più piccolo rispetto al desktop */
-            bottom: 20px !important; /* Sollevato un po' */
+            right: -75px !important; /* Spostato di altri 25px a destra */
+            height: 35vh !important; 
+            bottom: 20px !important; 
             opacity: 1;
         }
 
-        /* 2. La Card: Più stretta, font più piccoli e spostata a sinistra */
+        /* 2. La Card: Più piccola e compatta */
         body.game-active .card {
-            margin-right: 100px !important; /* Lascia spazio a destra per il lupo */
-            width: 65vw !important; /* Occupa circa il 65% della larghezza */
-            min-height: 400px !important; /* Meno alta */
-            padding: 15px !important; /* Meno padding interno */
-            margin-left: 10px !important; /* Un po' di margine dal bordo sinistro */
+            margin-right: 90px !important; /* Aggiustato margine */
+            width: 60vw !important; /* Ridotto dal 65% al 60% */
+            min-height: 380px !important; /* Leggermente meno alta */
+            padding: 12px !important; /* Padding ridotto */
+            margin-left: 5px !important; 
         }
 
-        /* Testi più piccoli su mobile per far entrare tutto */
-        body.game-active h2 { font-size: 18px !important; margin-bottom: 10px !important; }
-        body.game-active .question-box { font-size: 14px !important; padding: 10px !important; }
-        body.game-active button { padding: 8px 16px !important; font-size: 14px !important; }
+        /* Testi rimpiccioliti per stare meglio nel fumetto piccolo */
+        body.game-active h2 { font-size: 16px !important; margin-bottom: 8px !important; }
+        body.game-active .question-box { font-size: 13px !important; padding: 8px !important; }
+        body.game-active button { padding: 6px 14px !important; font-size: 13px !important; }
+        
+        /* Immagine "thinking" più piccola */
+        body.game-active #gameSection img { width: 40px !important; height: 40px !important; }
 
         /* 3. Il Fumetto: Punta sempre a destra, ma adattato */
         body.game-active .card::before {
             top: auto !important;
-            bottom: 80px !important; /* La punta è più in basso, vicino al muso del lupo piccolo */
-            right: -20px !important; /* Punta più corta */
-            border-width: 10px 0 10px 20px !important;
+            bottom: 80px !important; 
+            right: -18px !important; /* Punta un po' più corta */
+            border-width: 8px 0 8px 18px !important;
         }
 
         body.game-active .card::after {
             top: auto !important;
             bottom: 78px !important;
-            right: -24px !important;
-            border-width: 12px 0 12px 24px !important;
+            right: -22px !important;
+            border-width: 10px 0 10px 22px !important;
         }
     }
     /* ========================================= */
