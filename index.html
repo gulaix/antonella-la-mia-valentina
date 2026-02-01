@@ -58,7 +58,6 @@
         position: fixed; 
         bottom: -20px; 
         right: -400px; /* Nascosto a destra */
-        /* DIMENSIONI ORIGINALI GRANDI */
         height: 65vh; 
         max-height: 550px;
         z-index: 50; 
@@ -82,8 +81,7 @@
         bottom: auto !important; /* Rimuove ancoraggio in basso */
         right: auto !important;  /* Rimuove ancoraggio a destra */
         opacity: 1 !important;
-        /* RALLENTATA LA CAMMINATA A 5 SECONDI */
-        transition: left 5s linear !important; 
+        /* La transizione è gestita dinamicamente per evitare scatti */
     }
 
     /* CARD */
@@ -165,29 +163,38 @@
     .clue-box { display: none; background: #fff3cd; border: 2px solid #ffeeba; color: #856404; padding: 15px; border-radius: 10px; margin-bottom: 15px; width: 90%; font-size: 16px; animation: slideDown 0.5s; }
     .next-level-btn { display: none; background: #28a745; color: white; }
 
-    /* === STILI SLIDER BELLO === */
-    .slider-wrapper { width: 90%; position: relative; padding: 20px 0; margin-bottom: 20px; }
+    /* === STILI SLIDER PULITO & TRICKY === */
+    .slider-wrapper { 
+        width: 85%; /* Larghezza contenitore visibile */
+        position: relative; 
+        padding: 20px 0; 
+        margin: 0 auto 20px auto; 
+    }
     
     .slider-labels { 
         display: flex; justify-content: space-between; 
-        width: 77%; 
-        margin: 0 auto 5px auto; 
+        width: 100%; /* Le label 0 e 100 stanno agli estremi della barra visibile */
+        margin-bottom: 5px;
         font-weight: bold; color: #ff4d88; font-size: 18px;
     }
     
     input[type=range].love-slider {
         -webkit-appearance: none;
-        width: 100%; 
+        width: 130%; /* L'input è più largo del contenitore (sborda a destra) */
+        margin-left: 0; /* Allineato a sinistra */
         background: transparent;
+        display: block;
     }
     
     input[type=range].love-slider::-webkit-slider-runnable-track {
         width: 100%;
         height: 12px;
         cursor: pointer;
-        background: linear-gradient(to right, #ff4d88 0%, #ff4d88 77%, rgba(0,0,0,0.05) 77%);
+        /* La barra è ROSA PIENO fino al 77% (che corrisponde al valore 100/130). 
+           Dopo diventa trasparente, quindi sembra finire lì. */
+        background: linear-gradient(to right, #ff4d88 0%, #ff4d88 76.9%, transparent 76.9%);
         border-radius: 10px;
-        border: 1px solid rgba(0,0,0,0.1);
+        /* Nessun bordo per pulizia */
     }
 
     input[type=range].love-slider::-webkit-slider-thumb {
@@ -198,7 +205,7 @@
         background: #fff;
         border: 4px solid #ff2e6e;
         cursor: grab;
-        margin-top: -9px; 
+        margin-top: -8px; /* Centrato */
         box-shadow: 0 2px 6px rgba(0,0,0,0.3);
         position: relative;
         z-index: 2;
@@ -380,7 +387,7 @@ function stopEverything() {
     wolf.style.transform = '';
     wolf.style.right = '';
     wolf.style.bottom = '';
-    wolf.style.transition = '';
+    wolf.style.transition = ''; // IMPORTANTE: Resetta la transizione
     
     // Reset immagine default (Lupo)
     wolf.src = "lupocut.png";
@@ -406,7 +413,6 @@ function launchConfetti() {
 }
 
 function startGame() {
-    // Reset stati speciali
     questions[4].correct = -1; 
     questions[5].correct = -1; 
 
@@ -420,12 +426,11 @@ function startGame() {
 
 // --- LOGICA PARLATO NORMALE (Lupo Grande) ---
 function startTalking() {
-    // Se siamo nel livello 3 (Slider), il lupo non parla all'inizio
-    if (currentLevel === 3) return;
+    if (currentLevel === 3) return; // Salta se livello slider
 
     stopEverything(); 
     
-    // Riattiva posizione normale del lupo (Grande, in basso a destra)
+    // Riattiva posizione normale del lupo
     wolf.classList.add('normal-pos');
 
     if (audioFiles.length === 0) return;
@@ -444,7 +449,6 @@ function startTalking() {
     currentAudio.onplay = function() {
         let isOpen = false;
         talkingInterval = setInterval(() => {
-            // QUI USIAMO SOLO LE IMMAGINI ORIGINALI DEL LUPO
             if (isOpen) {
                 wolf.src = "lupocut.png"; 
             } else {
@@ -470,44 +474,47 @@ function startTalking() {
 
 // --- LOGICA CINEMATICA SPECIALE (Ragazzo Piccolo - Solo Livello 4) ---
 function startCinematicSequence() {
-    stopEverything(); // Pulisce tutto e resetta
+    stopEverything(); // Pulisce tutto
     
-    // Aggiungi classe per rimpicciolire il ragazzo SOLO ORA
     wolf.classList.add('cinematic-wolf');
     document.body.classList.add('cinematic-active'); 
 
-    // 1. Setup Iniziale (Fuori schermo a SINISTRA, altezza fissa)
+    // 1. Setup Iniziale
     wolf.style.top = '50px'; 
     wolf.style.left = '-300px'; 
-    // FLIP ORIZZONTALE PER FARLO CAMMINARE VERSO DESTRA
-    wolf.style.transform = 'scaleX(-1)'; 
-    wolf.src = 'walking.png'; // Immagine camminata
+    wolf.style.transform = 'translateY(0) scaleX(-1)'; // Flip per guardare a destra
+    
+    // Forza il reflow del browser per applicare le posizioni iniziali prima della transizione
+    void wolf.offsetWidth;
 
-    // 2. Start Camminata Orizzontale (dopo breve delay per applicare CSS)
+    // Attiva transizione e immagine
+    wolf.style.transition = 'left 5s linear'; // Camminata in 5s
+    wolf.src = 'walking.png'; 
+
+    // 2. Start Camminata
     setTimeout(() => {
         // Coordinate arrivo (Centro orizzontale)
         wolf.style.left = '50%';
-        // MANTENIAMO IL FLIP DURANTE LA CAMMINATA E CENTRIAMO
-        wolf.style.transform = 'translateX(50%) scaleX(-1)'; 
+        wolf.style.transform = 'translateX(-50%) scaleX(-1)'; // Mantiene flip e centra
         
-        // Tempo di camminata (ORA 5 SECONDI)
+        // Tempo di camminata (5s)
         setTimeout(() => {
-            // 3. Arrivato: Si gira frontale e si ferma
-            // RIMUOVIAMO IL FLIP (scaleX(1)) E CENTRIAMO NORMALMENTE
-            wolf.style.transform = 'translateX(-50%) scaleX(1)'; 
+            // 3. Arrivato: Ferma tutto, gira e aspetta
+            wolf.style.transition = 'none'; // FERMA LA TRANSIZIONE PER EVITARE SCATTI
+            wolf.style.transform = 'translateX(-50%) scaleX(1)'; // Gira frontale
             wolf.src = 'stand.png';
             
-            // 4. ATTESA DI 2 SECONDI PRIMA DI PARLARE
+            // 4. ATTESA DI 1 SECONDO PRIMA DI PARLARE (Ridotta da 2s)
             setTimeout(() => {
                 // Audio Voce
                 currentAudio = new Audio('voce.mp3');
                 currentAudio.play();
                 
                 let isOpen = false;
-                // Loop parlato SPECIALE con "Rare" (Aumentata probabilità al 10%)
+                // Loop parlato SPECIALE
                 cinematicInterval = setInterval(() => {
                     const rand = Math.random();
-                    if (rand < 0.10) {  // 10% chance di "rare"
+                    if (rand < 0.10) {  // 10% chance
                         wolf.src = 'rare.png';
                     } else {
                         if (isOpen) {
@@ -523,12 +530,11 @@ function startCinematicSequence() {
                 currentAudio.onended = function() {
                     clearInterval(cinematicInterval);
                     wolf.src = 'stand.png'; 
-                    // Triggera l'errore standard. 'true' impedisce reset immediato
                     triggerError(document.querySelector("#optionsContainer button"), true); 
                 };
-            }, 2000); // Fine attesa 2 secondi
+            }, 1000); // Attesa 1s
 
-        }, 5000); // 5000ms = tempo camminata (più lenta)
+        }, 5000); // 5000ms = tempo camminata
     }, 50);
 }
 
@@ -536,7 +542,6 @@ function loadQuestion() {
     const q = questions[currentLevel];
     wrongAnswersCount = 0; 
     
-    // Reset specifici per ricaricamenti
     if (currentLevel === 4) questions[4].correct = -1;
     if (currentLevel === 5) questions[5].correct = -1;
     
@@ -631,8 +636,6 @@ function showClue() {
 function triggerError(btnElement, isCinematic = false) {
     if(btnElement) btnElement.classList.add("wrong");
     
-    // Se NON siamo in cinematica, resetta tutto (Lupo torna normale).
-    // Se SIAMO in cinematica, non resettare ancora posizione, ferma solo audio.
     if (!isCinematic) {
         stopEverything();
         wolf.classList.add('normal-pos'); 
@@ -646,15 +649,12 @@ function triggerError(btnElement, isCinematic = false) {
     errorSound.currentTime = 0;
     errorSound.play();
     
-    // Quando finisce il suono "auu", chiudiamo overlay
     errorSound.onended = function() {
         errorOverlay.classList.add('fade-out');
         setTimeout(() => { 
             errorOverlay.style.display = 'none'; 
-            
-            // SE ERAVAMO IN CINEMATICA, ORA DOBBIAMO RIPRISTINARE IL LUPO GRANDE
             if (isCinematic) {
-                stopEverything(); 
+                stopEverything(); // Rimuove il ragazzo cinematico e resetta
             }
         }, 500); 
     };
@@ -664,7 +664,6 @@ function triggerError(btnElement, isCinematic = false) {
 function checkAnswer(selectedIndex, btnElement) {
     const q = questions[currentLevel];
 
-    // Gestione Wikipedia (Indice 0 è "Tu" -> Errore redirect)
     if (q.type === "redirect" && selectedIndex === 0) {
         handleRedirect();
         if(btnElement) btnElement.classList.add("wrong");
@@ -672,17 +671,14 @@ function checkAnswer(selectedIndex, btnElement) {
     }
 
     if (selectedIndex === q.correct) {
-        // Giusto
         btnElement.classList.add("correct");
         const allBtns = document.querySelectorAll(".option-btn");
         allBtns.forEach(b => b.disabled = true);
         showClue();
     } else {
-        // Sbagliato
         triggerError(btnElement);
 
-        // LOGICA PIEDI (Lv 5 -> Index 4)
-        if (currentLevel === 4) {
+        if (currentLevel === 4) { // PIEDI
             const wrongButtons = document.querySelectorAll('#optionsContainer .option-btn.wrong');
             if (wrongButtons.length === 4) {
                 setTimeout(() => {
@@ -694,8 +690,7 @@ function checkAnswer(selectedIndex, btnElement) {
             }
         }
 
-        // LOGICA BEDDRA (Lv 6 -> Index 5)
-        if (currentLevel === 5) {
+        if (currentLevel === 5) { // BEDDRA
             wrongAnswersCount++;
             if (wrongAnswersCount === 2) {
                 const container = document.getElementById("optionsContainer");
