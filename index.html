@@ -6,6 +6,7 @@
 <title>Will you be my Valentine? ❤️</title>
 <link rel="preload" as="image" href="lupocut.png">
 <link rel="preload" as="image" href="lupocut1.png">
+<link rel="preload" as="image" href="noo.png">
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
@@ -22,6 +23,7 @@
         overflow: hidden;
     }
 
+    /* SFONDO ANIMATO */
     .heart-bg {
         position: absolute;
         width: 100%;
@@ -108,6 +110,35 @@
         border-style: solid;
         border-color: transparent transparent transparent #ff4d88;
         z-index: 0;
+    }
+
+    /* === OVERLAY ERRORE === */
+    #errorOverlay {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: transparent; /* Nessuno sfondo colorato */
+        display: none; /* Nascosto di default */
+        justify-content: center;
+        align-items: center;
+        z-index: 9999; /* Sopra a tutto, anche al lupo */
+        backdrop-filter: blur(2px); /* Leggera sfocatura dietro per risaltare */
+    }
+
+    #errorImage {
+        max-width: 80%;
+        max-height: 80%;
+        animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    /* Classe per la dissolvenza in uscita */
+    .fade-out {
+        opacity: 0;
+        transition: opacity 0.5s ease;
+    }
+
+    @keyframes popIn {
+        0% { transform: scale(0); }
+        100% { transform: scale(1); }
     }
 
     /* === MOBILE === */
@@ -230,6 +261,11 @@
     <span style="left: 90%; animation-duration: 19s; animation-delay: 4s;"></span>
 </div>
 
+<audio id="errorSound" src="auu.mp3" preload="auto"></audio>
+<div id="errorOverlay">
+    <img id="errorImage" src="noo.png" alt="NOO!">
+</div>
+
 <img src="lupocut.png" id="wolfCharacter" alt="Lupo Cowboy">
 
 
@@ -333,6 +369,8 @@ const celebration = document.getElementById("celebrationText");
 const mainImage = document.getElementById("mainImage");
 const card = document.getElementById("mainCard");
 const wolf = document.getElementById("wolfCharacter");
+const errorOverlay = document.getElementById("errorOverlay");
+const errorSound = document.getElementById("errorSound");
 
 // Variabili di Stato
 let currentLevel = 0;
@@ -343,12 +381,12 @@ let lastAudioIndex = -1;
 
 // --- GESTIONE KILL SWITCH ---
 function stopEverything() {
-    // 1. Ferma l'audio
+    // 1. Ferma l'audio del lupo
     if (currentAudio) {
         currentAudio.pause();
         currentAudio.currentTime = 0; 
-        currentAudio.onplay = null; // Rimuovi listener vecchi
-        currentAudio.onended = null; // Rimuovi listener vecchi
+        currentAudio.onplay = null; 
+        currentAudio.onended = null;
     }
     // 2. Ferma i timer
     if (talkingInterval) clearInterval(talkingInterval);
@@ -392,7 +430,6 @@ function startTalking() {
 
     if (audioFiles.length === 0) return;
 
-    // 1. Scelta Audio Random
     let newIndex;
     if (audioFiles.length > 1) {
         do { newIndex = Math.floor(Math.random() * audioFiles.length); } 
@@ -404,9 +441,7 @@ function startTalking() {
     
     currentAudio = new Audio(audioFiles[newIndex]);
 
-    // 2. QUANDO PARTE L'AUDIO (ONPLAY)
     currentAudio.onplay = function() {
-        // Parte l'animazione bocca
         let isOpen = false;
         talkingInterval = setInterval(() => {
             if (isOpen) {
@@ -415,23 +450,18 @@ function startTalking() {
                 wolf.src = "lupocut1.png"; 
             }
             isOpen = !isOpen;
-        }, 120); // 120ms = Veloce
+        }, 120);
 
-        // Imposta anche il timeout massimo randomico (4-8 sec)
-        // Se l'audio dura più di 8 secondi, questo timer lo fermerà.
         const duration = Math.random() * (8000 - 4000) + 4000;
         stopTimeout = setTimeout(() => {
             stopEverything();
         }, duration);
     };
 
-    // 3. QUANDO FINISCE L'AUDIO (ONENDED)
-    // Se l'audio è breve (es. 2 secondi), questo evento scatta prima del timeout e ferma tutto.
     currentAudio.onended = function() {
         stopEverything();
     };
 
-    // 4. Play effettivo
     currentAudio.play().catch(e => console.log("Audio autoplay bloccato:", e));
 }
 
@@ -456,9 +486,11 @@ function loadQuestion() {
     startTalking();
 }
 
+// --- GESTIONE RISPOSTA E ERRORE ---
 function checkAnswer(selectedIndex, btnElement) {
     const q = questions[currentLevel];
     if (selectedIndex === q.correct) {
+        // RISPOSTA GIUSTA
         btnElement.classList.add("correct");
         const allBtns = document.querySelectorAll(".option-btn");
         allBtns.forEach(b => b.disabled = true);
@@ -467,13 +499,29 @@ function checkAnswer(selectedIndex, btnElement) {
         document.getElementById("nextBtn").style.display = "inline-block";
         launchConfetti(); 
     } else {
-        btnElement.classList.add("wrong");
-        setTimeout(() => { btnElement.classList.remove("wrong"); }, 500);
+        // RISPOSTA SBAGLIATA
+        // 1. Zittisci il lupo
+        stopEverything();
+        
+        // 2. Mostra Overlay e suona errore
+        errorOverlay.classList.remove('fade-out');
+        errorOverlay.style.display = 'flex';
+        
+        errorSound.currentTime = 0;
+        errorSound.play();
+
+        // 3. Quando l'audio errore finisce, chiudi
+        errorSound.onended = function() {
+            errorOverlay.classList.add('fade-out');
+            setTimeout(() => {
+                errorOverlay.style.display = 'none';
+            }, 500); // tempo della dissolvenza CSS
+        };
     }
 }
 
 function nextLevel() {
-    stopEverything(); // Ferma parlato vecchio
+    stopEverything(); 
 
     currentLevel++;
     if (currentLevel < questions.length) {
