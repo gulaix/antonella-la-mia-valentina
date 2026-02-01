@@ -54,15 +54,10 @@
     body.game-active #wolfCharacter { right: -40px; opacity: 1; }
 
     /* CARD */
-    .card { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); max-width: 420px; width: 90vw; min-height: 550px; position: relative; border: 3px solid #ffebf0; overflow: hidden; display: flex; flex-direction: column; align-items: center; z-index: 10; transition: all 0.8s ease; }
+    .card { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); max-width: 420px; width: 90vw; min-height: 550px; position: relative; border: 3px solid #ffebf0; overflow: hidden; display: flex; flex-direction: column; align-items: center; z-index: 10; transition: all 0.5s ease; }
     body.game-active .card { margin-right: 220px; overflow: visible; border-color: #ff4d88; }
     body.game-active .card::before { content: ''; position: absolute; top: 150px; right: -30px; border-width: 15px 0 15px 30px; border-style: solid; border-color: transparent transparent transparent rgba(255, 255, 255, 0.95); z-index: 1; }
     body.game-active .card::after { content: ''; position: absolute; top: 147px; right: -36px; border-width: 18px 0 18px 36px; border-style: solid; border-color: transparent transparent transparent #ff4d88; z-index: 0; }
-
-    /* CLASSE SOTTOSOPRA */
-    .card.upside-down {
-        transform: rotate(180deg);
-    }
 
     /* POPUP AVVISO */
     #warningPopup { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 99999; display: none; justify-content: center; align-items: center; flex-direction: column; text-align: center; }
@@ -121,35 +116,46 @@
     .clue-box { display: none; background: #fff3cd; border: 2px solid #ffeeba; color: #856404; padding: 15px; border-radius: 10px; margin-bottom: 15px; width: 90%; font-size: 16px; animation: slideDown 0.5s; }
     .next-level-btn { display: none; background: #28a745; color: white; }
 
-    /* STILI SLIDER SPECIALE */
-    .slider-wrapper { width: 100%; position: relative; padding: 20px 0; margin-bottom: 20px; }
-    .slider-labels { display: flex; justify-content: space-between; width: 80%; margin: 0 auto; font-weight: bold; color: #ff4d88; }
+    /* === STILI SLIDER BELLO === */
+    .slider-wrapper { width: 90%; position: relative; padding: 20px 0; margin-bottom: 20px; }
     
-    /* Il trucco: l'input è più largo del contenitore visibile, ma l'overflow è nascosto a metà */
+    .slider-labels { 
+        display: flex; justify-content: space-between; 
+        width: 77%; /* Allineato con la fine visibile della barra (che è il 77% di 130) */
+        margin: 0 auto 5px auto; /* Centrato */
+        font-weight: bold; color: #ff4d88; font-size: 18px;
+    }
+    
     input[type=range].love-slider {
         -webkit-appearance: none;
-        width: 100%; /* Larghezza normale */
+        width: 100%; /* Occupa tutto, anche la parte invisibile */
         background: transparent;
     }
     
-    input[type=range].love-slider::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        height: 25px;
-        width: 25px;
-        border-radius: 50%;
-        background: #ff2e6e;
-        cursor: pointer;
-        margin-top: -8px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.2);
-    }
-
+    /* Il binario */
     input[type=range].love-slider::-webkit-slider-runnable-track {
         width: 100%;
-        height: 10px;
+        height: 12px;
         cursor: pointer;
-        /* Gradiente che si ferma al 75% per creare l'effetto "fine" */
-        background: linear-gradient(to right, #ffb6c1 0%, #ff4d88 75%, transparent 75%);
-        border-radius: 5px;
+        /* Colore pieno fino al 77% (valore 100), poi trasparente */
+        background: linear-gradient(to right, #ff4d88 0%, #ff4d88 77%, rgba(0,0,0,0.05) 77%);
+        border-radius: 10px;
+        border: 1px solid rgba(0,0,0,0.1);
+    }
+
+    /* Il pallino */
+    input[type=range].love-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        height: 28px;
+        width: 28px;
+        border-radius: 50%;
+        background: #fff;
+        border: 4px solid #ff2e6e;
+        cursor: grab;
+        margin-top: -9px; /* Per centrarlo verticalmente */
+        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        position: relative;
+        z-index: 2;
     }
 
     @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } 100% { transform: translateX(0); } }
@@ -240,7 +246,7 @@ const audioFiles = [
     'audio3.mp3'
 ]; 
 
-// --- DATI DELLA CACCIA AL TESORO (7 DOMANDE) ---
+// --- DATI DELLA CACCIA AL TESORO (6 LIVELLI ORA) ---
 const questions = [
     {   // 1. CLASSICA
         question: "La sera in cui ci siamo baciati la prima volta perchè volevo salire da te??",
@@ -267,20 +273,13 @@ const questions = [
         correct: 3, 
         clue: "Vai in bagno e guarda dietro lo specchio! 🚿"
     },
-    {   // 5. SOTTOSOPRA (Nuova)
-        question: "Saresti disposta a ribaltare il mondo per me? 🙃",
-        options: ["NO", "FORSE", "MAI", "SI CERTO"],
-        correct: 3,
-        clue: "Cerca sotto il divano! 🛋️",
-        type: "upside_down"
-    },
-    {   // 6. BEDDRA (Strobo)
+    {   // 5. BEDDRA (Strobo) - Spostata qui
         question: "Giulio è il miglior fidanzato a fare i regali??",
         options: ["SI", "...si", "NO", "forse"],
         correct: -1, 
         clue: "Cerca sotto il tuo cuscino! 🛏️"
     },
-    {   // 7. SLIDER (Finale)
+    {   // 6. SLIDER (Finale)
         question: "Quanto ti amo da 1 a 10? 📈",
         options: [], // Vuoto, useremo lo slider
         correct: 999, // Speciale
@@ -347,7 +346,7 @@ function launchConfetti() {
 function startGame() {
     // Reset stati
     questions[1].correct = -1;
-    questions[5].correct = -1;
+    questions[4].correct = -1; // Beddra è ora index 4
 
     document.body.classList.add('game-active');
     setTimeout(() => {
@@ -402,17 +401,10 @@ function loadQuestion() {
     const q = questions[currentLevel];
     wrongAnswersCount = 0; 
     
-    // Reset specifici
+    // Reset specifici (Aggiornati gli indici)
     if (currentLevel === 1) questions[1].correct = -1;
-    if (currentLevel === 5) questions[5].correct = -1;
+    if (currentLevel === 4) questions[4].correct = -1;
     
-    // Gestione Sottosopra
-    if (q.type === "upside_down") {
-        card.classList.add("upside-down");
-    } else {
-        card.classList.remove("upside-down");
-    }
-
     document.getElementById("levelTitle").innerText = "Livello " + (currentLevel + 1);
     document.getElementById("questionText").innerText = q.question;
     document.getElementById("clueBox").style.display = "none";
@@ -427,7 +419,7 @@ function loadQuestion() {
             <div class="slider-wrapper">
                 <div class="slider-labels">
                     <span>0</span>
-                    <span style="margin-right:25%">100</span>
+                    <span>100</span>
                 </div>
                 <input type="range" id="loveRange" class="love-slider" min="0" max="130" value="0">
             </div>
@@ -455,7 +447,7 @@ function checkSlider() {
     
     // Se il valore è nell'area visibile (0-100 circa)
     if (val <= 100) {
-        triggerError(document.querySelector("#optionsContainer button")); // Usa il bottone conferma per l'animazione
+        triggerError(document.querySelector("#optionsContainer button")); 
     } else {
         // Se ha trascinato nel vuoto (>100)
         showClue();
@@ -464,9 +456,7 @@ function checkSlider() {
 
 // --- GESTIONE WIKIPEDIA ---
 function handleRedirect() {
-    // Apre Delirio di onnipotenza
     window.open("https://it.wikipedia.org/wiki/Delirio_di_onnipotenza", "_blank");
-    // Conta come errore nel gioco
     triggerError(null); 
 }
 
@@ -535,7 +525,7 @@ function checkAnswer(selectedIndex, btnElement) {
         // Sbagliato
         triggerError(btnElement);
 
-        // LOGICA PIEDI (Lv 1)
+        // LOGICA PIEDI (Lv 1 - Index 1)
         if (currentLevel === 1) {
             const wrongButtons = document.querySelectorAll('#optionsContainer .option-btn.wrong');
             if (wrongButtons.length === 4) {
@@ -548,8 +538,8 @@ function checkAnswer(selectedIndex, btnElement) {
             }
         }
 
-        // LOGICA BEDDRA (Lv 5)
-        if (currentLevel === 5) {
+        // LOGICA BEDDRA (Lv 4 - Index 4)
+        if (currentLevel === 4) {
             wrongAnswersCount++;
             if (wrongAnswersCount === 2) {
                 const container = document.getElementById("optionsContainer");
