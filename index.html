@@ -393,7 +393,6 @@ const audioFiles = [
     'audio3.mp3'
 ]; 
 
-
 // --- DATI DELLA CACCIA AL TESORO ---
 const questions = [
     {
@@ -428,6 +427,7 @@ const questions = [
     }
 ];
 
+// Riferimenti DOM
 const proposalSection = document.getElementById("proposalSection");
 const gameSection = document.getElementById("gameSection");
 const finalSection = document.getElementById("finalSection");
@@ -438,13 +438,30 @@ const mainImage = document.getElementById("mainImage");
 const card = document.getElementById("mainCard");
 const wolf = document.getElementById("wolfCharacter");
 
+// Variabili di Stato
 let currentLevel = 0;
-// Variabili per il parlato
-let talkingInterval;
-let stopTalkingTimeout;
-let currentAudio = null; 
-let lastAudioIndex = -1; // Per ricordare l'ultimo audio suonato
+let currentAudio = null; // Oggetto Audio corrente
+let talkingInterval = null; // Interval per l'animazione bocca
+let stopTimeout = null; // Timeout per fermare il tutto
+let lastAudioIndex = -1; 
 
+// --- GESTIONE KILL SWITCH (FERMA TUTTO) ---
+// Questa funzione è fondamentale: resetta qualsiasi suono/animazione attivo
+function stopEverything() {
+    // 1. Ferma l'audio se sta suonando
+    if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0; // Riavvolgi
+    }
+    // 2. Cancella i timer
+    if (talkingInterval) clearInterval(talkingInterval);
+    if (stopTimeout) clearTimeout(stopTimeout);
+    
+    // 3. Resetta l'immagine a bocca chiusa
+    wolf.src = "lupocut.png";
+}
+
+// --- LOGICA SÌ/NO ---
 yesBtn.addEventListener("click", () => {
     celebration.style.display = "block";
     mainImage.src = "https://i.imgur.com/jRf6Y7R.png"; 
@@ -466,7 +483,6 @@ function launchConfetti() {
 
 function startGame() {
     document.body.classList.add('game-active');
-    
     setTimeout(() => {
         proposalSection.style.display = "none"; 
         gameSection.style.display = "flex";     
@@ -474,63 +490,49 @@ function startGame() {
     }, 300); 
 }
 
-// --- FUNZIONE PER STOPPARE TUTTO ---
-function stopTalking() {
-    clearInterval(talkingInterval);
-    clearTimeout(stopTalkingTimeout);
-    wolf.src = "lupocut.png"; // Reset bocca chiusa (PNG)
-    if (currentAudio) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-    }
-}
-
-// --- FUNZIONE PER FAR PARLARE IL LUPO ---
+// --- LOGICA PARLATO SINCRONIZZATO ---
 function startTalking() {
-    // 1. Resetta
-    stopTalking();
+    // PRIMA DI TUTTO: RESET TOTALE
+    stopEverything();
 
-    // 2. Scegli Audio Random (diverso dal precedente)
+    // 1. Scegli Audio Random (diverso dal precedente)
     if (audioFiles.length > 0) {
         let newIndex;
-        // Se c'è più di un audio, cerca finché non ne trovi uno diverso dall'ultimo
         if (audioFiles.length > 1) {
-            do {
-                newIndex = Math.floor(Math.random() * audioFiles.length);
-            } while (newIndex === lastAudioIndex);
+            do { newIndex = Math.floor(Math.random() * audioFiles.length); } 
+            while (newIndex === lastAudioIndex);
         } else {
-            newIndex = 0; // Se c'è solo un file, usa quello
+            newIndex = 0; 
         }
-        
-        lastAudioIndex = newIndex; // Salva questo indice per il prossimo controllo
+        lastAudioIndex = newIndex;
         
         currentAudio = new Audio(audioFiles[newIndex]);
-        currentAudio.play().catch(e => console.log("Audio bloccato:", e));
+        // Riproduci Audio
+        currentAudio.play().catch(e => console.log("Audio autoplay bloccato:", e));
     }
 
-    // 3. Calcola durata random tra 4 e 8 secondi
+    // 2. Calcola durata random (4-8 sec)
     const duration = Math.random() * (8000 - 4000) + 4000;
 
-    // 4. Animazione bocca VELOCE (200ms = 5 volte al secondo)
+    // 3. Fai partire l'animazione bocca INSIEME all'audio
     let isOpen = false;
     talkingInterval = setInterval(() => {
         if (isOpen) {
-            wolf.src = "lupocut.png"; // Bocca chiusa (PNG)
+            wolf.src = "lupocut.png"; // Chiusa
         } else {
-            wolf.src = "lupocut1.png"; // Bocca aperta (PNG)
+            wolf.src = "lupocut1.png"; // Aperta
         }
         isOpen = !isOpen;
-    }, 200); 
+    }, 200); // 200ms velocità cambio
 
-    // 5. Imposta lo stop dopo la durata random
-    stopTalkingTimeout = setTimeout(() => {
-        stopTalking();
+    // 4. Programma la fine sincronizzata
+    stopTimeout = setTimeout(() => {
+        stopEverything(); // Spegne audio e bocca insieme
     }, duration);
 }
 
 function loadQuestion() {
-    startTalking();
-
+    // Carica la domanda
     const q = questions[currentLevel];
     document.getElementById("levelTitle").innerText = "Livello " + (currentLevel + 1);
     document.getElementById("questionText").innerText = q.question;
@@ -547,6 +549,9 @@ function loadQuestion() {
         btn.onclick = () => checkAnswer(index, btn);
         container.appendChild(btn);
     });
+
+    // START PARLATO (Ora che la domanda è a schermo)
+    startTalking();
 }
 
 function checkAnswer(selectedIndex, btnElement) {
@@ -566,15 +571,14 @@ function checkAnswer(selectedIndex, btnElement) {
 }
 
 function nextLevel() {
+    // Appena clicco avanti, UCCIDO il parlato della domanda vecchia
+    stopEverything();
+
     currentLevel++;
     if (currentLevel < questions.length) {
-        loadQuestion();
+        loadQuestion(); // Carica nuova domanda e fa partire nuovo parlato
     } else {
         document.body.classList.remove('game-active');
-        
-        // Ferma il parlato
-        stopTalking();
-        
         gameSection.style.display = "none";
         finalSection.style.display = "flex";
         launchConfetti();
