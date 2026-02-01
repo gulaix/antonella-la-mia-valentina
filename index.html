@@ -31,7 +31,17 @@
         transition: background-color 0.2s;
     }
 
-    /* EFFETTO DISCO STROBOSCOPICO */
+    /* === NUOVO OVERLAY DISCO (COPRE LA CARD MA STA SOTTO IL POPUP) === */
+    #discoOverlay {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        z-index: 90000; /* Sopra la card (z-10), sotto il popup (z-99999) */
+        display: none;
+        pointer-events: none; /* Lascia cliccare il popup */
+        opacity: 0.9; /* Leggera trasparenza per vedere intravedere sotto */
+    }
+
+    /* Animazione applicata al div overlay invece che al body */
     @keyframes discoFlash {
         0% { background-color: #ff0000; }
         15% { background-color: #00ff00; }
@@ -43,9 +53,9 @@
         100% { background-color: #ff0000; }
     }
 
-    body.disco-mode {
-        animation: discoFlash 0.1s infinite; 
-        background-image: none; 
+    .active-disco {
+        display: block !important;
+        animation: discoFlash 0.1s infinite; /* Velocissimo */
     }
 
     /* SFONDO ANIMATO */
@@ -57,7 +67,7 @@
     #wolfCharacter { 
         position: fixed; 
         bottom: -20px; 
-        right: -400px; /* Nascosto a destra */
+        right: -400px; 
         height: 65vh; 
         max-height: 550px;
         z-index: 50; 
@@ -68,7 +78,6 @@
         transform: translateZ(0); 
     }
 
-    /* Stato visibile normale */
     body.game-active #wolfCharacter.normal-pos { 
         right: -40px; 
         opacity: 1; 
@@ -78,10 +87,9 @@
     #wolfCharacter.cinematic-wolf {
         height: 30vh !important; 
         max-height: 250px !important;
-        bottom: auto !important; /* Rimuove ancoraggio in basso */
-        right: auto !important;  /* Rimuove ancoraggio a destra */
+        bottom: auto !important; 
+        right: auto !important; 
         opacity: 1 !important;
-        /* La transizione è gestita dinamicamente per evitare scatti */
     }
 
     /* CARD */
@@ -92,8 +100,8 @@
 
     /* Quando c'è la cinematica, centra la card */
     body.game-active.cinematic-active .card {
-        margin-right: 0 !important; /* Centra la card */
-        margin-top: 100px; /* Spazio per il ragazzo sopra */
+        margin-right: 0 !important; 
+        margin-top: 100px; 
     }
 
     /* POPUP AVVISO */
@@ -232,6 +240,8 @@
     <img id="errorImage" src="noo.png" alt="NOO!">
 </div>
 
+<div id="discoOverlay"></div>
+
 <div id="warningPopup">
     <div class="warning-box">
         <h2 style="color:red; margin-top:0;">⚠️ ATTENZIONE ⚠️</h2>
@@ -354,6 +364,7 @@ const wolf = document.getElementById("wolfCharacter");
 const errorOverlay = document.getElementById("errorOverlay");
 const errorSound = document.getElementById("errorSound");
 const warningPopup = document.getElementById("warningPopup");
+const discoOverlay = document.getElementById("discoOverlay");
 
 // Variabili di Stato
 let currentLevel = 0;
@@ -364,6 +375,7 @@ let stopTimeout = null;
 let lastAudioIndex = -1; 
 let wrongAnswersCount = 0; 
 let beddraAudio = null; 
+let sliderLocked = true; // STATO DEL BLOCCO SLIDER
 
 // --- GESTIONE KILL SWITCH E RESET ---
 function stopEverything() {
@@ -381,13 +393,16 @@ function stopEverything() {
     wolf.classList.remove('normal-pos');
     document.body.classList.remove('cinematic-active');
     
+    // RESET OVERLAY
+    discoOverlay.classList.remove('active-disco');
+    
     // Reset forzato degli stili inline
     wolf.style.top = '';
     wolf.style.left = '';
     wolf.style.transform = '';
     wolf.style.right = '';
     wolf.style.bottom = '';
-    wolf.style.transition = ''; // IMPORTANTE: Resetta la transizione
+    wolf.style.transition = '';
     
     // Reset immagine default (Lupo)
     wolf.src = "lupocut.png";
@@ -413,8 +428,10 @@ function launchConfetti() {
 }
 
 function startGame() {
+    // Reset stati speciali
     questions[4].correct = -1; 
     questions[5].correct = -1; 
+    sliderLocked = true; // Reset lock
 
     document.body.classList.add('game-active');
     setTimeout(() => {
@@ -484,7 +501,7 @@ function startCinematicSequence() {
     wolf.style.left = '-300px'; 
     wolf.style.transform = 'translateY(0) scaleX(-1)'; // Flip per guardare a destra
     
-    // Forza il reflow del browser per applicare le posizioni iniziali prima della transizione
+    // Forza il reflow
     void wolf.offsetWidth;
 
     // Attiva transizione e immagine
@@ -504,7 +521,7 @@ function startCinematicSequence() {
             wolf.style.transform = 'translateX(-50%) scaleX(1)'; // Gira frontale
             wolf.src = 'stand.png';
             
-            // 4. ATTESA DI 1 SECONDO PRIMA DI PARLARE (Ridotta da 2s)
+            // 4. ATTESA DI 1 SECONDO PRIMA DI PARLARE
             setTimeout(() => {
                 // Audio Voce
                 currentAudio = new Audio('voce.mp3');
@@ -542,8 +559,10 @@ function loadQuestion() {
     const q = questions[currentLevel];
     wrongAnswersCount = 0; 
     
+    // Reset specifici per ricaricamenti
     if (currentLevel === 4) questions[4].correct = -1;
     if (currentLevel === 5) questions[5].correct = -1;
+    if (currentLevel === 3) sliderLocked = true; // Reset lock quando carica lv slider
     
     document.getElementById("levelTitle").innerText = "Livello " + (currentLevel + 1);
     document.getElementById("questionText").innerText = q.question;
@@ -565,6 +584,16 @@ function loadQuestion() {
             </div>
             <button class="option-btn" onclick="checkSlider()">Conferma</button>
         `;
+        
+        // AGGIUNTA EVENTO INPUT PER BLOCCARE IL CURSORE
+        const sliderInput = document.getElementById("loveRange");
+        sliderInput.oninput = function() {
+            // Se è bloccato e prova ad andare oltre 90 (prima della fine rosa)
+            if (sliderLocked && parseInt(this.value) > 90) {
+                this.value = 90; // Bloccalo fisicamente
+            }
+        };
+
         // Nessun parlato iniziale qui
         stopEverything();
     } 
@@ -602,20 +631,35 @@ function handleRedirect() {
     triggerError(null); 
 }
 
-// --- GESTIONE SPECIALE BEDDRA ---
+// --- GESTIONE SPECIALE BEDDRA (DOPPIA RIPRODUZIONE + OVERLAY SOPRA CARD) ---
 function handleSpecialGiulioAnswer(btn) {
     btn.classList.add("correct");
     stopEverything(); 
     
-    beddraAudio = new Audio('beddra.mp3');
-    beddraAudio.play();
-    document.body.classList.add('disco-mode');
+    // 1. INIZIA LO STROBO (SOPRA LA CARD)
+    discoOverlay.classList.add('active-disco');
+
+    // 2. MOSTRA IL POPUP
     warningPopup.style.display = 'flex';
 
+    // 3. LOGICA AUDIO LOOP (2 VOLTE)
+    let playCount = 0;
+    
+    beddraAudio = new Audio('beddra.mp3');
+    beddraAudio.play();
+
     beddraAudio.onended = () => {
-        document.body.classList.remove('disco-mode'); 
-        warningPopup.style.display = 'none'; 
-        showClue();
+        playCount++;
+        if (playCount < 2) {
+            // RIPETI AUDIO
+            beddraAudio.currentTime = 0;
+            beddraAudio.play();
+        } else {
+            // FINE (dopo 2 volte)
+            discoOverlay.classList.remove('active-disco'); // Ferma strobo
+            warningPopup.style.display = 'none'; // Chiudi popup
+            showClue();
+        }
     };
 }
 
@@ -653,8 +697,11 @@ function triggerError(btnElement, isCinematic = false) {
         errorOverlay.classList.add('fade-out');
         setTimeout(() => { 
             errorOverlay.style.display = 'none'; 
+            
+            // SE ERAVAMO IN CINEMATICA (Livello Slider)
             if (isCinematic) {
-                stopEverything(); // Rimuove il ragazzo cinematico e resetta
+                stopEverything(); 
+                sliderLocked = false; // SBLOCCA LO SLIDER
             }
         }, 500); 
     };
