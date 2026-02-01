@@ -14,16 +14,10 @@
     body {
         margin: 0;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        
-        /* --- MODIFICA SFONDO: ROSA VERO (LIGHT PINK) CON STELLINE --- */
-        background-color: #ffc0cb; /* Rosa classico */
-        
-        /* Pattern SVG con stelline bianche */
+        background-color: #ffc0cb; 
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150' viewBox='0 0 150 150'%3E%3Cstyle%3E.st%7Bfill:%23fff;opacity:0.8%7D.sh%7Bstroke:%23fff;stroke-width:2;stroke-opacity:0.8;stroke-linecap:round%7D%3C/style%3E%3Ccircle class='st' cx='20' cy='20' r='2'/%3E%3Ccircle class='st' cx='120' cy='40' r='3'/%3E%3Ccircle class='st' cx='70' cy='90' r='2'/%3E%3Ccircle class='st' cx='10' cy='110' r='3'/%3E%3Ccircle class='st' cx='140' cy='130' r='2'/%3E%3Ccircle class='st' cx='50' cy='140' r='1.5'/%3E%3Ccircle class='st' cx='90' cy='10' r='2'/%3E%3Cpath class='sh' d='M40,10 L80,30'/%3E%3Ccircle fill='%23fff' opacity='0.9' cx='80' cy='30' r='3.5'/%3E%3Cpath class='sh' d='M100,70 L130,100'/%3E%3Ccircle fill='%23fff' opacity='0.9' cx='130' cy='100' r='3'/%3E%3C/svg%3E");
         background-repeat: repeat;
         background-size: 150px 150px;
-        /* ------------------------------------------------ */
-
         display: flex;
         justify-content: center;
         align-items: center;
@@ -33,7 +27,7 @@
         transition: background-color 0.2s;
     }
 
-    /* EFFETTO DISCO PER BEDDRA.MP3 */
+    /* EFFETTO DISCO STROBOSCOPICO */
     @keyframes discoFlash {
         0% { background-color: #ff0000; }
         15% { background-color: #00ff00; }
@@ -46,259 +40,121 @@
     }
 
     body.disco-mode {
-        animation: discoFlash 0.2s infinite; /* Lampeggia veloce */
-        background-image: none; /* Rimuove le stelline per l'effetto pieno */
+        animation: discoFlash 0.1s infinite; 
+        background-image: none; 
     }
 
-    /* SFONDO ANIMATO (Cuori) */
-    .heart-bg {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-        pointer-events: none;
-        z-index: -1; 
-    }
-    
-    .heart-bg span {
-        position: absolute;
-        display: block;
-        width: 20px;
-        height: 20px;
-        background: rgba(255, 255, 255, 0.6); 
-        transform: rotate(45deg);
-        animation: animate 25s linear infinite;
-        bottom: -150px;
-    }
-    
-    @keyframes animate {
-        0% { transform: translateY(0) rotate(45deg) scale(0.3); opacity: 1; }
-        100% { transform: translateY(-100vh) rotate(45deg) scale(1.2); opacity: 0; }
+    /* SFONDO ANIMATO */
+    .heart-bg { position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; z-index: -1; }
+    .heart-bg span { position: absolute; display: block; width: 20px; height: 20px; background: rgba(255, 255, 255, 0.6); transform: rotate(45deg); animation: animate 25s linear infinite; bottom: -150px; }
+    @keyframes animate { 0% { transform: translateY(0) rotate(45deg) scale(0.3); opacity: 1; } 100% { transform: translateY(-100vh) rotate(45deg) scale(1.2); opacity: 0; } }
+
+    /* LUPO */
+    #wolfCharacter { position: fixed; bottom: -20px; right: -400px; height: 65vh; max-height: 550px; z-index: 50; transition: right 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s; pointer-events: none; opacity: 0; backface-visibility: hidden; transform: translateZ(0); }
+    body.game-active #wolfCharacter { right: -40px; opacity: 1; }
+
+    /* CARD */
+    .card { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); max-width: 420px; width: 90vw; min-height: 550px; position: relative; border: 3px solid #ffebf0; overflow: hidden; display: flex; flex-direction: column; align-items: center; z-index: 10; transition: all 0.8s ease; }
+    body.game-active .card { margin-right: 220px; overflow: visible; border-color: #ff4d88; }
+    body.game-active .card::before { content: ''; position: absolute; top: 150px; right: -30px; border-width: 15px 0 15px 30px; border-style: solid; border-color: transparent transparent transparent rgba(255, 255, 255, 0.95); z-index: 1; }
+    body.game-active .card::after { content: ''; position: absolute; top: 147px; right: -36px; border-width: 18px 0 18px 36px; border-style: solid; border-color: transparent transparent transparent #ff4d88; z-index: 0; }
+
+    /* CLASSE SOTTOSOPRA */
+    .card.upside-down {
+        transform: rotate(180deg);
     }
 
-    /* --- IL LUPO --- */
-    #wolfCharacter {
-        position: fixed;
-        bottom: -20px; 
-        right: -400px;
-        height: 65vh; 
-        max-height: 550px;
-        z-index: 50; 
-        transition: right 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s;
-        pointer-events: none; 
-        opacity: 0;
-        backface-visibility: hidden; 
-        transform: translateZ(0);
-    }
+    /* POPUP AVVISO */
+    #warningPopup { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 99999; display: none; justify-content: center; align-items: center; flex-direction: column; text-align: center; }
+    .warning-box { background: white; padding: 25px; border-radius: 15px; border: 4px solid red; max-width: 80%; }
+    .warning-btn { margin-top: 15px; padding: 10px 30px; background: red; color: white; border: none; font-size: 18px; cursor: pointer; border-radius: 5px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); transition: transform 0.1s; }
+    .warning-btn:active { transform: scale(0.95); background: #cc0000; }
 
-    body.game-active #wolfCharacter {
-        right: -40px; 
-        opacity: 1;
-    }
+    /* OVERLAY ERRORE */
+    #errorOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: transparent; display: none; justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(2px); }
+    #errorImage { max-width: 80%; max-height: 80%; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    .fade-out { opacity: 0; transition: opacity 0.5s ease; }
+    @keyframes popIn { 0% { transform: scale(0); } 100% { transform: scale(1); } }
 
-    /* --- LA CARD --- */
-    .card {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 30px;
-        border-radius: 30px;
-        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-        max-width: 420px;
-        width: 90vw;
-        min-height: 550px; 
-        position: relative;
-        border: 3px solid #ffebf0;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        z-index: 10; 
-        transition: all 0.5s ease;
-    }
-
-    body.game-active .card {
-        margin-right: 220px; 
-        overflow: visible; 
-        border-color: #ff4d88;
-    }
-
-    body.game-active .card::before {
-        content: ''; position: absolute;
-        top: 150px; right: -30px;
-        border-width: 15px 0 15px 30px;
-        border-style: solid;
-        border-color: transparent transparent transparent rgba(255, 255, 255, 0.95);
-        z-index: 1;
-    }
-    body.game-active .card::after {
-        content: ''; position: absolute;
-        top: 147px; right: -36px;
-        border-width: 18px 0 18px 36px;
-        border-style: solid;
-        border-color: transparent transparent transparent #ff4d88;
-        z-index: 0;
-    }
-
-    /* === OVERLAY ERRORE === */
-    #errorOverlay {
-        position: fixed;
-        top: 0; left: 0; width: 100%; height: 100%;
-        background: transparent; 
-        display: none; 
-        justify-content: center;
-        align-items: center;
-        z-index: 9999; 
-        backdrop-filter: blur(2px); 
-    }
-
-    #errorImage {
-        max-width: 80%;
-        max-height: 80%;
-        animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-
-    /* Classe per la dissolvenza in uscita */
-    .fade-out {
-        opacity: 0;
-        transition: opacity 0.5s ease;
-    }
-
-    @keyframes popIn {
-        0% { transform: scale(0); }
-        100% { transform: scale(1); }
-    }
-
-    /* === MOBILE === */
+    /* MEDIA QUERIES MOBILE */
     @media (max-width: 768px) {
-        body.game-active #wolfCharacter {
-            right: -75px !important; 
-            height: 35vh !important; 
-            bottom: 20px !important; 
-            opacity: 1;
-        }
-
-        body.game-active .card {
-            margin-right: 90px !important; 
-            width: 60vw !important; 
-            min-height: 380px !important; 
-            padding: 12px !important; 
-            margin-left: 5px !important; 
-        }
-
+        body.game-active #wolfCharacter { right: -75px !important; height: 35vh !important; bottom: 20px !important; opacity: 1; }
+        body.game-active .card { margin-right: 90px !important; width: 60vw !important; min-height: 380px !important; padding: 12px !important; margin-left: 5px !important; }
         body.game-active h2 { font-size: 16px !important; margin-bottom: 8px !important; }
         body.game-active .question-box { font-size: 13px !important; padding: 8px !important; }
         body.game-active button { padding: 6px 14px !important; font-size: 13px !important; }
         body.game-active #gameSection img { width: 40px !important; height: 40px !important; }
-
-        body.game-active .card::before {
-            top: auto !important;
-            bottom: 80px !important; 
-            right: -18px !important; 
-            border-width: 8px 0 8px 18px !important;
-        }
-
-        body.game-active .card::after {
-            top: auto !important;
-            bottom: 78px !important;
-            right: -22px !important;
-            border-width: 10px 0 10px 22px !important;
-        }
+        body.game-active .card::before { top: auto !important; bottom: 80px !important; right: -18px !important; border-width: 8px 0 8px 18px !important; }
+        body.game-active .card::after { top: auto !important; bottom: 78px !important; right: -22px !important; border-width: 10px 0 10px 22px !important; }
     }
 
-    .poop-trail {
-        position: absolute; font-size: 24px; pointer-events: none; z-index: 5; 
-        animation: fadeOutPoop 1.5s forwards;
-    }
-    @keyframes fadeOutPoop {
-        0% { opacity: 1; transform: scale(1); }
-        100% { opacity: 0; transform: scale(0.5) translateY(20px); }
-    }
+    .poop-trail { position: absolute; font-size: 24px; pointer-events: none; z-index: 5; animation: fadeOutPoop 1.5s forwards; }
+    @keyframes fadeOutPoop { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(0.5) translateY(20px); } }
 
-    img.main-photo {
-        width: 140px; height: 140px; object-fit: cover; border-radius: 50%;
-        margin-bottom: 20px; border: 5px solid #ff4d88;
-        box-shadow: 0 5px 15px rgba(255, 77, 136, 0.3); z-index: 20; transition: transform 0.3s;
-    }
-
+    img.main-photo { width: 140px; height: 140px; object-fit: cover; border-radius: 50%; margin-bottom: 20px; border: 5px solid #ff4d88; box-shadow: 0 5px 15px rgba(255, 77, 136, 0.3); z-index: 20; transition: transform 0.3s; }
     h1, h2 { color: #ff4d88; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); z-index: 20; width: 100%; }
     h1 { font-size: 24px; margin-bottom: 20px; }
     h2 { font-size: 20px; margin-bottom: 15px; }
 
-    button {
-        padding: 12px 24px; border-radius: 25px; border: none; font-size: 16px; font-weight: bold;
-        cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.15); transition: transform 0.2s, background 0.3s;
-    }
+    button { padding: 12px 24px; border-radius: 25px; border: none; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.15); transition: transform 0.2s, background 0.3s; }
     button:active { transform: scale(0.95); }
 
     .btn-proposal { position: absolute; }
-    #yesBtn {
-        background: linear-gradient(45deg, #ff4d88, #ff2e6e); color: white;
-        top: 380px; left: 20%; 
-        z-index: 1000; 
-        animation: pulse 2s infinite;
-        cursor: pointer;
-    }
+    #yesBtn { background: linear-gradient(45deg, #ff4d88, #ff2e6e); color: white; top: 380px; left: 20%; z-index: 1000; animation: pulse 2s infinite; cursor: pointer; }
     #yesBtn:hover { transform: scale(1.1); }
-    
-    #noBtn {
-        background-color: #f0f0f0; color: #555; 
-        top: 380px; left: 60%; 
-        z-index: 1000; 
-        transition: all 0.3s ease-out;
-        cursor: pointer;
-    }
-    
-    @keyframes pulse {
-        0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); }
-    }
+    #noBtn { background-color: #f0f0f0; color: #555; top: 380px; left: 60%; z-index: 1000; transition: all 0.3s ease-out; cursor: pointer; }
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-    .celebration {
-        display: none; margin-top: 10px; font-size: 18px; color: #ff2e6e; font-weight: bold;
-        animation: fadeIn 0.5s ease-in; z-index: 150; width: 100%;
-    }
+    .celebration { display: none; margin-top: 10px; font-size: 18px; color: #ff2e6e; font-weight: bold; animation: fadeIn 0.5s ease-in; z-index: 150; width: 100%; }
     .start-game-btn { margin-top: 15px; background: #ffcc00; color: #d35400; font-size: 18px; display: inline-block; }
 
     #gameSection, #finalSection { display: none; width: 100%; flex-direction: column; align-items: center; }
-
-    .question-box {
-        background: #fff0f5; padding: 15px; border-radius: 15px; width: 90%;
-        margin-bottom: 20px; border: 2px dashed #ffb6c1;
-    }
+    .question-box { background: #fff0f5; padding: 15px; border-radius: 15px; width: 90%; margin-bottom: 20px; border: 2px dashed #ffb6c1; }
     .options-grid { display: flex; flex-direction: column; gap: 10px; width: 100%; margin-bottom: 20px; }
     .option-btn { background: white; border: 2px solid #ddd; color: #555; width: 100%; }
     .option-btn:hover { background: #fff5f8; border-color: #ff4d88; }
     .option-btn.correct { background: #d4edda; border-color: #28a745; color: #155724; }
     .option-btn.wrong { background: #f8d7da; border-color: #dc3545; color: #721c24; animation: shake 0.5s; }
+    
+    .option-btn.transformed { background: #fff3cd; border-color: #ffc107; font-weight: bold; transform: scale(1.05); transition: all 0.3s ease; }
 
-    /* Stile speciale per la risposta che si trasforma */
-    .option-btn.transformed {
-        background: #fff3cd;
-        border-color: #ffc107;
-        font-weight: bold;
-        transform: scale(1.05);
-        transition: all 0.3s ease;
-    }
-
-    /* Stile per la risposta speciale siciliana */
-    .option-btn.beddra-btn {
-        background: linear-gradient(45deg, #FFD700, #ff8c00);
-        color: white;
-        border: 2px solid #B8860B;
-        font-weight: bold;
-        animation: popIn 0.5s;
-    }
-
-    .clue-box {
-        display: none; background: #fff3cd; border: 2px solid #ffeeba; color: #856404;
-        padding: 15px; border-radius: 10px; margin-bottom: 15px; width: 90%;
-        font-size: 16px; animation: slideDown 0.5s;
-    }
+    .clue-box { display: none; background: #fff3cd; border: 2px solid #ffeeba; color: #856404; padding: 15px; border-radius: 10px; margin-bottom: 15px; width: 90%; font-size: 16px; animation: slideDown 0.5s; }
     .next-level-btn { display: none; background: #28a745; color: white; }
+
+    /* STILI SLIDER SPECIALE */
+    .slider-wrapper { width: 100%; position: relative; padding: 20px 0; margin-bottom: 20px; }
+    .slider-labels { display: flex; justify-content: space-between; width: 80%; margin: 0 auto; font-weight: bold; color: #ff4d88; }
+    
+    /* Il trucco: l'input è più largo del contenitore visibile, ma l'overflow è nascosto a metà */
+    input[type=range].love-slider {
+        -webkit-appearance: none;
+        width: 100%; /* Larghezza normale */
+        background: transparent;
+    }
+    
+    input[type=range].love-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        height: 25px;
+        width: 25px;
+        border-radius: 50%;
+        background: #ff2e6e;
+        cursor: pointer;
+        margin-top: -8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+
+    input[type=range].love-slider::-webkit-slider-runnable-track {
+        width: 100%;
+        height: 10px;
+        cursor: pointer;
+        /* Gradiente che si ferma al 75% per creare l'effetto "fine" */
+        background: linear-gradient(to right, #ffb6c1 0%, #ff4d88 75%, transparent 75%);
+        border-radius: 5px;
+    }
 
     @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } 100% { transform: translateX(0); } }
     @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
 </style>
 </head>
 
@@ -315,6 +171,14 @@
 <audio id="errorSound" src="auu.mp3" preload="auto"></audio>
 <div id="errorOverlay">
     <img id="errorImage" src="noo.png" alt="NOO!">
+</div>
+
+<div id="warningPopup">
+    <div class="warning-box">
+        <h2 style="color:red; margin-top:0;">⚠️ ATTENZIONE ⚠️</h2>
+        <p style="font-size:18px; font-weight:bold;">Se soffri di schizofrenia skippa questa parte con le luci stroboscopiche!</p>
+        <button class="warning-btn" onclick="fakeOkButton()">OK</button>
+    </div>
 </div>
 
 <img src="lupocut.png" id="wolfCharacter" alt="Lupo Cowboy">
@@ -376,39 +240,52 @@ const audioFiles = [
     'audio3.mp3'
 ]; 
 
-// --- DATI DELLA CACCIA AL TESORO ---
+// --- DATI DELLA CACCIA AL TESORO (7 DOMANDE) ---
 const questions = [
-    {
+    {   // 1. CLASSICA
         question: "La sera in cui ci siamo baciati la prima volta perchè volevo salire da te??",
         options: ["I piedi", "Per fare segso", "Perchè avevo sete", "Per le coccole"],
         correct: 3, 
         clue: "Cerca dove tieni le scarpe... c'è un bigliettino nascosto lì! 👟"
     },
-    {
-        // LIVELLO SPECIALE "I PIEDI"
+    {   // 2. PIEDI (Trick)
         question: "Qual è il mio piatto preferito che cucini tu?",
         options: ["pasta col tonno", "insalata e limone", "macinato bollito", "i broccoli"],
-        correct: -1, // INIZIALMENTE NESSUNA È GIUSTA!
+        correct: -1, 
         clue: "Controlla dentro il frigo, vicino al latte! 🥛"
     },
-    {
+    {   // 3. WIKIPEDIA (Nuova)
+        question: "Chi è che ha SEMPRE ragione nelle discussioni?",
+        options: ["Tu (Antonella) 🙄", "Io (Giulio) 😎"],
+        correct: 1, 
+        clue: "Guarda dietro la TV in salotto! 📺",
+        type: "redirect" 
+    },
+    {   // 4. PELUCHE (Relax)
         question: "Come si chiama il nostro peluche preferito? 🧸",
         options: ["Bubu", "Orso", "Pippo", "Stitch"],
         correct: 3, 
         clue: "Vai in bagno e guarda dietro lo specchio! 🚿"
     },
-    {
-        // LIVELLO SPECIALE "BEDDRA"
+    {   // 5. SOTTOSOPRA (Nuova)
+        question: "Saresti disposta a ribaltare il mondo per me? 🙃",
+        options: ["NO", "FORSE", "MAI", "SI CERTO"],
+        correct: 3,
+        clue: "Cerca sotto il divano! 🛋️",
+        type: "upside_down"
+    },
+    {   // 6. BEDDRA (Strobo)
         question: "Giulio è il miglior fidanzato a fare i regali??",
         options: ["SI", "...si", "NO", "forse"],
-        correct: -1, // TUTTE SBAGLIATE ALL'INIZIO
+        correct: -1, 
         clue: "Cerca sotto il tuo cuscino! 🛏️"
     },
-    {
+    {   // 7. SLIDER (Finale)
         question: "Quanto ti amo da 1 a 10? 📈",
-        options: ["10", "100", "Infinito 🚀", "Millemila"],
-        correct: 2, 
-        clue: "L'ultimo indizio è... addosso a me! Vieni a prendertelo! ❤️"
+        options: [], // Vuoto, useremo lo slider
+        correct: 999, // Speciale
+        clue: "L'ultimo indizio è... addosso a me! Vieni a prendertelo! ❤️",
+        type: "slider"
     }
 ];
 
@@ -424,6 +301,7 @@ const card = document.getElementById("mainCard");
 const wolf = document.getElementById("wolfCharacter");
 const errorOverlay = document.getElementById("errorOverlay");
 const errorSound = document.getElementById("errorSound");
+const warningPopup = document.getElementById("warningPopup");
 
 // Variabili di Stato
 let currentLevel = 0;
@@ -431,22 +309,19 @@ let currentAudio = null;
 let talkingInterval = null; 
 let stopTimeout = null; 
 let lastAudioIndex = -1; 
-let wrongAnswersCount = 0; // Contatore per la logica speciale
+let wrongAnswersCount = 0; 
+let beddraAudio = null; 
 
 // --- GESTIONE KILL SWITCH ---
 function stopEverything() {
-    // 1. Ferma l'audio del lupo
     if (currentAudio) {
         currentAudio.pause();
         currentAudio.currentTime = 0; 
         currentAudio.onplay = null; 
         currentAudio.onended = null;
     }
-    // 2. Ferma i timer
     if (talkingInterval) clearInterval(talkingInterval);
     if (stopTimeout) clearTimeout(stopTimeout);
-    
-    // 3. Resetta bocca
     wolf.src = "lupocut.png";
 }
 
@@ -470,9 +345,9 @@ function launchConfetti() {
 }
 
 function startGame() {
-    // Reset dello stato delle domande speciali
+    // Reset stati
     questions[1].correct = -1;
-    questions[3].correct = -1;
+    questions[5].correct = -1;
 
     document.body.classList.add('game-active');
     setTimeout(() => {
@@ -482,9 +357,9 @@ function startGame() {
     }, 300); 
 }
 
-// --- LOGICA PARLATO SINCRONIZZATO E ADATTIVO ---
+// --- LOGICA PARLATO ---
 function startTalking() {
-    stopEverything(); // Pulizia preliminare
+    stopEverything(); 
 
     if (audioFiles.length === 0) return;
 
@@ -525,15 +400,17 @@ function startTalking() {
 
 function loadQuestion() {
     const q = questions[currentLevel];
-    wrongAnswersCount = 0; // Reset contatore errori per ogni livello
+    wrongAnswersCount = 0; 
     
-    // Assicuriamoci che il testo sia "i broccoli" quando si carica la domanda, prima della trasformazione
-    let optionsToShow = [...q.options];
-    if (currentLevel === 1) {
-        questions[1].correct = -1;
-    }
-    if (currentLevel === 3) {
-        questions[3].correct = -1; // Reset per il livello 4
+    // Reset specifici
+    if (currentLevel === 1) questions[1].correct = -1;
+    if (currentLevel === 5) questions[5].correct = -1;
+    
+    // Gestione Sottosopra
+    if (q.type === "upside_down") {
+        card.classList.add("upside-down");
+    } else {
+        card.classList.remove("upside-down");
     }
 
     document.getElementById("levelTitle").innerText = "Livello " + (currentLevel + 1);
@@ -544,104 +421,151 @@ function loadQuestion() {
     const container = document.getElementById("optionsContainer");
     container.innerHTML = ""; 
 
-    optionsToShow.forEach((opt, index) => {
-        const btn = document.createElement("button");
-        btn.innerText = opt;
-        btn.className = "option-btn";
-        btn.onclick = () => checkAnswer(index, btn);
-        container.appendChild(btn);
-    });
+    // GESTIONE SLIDER
+    if (q.type === "slider") {
+        container.innerHTML = `
+            <div class="slider-wrapper">
+                <div class="slider-labels">
+                    <span>0</span>
+                    <span style="margin-right:25%">100</span>
+                </div>
+                <input type="range" id="loveRange" class="love-slider" min="0" max="130" value="0">
+            </div>
+            <button class="option-btn" onclick="checkSlider()">Conferma</button>
+        `;
+    } 
+    // GESTIONE PULSANTI NORMALI
+    else {
+        q.options.forEach((opt, index) => {
+            const btn = document.createElement("button");
+            btn.innerText = opt;
+            btn.className = "option-btn";
+            btn.onclick = () => checkAnswer(index, btn);
+            container.appendChild(btn);
+        });
+    }
 
     startTalking();
+}
+
+// --- GESTIONE SLIDER ---
+function checkSlider() {
+    const slider = document.getElementById("loveRange");
+    const val = parseInt(slider.value);
+    
+    // Se il valore è nell'area visibile (0-100 circa)
+    if (val <= 100) {
+        triggerError(document.querySelector("#optionsContainer button")); // Usa il bottone conferma per l'animazione
+    } else {
+        // Se ha trascinato nel vuoto (>100)
+        showClue();
+    }
+}
+
+// --- GESTIONE WIKIPEDIA ---
+function handleRedirect() {
+    // Apre Delirio di onnipotenza
+    window.open("https://it.wikipedia.org/wiki/Delirio_di_onnipotenza", "_blank");
+    // Conta come errore nel gioco
+    triggerError(null); 
 }
 
 // --- GESTIONE SPECIALE BEDDRA ---
 function handleSpecialGiulioAnswer(btn) {
     btn.classList.add("correct");
-    stopEverything(); // Zittisci il lupo
+    stopEverything(); 
     
-    // Play Beddra Audio
-    const beddraAudio = new Audio('beddra.mp3');
+    beddraAudio = new Audio('beddra.mp3');
     beddraAudio.play();
-    
-    // Attiva modalità Disco
     document.body.classList.add('disco-mode');
-    
-    // Quando finisce l'audio
+    warningPopup.style.display = 'flex';
+
     beddraAudio.onended = () => {
-        document.body.classList.remove('disco-mode');
-        
-        // Procedura standard successo
-        const q = questions[currentLevel];
-        document.getElementById("clueText").innerText = q.clue;
-        document.getElementById("clueBox").style.display = "block";
-        document.getElementById("nextBtn").style.display = "inline-block";
-        launchConfetti();
+        document.body.classList.remove('disco-mode'); 
+        warningPopup.style.display = 'none'; 
+        showClue();
     };
 }
 
-// --- GESTIONE RISPOSTA E ERRORE ---
+function fakeOkButton() {
+    console.log("Cliccato OK, ma è una trappola!");
+}
+
+// --- FUNZIONE COMUNE PER MOSTRARE INDIZIO ---
+function showClue() {
+    const q = questions[currentLevel];
+    document.getElementById("clueText").innerText = q.clue;
+    document.getElementById("clueBox").style.display = "block";
+    document.getElementById("nextBtn").style.display = "inline-block";
+    launchConfetti(); 
+}
+
+// --- FUNZIONE COMUNE ERRORE ---
+function triggerError(btnElement) {
+    if(btnElement) btnElement.classList.add("wrong");
+    stopEverything(); 
+    errorOverlay.classList.remove('fade-out');
+    errorOverlay.style.display = 'flex';
+    errorSound.currentTime = 0;
+    errorSound.play();
+    errorSound.onended = function() {
+        errorOverlay.classList.add('fade-out');
+        setTimeout(() => { errorOverlay.style.display = 'none'; }, 500); 
+    };
+}
+
+// --- GESTIONE RISPOSTA GENERALE ---
 function checkAnswer(selectedIndex, btnElement) {
     const q = questions[currentLevel];
 
+    // Gestione Wikipedia (Indice 0 è "Tu" -> Errore redirect)
+    if (q.type === "redirect" && selectedIndex === 0) {
+        handleRedirect();
+        if(btnElement) btnElement.classList.add("wrong");
+        return;
+    }
+
     if (selectedIndex === q.correct) {
-        // --- RISPOSTA GIUSTA STANDARD ---
+        // Giusto
         btnElement.classList.add("correct");
         const allBtns = document.querySelectorAll(".option-btn");
         allBtns.forEach(b => b.disabled = true);
-        document.getElementById("clueText").innerText = q.clue;
-        document.getElementById("clueBox").style.display = "block";
-        document.getElementById("nextBtn").style.display = "inline-block";
-        launchConfetti(); 
+        showClue();
     } else {
-        // --- RISPOSTA SBAGLIATA ---
-        
-        btnElement.classList.add("wrong");
-        stopEverything(); // 1. Zittisci il lupo
-        
-        // 2. Mostra Overlay e suona errore
-        errorOverlay.classList.remove('fade-out');
-        errorOverlay.style.display = 'flex';
-        
-        errorSound.currentTime = 0;
-        errorSound.play();
+        // Sbagliato
+        triggerError(btnElement);
 
-        // 3. LOGICHE SPECIALI
-        
-        // A) LIVELLO "PIEDI" (Livello 1 / Indice array 1)
+        // LOGICA PIEDI (Lv 1)
         if (currentLevel === 1) {
             const wrongButtons = document.querySelectorAll('#optionsContainer .option-btn.wrong');
             if (wrongButtons.length === 4) {
                 setTimeout(() => {
                     const allBtns = document.querySelectorAll('#optionsContainer .option-btn');
-                    const feetBtn = allBtns[3]; // Indice 3 è "i broccoli"
+                    const feetBtn = allBtns[3]; 
                     feetBtn.innerHTML = "i tuoi piedi 🦶";
                     questions[1].correct = 3;
                 }, 200);
             }
         }
 
-        // B) LIVELLO "BEDDRA" (Livello 4 / Indice array 3)
-        if (currentLevel === 3) {
+        // LOGICA BEDDRA (Lv 5)
+        if (currentLevel === 5) {
             wrongAnswersCount++;
             if (wrongAnswersCount === 2) {
-                // Aggiungi pulsante speciale dopo 2 errori
                 const container = document.getElementById("optionsContainer");
+                const allButtons = container.children;
                 const specialBtn = document.createElement("button");
                 specialBtn.innerText = "Ie chi viristi uancora beddra";
-                specialBtn.className = "option-btn beddra-btn"; // Classe speciale
+                specialBtn.className = "option-btn"; 
                 specialBtn.onclick = () => handleSpecialGiulioAnswer(specialBtn);
-                container.appendChild(specialBtn);
+                
+                if (allButtons.length >= 2) {
+                    container.insertBefore(specialBtn, allButtons[2]);
+                } else {
+                    container.appendChild(specialBtn);
+                }
             }
         }
-
-        // 4. Quando l'audio errore finisce, chiudi
-        errorSound.onended = function() {
-            errorOverlay.classList.add('fade-out');
-            setTimeout(() => {
-                errorOverlay.style.display = 'none';
-            }, 500); 
-        };
     }
 }
 
@@ -676,14 +600,11 @@ function moveNoButton() {
     const currentLeft = noBtn.offsetLeft;
     const currentTop = noBtn.offsetTop;
     dropPoop(currentLeft + 20, currentTop + 10);
-
     const maxX = card.clientWidth - noBtn.offsetWidth - 30;
     const maxY = card.clientHeight - noBtn.offsetHeight - 30;
     const safeZoneTop = 280; 
-
     const newX = Math.max(20, Math.random() * maxX);
     let newY = Math.max(safeZoneTop, Math.random() * maxY);
-
     noBtn.style.left = newX + "px";
     noBtn.style.top = newY + "px";
 }
