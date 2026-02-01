@@ -10,17 +10,17 @@
     body {
         margin: 0;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(135deg, #fdfbfb, #ebedee); /* Sfondo più neutro per far risaltare i cuori */
+        background: linear-gradient(135deg, #fdfbfb, #ebedee);
         display: flex;
         justify-content: center;
         align-items: center;
         min-height: 100vh;
         text-align: center;
         overflow: hidden;
-        position: relative; /* Necessario per i cuori fluttuanti */
+        position: relative;
     }
 
-    /* Animazione cuori fluttuanti nello sfondo */
+    /* Sfondo animato */
     .heart-bg {
         position: absolute;
         width: 100%;
@@ -63,14 +63,14 @@
     }
 
     .card {
-        background: rgba(255, 255, 255, 0.95); /* Leggermente trasparente */
+        background: rgba(255, 255, 255, 0.95);
         padding: 50px;
         border-radius: 30px;
         box-shadow: 0 15px 35px rgba(0,0,0,0.1);
         max-width: 420px;
-        width: 90%; /* Si adatta meglio ai telefoni */
+        width: 90%;
         position: relative;
-        border: 3px solid #ffebf0; /* Un bordo rosa tenue */
+        border: 3px solid #ffebf0;
         transition: transform 0.3s ease;
     }
     
@@ -81,7 +81,7 @@
     img {
         width: 140px;
         height: 140px;
-        object-fit: cover; /* Ritaglia l'immagine in un cerchio perfetto */
+        object-fit: cover;
         border-radius: 50%;
         margin-bottom: 25px;
         border: 5px solid #ff4d88;
@@ -95,12 +95,12 @@
         text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
     }
 
+    /* --- MODIFICHE QUI PER EVITARE SOVRAPPOSIZIONE --- */
     .buttons {
         position: relative;
         height: 100px;
-        display: flex;
-        justify-content: center;
-        gap: 20px; /* Spazio tra i bottoni */
+        width: 100%;
+        /* Rimuoviamo flex per usare posizionamento assoluto preciso */
     }
 
     button {
@@ -111,11 +111,12 @@
         font-weight: bold;
         cursor: pointer;
         transition: all 0.3s ease;
-        position: relative; /* Cambiato da absolute per gestire meglio il layout */
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        position: absolute; /* Entrambi assoluti per controllo totale */
+        bottom: 20px;
+        transform: translateX(-50%); /* Centra il bottone rispetto al suo punto left */
+        white-space: nowrap; /* Impedisce al testo di andare a capo */
     }
     
-    /* Cursore a cuore sui bottoni */
     button:hover {
         cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'  width='40' height='48' viewport='0 0 100 100' style='fill:black;font-size:24px;'><text y='50%'>❤️</text></svg>") 16 0, auto;
     }
@@ -123,26 +124,28 @@
     #yesBtn {
         background: linear-gradient(45deg, #ff4d88, #ff2e6e);
         color: white;
-        /* Animazione pulsante */
+        left: 30%; /* Posizionato a sinistra */
         animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-        0% { transform: scale(1); box-shadow: 0 4px 10px rgba(255, 77, 136, 0.3); }
-        50% { transform: scale(1.05); box-shadow: 0 8px 20px rgba(255, 77, 136, 0.5); }
-        100% { transform: scale(1); box-shadow: 0 4px 10px rgba(255, 77, 136, 0.3); }
-    }
-
-    #yesBtn:hover {
-        transform: scale(1.1) !important; /* Sovrascrive l'animazione al passaggio del mouse */
-        background: linear-gradient(45deg, #ff2e6e, #ff0a4d);
+        z-index: 10;
     }
 
     #noBtn {
         background-color: #f0f0f0;
         color: #555;
-        position: absolute; /* Il NO rimane assoluto per poter "scappare" */
-        left: 60%; /* Posizione iniziale */
+        left: 70%; /* Posizionato a destra (ben lontano dal 30%) */
+        z-index: 10;
+    }
+    /* ------------------------------------------------ */
+
+    @keyframes pulse {
+        0% { transform: translateX(-50%) scale(1); box-shadow: 0 4px 10px rgba(255, 77, 136, 0.3); }
+        50% { transform: translateX(-50%) scale(1.05); box-shadow: 0 8px 20px rgba(255, 77, 136, 0.5); }
+        100% { transform: translateX(-50%) scale(1); box-shadow: 0 4px 10px rgba(255, 77, 136, 0.3); }
+    }
+
+    #yesBtn:hover {
+        transform: translateX(-50%) scale(1.1) !important;
+        background: linear-gradient(45deg, #ff2e6e, #ff0a4d);
     }
     
     #noBtn:hover {
@@ -173,8 +176,6 @@
     <span style="left: 50%; animation-duration: 20s; animation-delay: 0s;"></span>
     <span style="left: 70%; animation-duration: 17s; animation-delay: 2s; scale: 1.1;"></span>
     <span style="left: 90%; animation-duration: 19s; animation-delay: 4s; scale: 0.9;"></span>
-    <span style="left: 20%; animation-duration: 22s; animation-delay: 5s;"></span>
-    <span style="left: 80%; animation-duration: 16s; animation-delay: 6s;"></span>
 </div>
 
 <div class="card">
@@ -200,15 +201,11 @@ const celebration = document.getElementById("celebrationText");
 const mainImage = document.getElementById("mainImage");
 const buttonsContainer = document.querySelector(".buttons");
 
-// Quando clicca SÌ
 yesBtn.addEventListener("click", () => {
     celebration.style.display = "block";
-    mainImage.src = "https://i.imgur.com/jRf6Y7R.png"; // immagine festeggiamento
-    
-    // Nascondi i bottoni
+    mainImage.src = "https://i.imgur.com/jRf6Y7R.png";
     buttonsContainer.style.display = "none";
 
-    // Esplosione di coriandoli a forma di cuore!
     var duration = 3 * 1000;
     var animationEnd = Date.now() + duration;
     var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
@@ -219,38 +216,32 @@ yesBtn.addEventListener("click", () => {
 
     var interval = setInterval(function() {
       var timeLeft = animationEnd - Date.now();
-
-      if (timeLeft <= 0) {
-        return clearInterval(interval);
-      }
-
+      if (timeLeft <= 0) return clearInterval(interval);
       var particleCount = 50 * (timeLeft / duration);
-      // since particles fall down, start a bit higher than random
       confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }, shapes: ['heart'], colors: ['#ff4d88', '#ff2e6e', '#ffffff'] }));
       confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }, shapes: ['heart'], colors: ['#ff4d88', '#ff2e6e', '#ffffff'] }));
     }, 250);
 });
 
-// Funzione per far scappare il bottone NO
 function moveNoButton() {
     const card = document.querySelector(".card");
     const cardRect = card.getBoundingClientRect();
     const btnRect = noBtn.getBoundingClientRect();
 
-    // Calcola i limiti all'interno della card, con un po' di margine
-    const maxX = cardRect.width - btnRect.width - 40; // 40px di margine
+    const maxX = cardRect.width - btnRect.width - 40; 
     const maxY = cardRect.height - btnRect.height - 40;
 
-    const newX = Math.max(20, Math.random() * maxX); // Minimo 20px dal bordo
+    const newX = Math.max(20, Math.random() * maxX);
     const newY = Math.max(20, Math.random() * maxY);
 
+    // Importante: quando scappa, dobbiamo resettare la trasformazione per posizionarlo preciso
+    noBtn.style.transform = "none"; 
     noBtn.style.left = newX + "px";
     noBtn.style.top = newY + "px";
 }
 
-// Quando il mouse si avvicina o prova a cliccare il NO
 noBtn.addEventListener("mouseenter", moveNoButton);
-noBtn.addEventListener("click", moveNoButton); // Per chi usa il touch screen
+noBtn.addEventListener("click", moveNoButton);
 </script>
 
 </body>
