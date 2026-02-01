@@ -72,10 +72,22 @@
         position: relative;
         border: 3px solid #ffebf0;
         transition: transform 0.3s ease;
+        /* Importante per contenere la scia */
+        overflow: hidden; 
     }
     
-    .card:hover {
-        transform: translateY(-5px);
+    /* Stile per la scia di cacca */
+    .poop-trail {
+        position: absolute;
+        font-size: 24px;
+        pointer-events: none; /* Non deve bloccare i click */
+        z-index: 1; /* Sta sotto i bottoni */
+        animation: fadeOutPoop 1.5s forwards;
+    }
+
+    @keyframes fadeOutPoop {
+        0% { opacity: 1; transform: scale(1); }
+        100% { opacity: 0; transform: scale(0.5) translateY(20px); }
     }
 
     img {
@@ -86,6 +98,7 @@
         margin-bottom: 25px;
         border: 5px solid #ff4d88;
         box-shadow: 0 5px 15px rgba(255, 77, 136, 0.3);
+        position: relative; z-index: 2;
     }
 
     h1 {
@@ -93,14 +106,14 @@
         margin-bottom: 35px;
         color: #ff4d88;
         text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        position: relative; z-index: 2;
     }
 
-    /* --- MODIFICHE QUI PER EVITARE SOVRAPPOSIZIONE --- */
     .buttons {
         position: relative;
         height: 100px;
         width: 100%;
-        /* Rimuoviamo flex per usare posizionamento assoluto preciso */
+        z-index: 10;
     }
 
     button {
@@ -110,11 +123,10 @@
         font-size: 18px;
         font-weight: bold;
         cursor: pointer;
-        transition: all 0.3s ease;
-        position: absolute; /* Entrambi assoluti per controllo totale */
+        position: absolute;
         bottom: 20px;
-        transform: translateX(-50%); /* Centra il bottone rispetto al suo punto left */
-        white-space: nowrap; /* Impedisce al testo di andare a capo */
+        white-space: nowrap;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
     
     button:hover {
@@ -124,18 +136,22 @@
     #yesBtn {
         background: linear-gradient(45deg, #ff4d88, #ff2e6e);
         color: white;
-        left: 30%; /* Posizionato a sinistra */
+        left: 30%;
+        transform: translateX(-50%);
         animation: pulse 2s infinite;
-        z-index: 10;
+        z-index: 20;
+        transition: all 0.3s ease;
     }
 
     #noBtn {
         background-color: #f0f0f0;
         color: #555;
-        left: 70%; /* Posizionato a destra (ben lontano dal 30%) */
-        z-index: 10;
+        left: 70%;
+        transform: translateX(-50%);
+        z-index: 20;
+        /* Transizione più lunga e "scivolosa" */
+        transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1); 
     }
-    /* ------------------------------------------------ */
 
     @keyframes pulse {
         0% { transform: translateX(-50%) scale(1); box-shadow: 0 4px 10px rgba(255, 77, 136, 0.3); }
@@ -159,6 +175,7 @@
         color: #ff2e6e;
         font-weight: bold;
         animation: fadeIn 0.5s ease-in;
+        position: relative; z-index: 2;
     }
     
     @keyframes fadeIn {
@@ -185,7 +202,7 @@
 
     <div class="buttons">
         <button id="yesBtn">Sì, certo! ❤️</button>
-        <button id="noBtn">No 🙈</button>
+        <button id="noBtn">No 💩</button>
     </div>
 
     <div class="celebration" id="celebrationText">
@@ -200,11 +217,15 @@ const yesBtn = document.getElementById("yesBtn");
 const celebration = document.getElementById("celebrationText");
 const mainImage = document.getElementById("mainImage");
 const buttonsContainer = document.querySelector(".buttons");
+const card = document.querySelector(".card");
 
 yesBtn.addEventListener("click", () => {
     celebration.style.display = "block";
     mainImage.src = "https://i.imgur.com/jRf6Y7R.png";
     buttonsContainer.style.display = "none";
+
+    // Rimuovi eventuali cacche rimaste quando si clicca sì
+    document.querySelectorAll('.poop-trail').forEach(el => el.remove());
 
     var duration = 3 * 1000;
     var animationEnd = Date.now() + duration;
@@ -223,24 +244,55 @@ yesBtn.addEventListener("click", () => {
     }, 250);
 });
 
+// Funzione per creare la scia
+function dropPoop(x, y) {
+    const poop = document.createElement('span');
+    poop.textContent = '💩';
+    poop.classList.add('poop-trail');
+    // Centra la cacca rispetto al punto centrale del bottone
+    poop.style.left = (x - 12) + 'px'; // 12 è metà della grandezza del font della cacca
+    poop.style.top = (y - 12) + 'px';
+    card.appendChild(poop);
+
+    // Rimuovi l'elemento dal DOM dopo che è svanito per non intasare la pagina
+    setTimeout(() => {
+        poop.remove();
+    }, 1500);
+}
+
 function moveNoButton() {
-    const card = document.querySelector(".card");
     const cardRect = card.getBoundingClientRect();
     const btnRect = noBtn.getBoundingClientRect();
 
-    const maxX = cardRect.width - btnRect.width - 40; 
-    const maxY = cardRect.height - btnRect.height - 40;
+    // 1. Calcola dove si trova il bottone ORA rispetto alla card
+    const currentCenterX = (btnRect.left + btnRect.width / 2) - cardRect.left;
+    const currentCenterY = (btnRect.top + btnRect.height / 2) - cardRect.top;
+    
+    // 2. Lascia la scia nel punto corrente PRIMA di muoversi
+    dropPoop(currentCenterX, currentCenterY);
 
-    const newX = Math.max(20, Math.random() * maxX);
-    const newY = Math.max(20, Math.random() * maxY);
+    // 3. Calcola la nuova posizione sicura
+    const margin = 25; // Margine di sicurezza dai bordi
+    const maxX = cardRect.width - btnRect.width - margin;
+    const maxY = cardRect.height - btnRect.height - margin;
 
-    // Importante: quando scappa, dobbiamo resettare la trasformazione per posizionarlo preciso
-    noBtn.style.transform = "none"; 
+    // Assicura che non vada troppo in alto sopra il testo
+    const minY = cardRect.height * 0.25; 
+
+    const newX = Math.max(margin, Math.random() * maxX);
+    const newY = Math.max(minY, Math.random() * maxY);
+
+    // Resetta le proprietà che potrebbero andare in conflitto
+    noBtn.style.bottom = "auto";
+    noBtn.style.transform = "none"; // Rimuove il centraggio iniziale
+    
+    // Applica le nuove coordinate
     noBtn.style.left = newX + "px";
     noBtn.style.top = newY + "px";
 }
 
-noBtn.addEventListener("mouseenter", moveNoButton);
+// Usa mouseover per una reazione più rapida su desktop
+noBtn.addEventListener("mouseover", moveNoButton);
 noBtn.addEventListener("click", moveNoButton);
 </script>
 
