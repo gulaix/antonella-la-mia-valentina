@@ -60,7 +60,6 @@
         transition: right 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s;
         pointer-events: none; 
         opacity: 0;
-        /* Ottimizzazione rendering per evitare flickering */
         backface-visibility: hidden; 
         transform: translateZ(0);
     }
@@ -446,18 +445,19 @@ const wolf = document.getElementById("wolfCharacter");
 
 // Variabili di Stato
 let currentLevel = 0;
-let currentAudio = null; // Oggetto Audio corrente
-let talkingInterval = null; // Interval per l'animazione bocca
-let stopTimeout = null; // Timeout per fermare il tutto
+let currentAudio = null; 
+let talkingInterval = null; 
+let stopTimeout = null; 
 let lastAudioIndex = -1; 
 
 // --- GESTIONE KILL SWITCH (FERMA TUTTO) ---
-// Questa funzione è fondamentale: resetta qualsiasi suono/animazione attivo
 function stopEverything() {
     // 1. Ferma l'audio se sta suonando
     if (currentAudio) {
         currentAudio.pause();
         currentAudio.currentTime = 0; // Riavvolgi
+        // Rimuoviamo l'evento onplay vecchio per sicurezza
+        currentAudio.onplay = null;
     }
     // 2. Cancella i timer
     if (talkingInterval) clearInterval(talkingInterval);
@@ -501,40 +501,43 @@ function startTalking() {
     // PRIMA DI TUTTO: RESET TOTALE
     stopEverything();
 
+    // Se non ci sono file audio, non fare nulla
+    if (audioFiles.length === 0) return;
+
     // 1. Scegli Audio Random (diverso dal precedente)
-    if (audioFiles.length > 0) {
-        let newIndex;
-        if (audioFiles.length > 1) {
-            do { newIndex = Math.floor(Math.random() * audioFiles.length); } 
-            while (newIndex === lastAudioIndex);
-        } else {
-            newIndex = 0; 
-        }
-        lastAudioIndex = newIndex;
-        
-        currentAudio = new Audio(audioFiles[newIndex]);
-        // Riproduci Audio
-        currentAudio.play().catch(e => console.log("Audio autoplay bloccato:", e));
+    let newIndex;
+    if (audioFiles.length > 1) {
+        do { newIndex = Math.floor(Math.random() * audioFiles.length); } 
+        while (newIndex === lastAudioIndex);
+    } else {
+        newIndex = 0; 
     }
+    lastAudioIndex = newIndex;
+    
+    currentAudio = new Audio(audioFiles[newIndex]);
 
-    // 2. Calcola durata random (4-8 sec)
-    const duration = Math.random() * (8000 - 4000) + 4000;
+    // 2. IMPORTANTE: Aspetta che l'audio parta DAVVERO prima di muovere la bocca
+    currentAudio.onplay = function() {
+        // ORA parte l'animazione bocca
+        let isOpen = false;
+        talkingInterval = setInterval(() => {
+            if (isOpen) {
+                wolf.src = "lupocut.png"; // Chiusa
+            } else {
+                wolf.src = "lupocut1.png"; // Aperta
+            }
+            isOpen = !isOpen;
+        }, 120); // 120ms velocità cambio
 
-    // 3. Fai partire l'animazione bocca INSIEME all'audio
-    let isOpen = false;
-    talkingInterval = setInterval(() => {
-        if (isOpen) {
-            wolf.src = "lupocut.png"; // Chiusa
-        } else {
-            wolf.src = "lupocut1.png"; // Aperta
-        }
-        isOpen = !isOpen;
-    }, 120); // 120ms velocità cambio (PIÙ VELOCE)
+        // E parte il timer per fermarsi
+        const duration = Math.random() * (8000 - 4000) + 4000;
+        stopTimeout = setTimeout(() => {
+            stopEverything(); // Spegne audio e bocca insieme
+        }, duration);
+    };
 
-    // 4. Programma la fine sincronizzata
-    stopTimeout = setTimeout(() => {
-        stopEverything(); // Spegne audio e bocca insieme
-    }, duration);
+    // 3. Lancia il play (che farà scattare onplay)
+    currentAudio.play().catch(e => console.log("Audio autoplay bloccato:", e));
 }
 
 function loadQuestion() {
@@ -556,7 +559,7 @@ function loadQuestion() {
         container.appendChild(btn);
     });
 
-    // START PARLATO (Ora che la domanda è a schermo)
+    // START PARLATO
     startTalking();
 }
 
@@ -582,9 +585,12 @@ function nextLevel() {
 
     currentLevel++;
     if (currentLevel < questions.length) {
-        loadQuestion(); // Carica nuova domanda e fa partire nuovo parlato
+        loadQuestion(); 
     } else {
         document.body.classList.remove('game-active');
+        
+        stopEverything();
+        
         gameSection.style.display = "none";
         finalSection.style.display = "flex";
         launchConfetti();
