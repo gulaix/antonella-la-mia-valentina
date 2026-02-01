@@ -31,68 +31,45 @@
         transition: background-color 0.2s;
     }
 
-    /* === NUOVA ANIMAZIONE STROBO POTENTE (RGB + BIANCO) === */
-    @keyframes superStrobe {
-        0%   { background-color: rgba(255, 0, 0, 0.4); }   /* Rosso */
-        15%  { background-color: rgba(255, 255, 255, 0.8); } /* FLASH BIANCO */
-        30%  { background-color: rgba(0, 0, 255, 0.4); }   /* Blu */
-        45%  { background-color: rgba(255, 255, 0, 0.4); } /* Giallo */
-        60%  { background-color: rgba(255, 255, 255, 0.8); } /* FLASH BIANCO */
-        75%  { background-color: rgba(0, 255, 0, 0.4); }   /* Verde */
-        90%  { background-color: rgba(255, 0, 255, 0.4); } /* Viola */
-        100% { background-color: rgba(0, 255, 255, 0.4); } /* Ciano */
+    /* === ANIMAZIONI DISCO === */
+    @keyframes discoFlash {
+        0% { background-color: #ff0000; }
+        15% { background-color: #00ff00; }
+        30% { background-color: #0000ff; }
+        45% { background-color: #ffff00; }
+        60% { background-color: #ff00ff; }
+        75% { background-color: #00ffff; }
+        90% { background-color: #ffffff; }
+        100% { background-color: #ff0000; }
     }
 
-    @keyframes shakeBox {
-        0% { transform: translate(1px, 1px) rotate(0deg); border-color: red; }
-        10% { transform: translate(-1px, -2px) rotate(-1deg); border-color: blue; }
-        20% { transform: translate(-3px, 0px) rotate(1deg); border-color: yellow; }
-        30% { transform: translate(3px, 2px) rotate(0deg); border-color: green; }
-        40% { transform: translate(1px, -1px) rotate(1deg); border-color: purple; }
-        50% { transform: translate(-1px, 2px) rotate(-1deg); border-color: orange; }
-        60% { transform: translate(-3px, 1px) rotate(0deg); border-color: cyan; }
-        70% { transform: translate(3px, 1px) rotate(-1deg); border-color: white; }
-        80% { transform: translate(-1px, -1px) rotate(1deg); border-color: magenta; }
-        90% { transform: translate(1px, 2px) rotate(0deg); border-color: lime; }
-        100% { transform: translate(1px, -2px) rotate(-1deg); border-color: red; }
+    @keyframes boxFlash {
+        0% { box-shadow: 0 0 50px #ff0000; border-color: #ff0000; background-color: #fff0f0; }
+        25% { box-shadow: 0 0 50px #00ff00; border-color: #00ff00; background-color: #f0fff0; }
+        50% { box-shadow: 0 0 50px #0000ff; border-color: #0000ff; background-color: #f0f0ff; }
+        75% { box-shadow: 0 0 50px #ffff00; border-color: #ffff00; background-color: #fffff0; }
+        100% { box-shadow: 0 0 50px #ff0000; border-color: #ff0000; background-color: #fff0f0; }
     }
 
-    /* Overlay che copre TUTTO tranne il popup */
     #discoOverlay {
-        position: fixed;
-        top: 0; left: 0; width: 100%; height: 100%;
-        z-index: 90000; 
-        display: none;
-        pointer-events: none;
-        /* Niente mix-blend-mode scuro, usiamo l'alpha channel per colorare tutto */
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        z-index: 90000; display: none; pointer-events: none; 
     }
-
-    .active-disco {
-        display: block !important;
-        animation: superStrobe 0.05s infinite; /* Velocità massima */
-    }
-
-    /* Quando il disco è attivo, il popup sfondo diventa trasparente */
-    body.disco-active #warningPopup {
-        background: rgba(0,0,0,0) !important; 
-    }
+    .active-disco { display: block !important; animation: discoFlash 0.05s infinite; } /* Velocissimo */
     
-    /* E il box del popup inizia a tremare e cambiare colore */
-    body.disco-active .warning-box {
-        animation: shakeBox 0.1s infinite;
-        box-shadow: 0 0 30px rgba(255,255,255,0.8);
-    }
+    body.disco-active #warningPopup { background: rgba(0,0,0,0); } /* Sfondo popup trasparente */
+    body.disco-active .warning-box { animation: boxFlash 0.1s infinite; } /* Box popup lampeggia */
 
     /* SFONDO ANIMATO */
     .heart-bg { position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; z-index: -1; }
     .heart-bg span { position: absolute; display: block; width: 20px; height: 20px; background: rgba(255, 255, 255, 0.6); transform: rotate(45deg); animation: animate 25s linear infinite; bottom: -150px; }
     @keyframes animate { 0% { transform: translateY(0) rotate(45deg) scale(0.3); opacity: 1; } 100% { transform: translateY(-100vh) rotate(45deg) scale(1.2); opacity: 0; } }
 
-    /* --- IL LUPO STANDARD (GRANDE) --- */
+    /* --- 1. IL LUPO NARRATORE (SEMPRE BASSO A DX) --- */
     #wolfCharacter { 
         position: fixed; 
         bottom: -20px; 
-        right: -400px; 
+        right: -400px; /* Nascosto a destra di default */
         height: 65vh; 
         max-height: 550px;
         z-index: 50; 
@@ -103,20 +80,21 @@
         transform: translateZ(0); 
     }
 
+    /* Classe per farlo apparire */
     body.game-active #wolfCharacter.wolf-visible { 
         right: -40px; 
         opacity: 1; 
     }
 
-    /* --- IL RAGAZZO CINEMATICO (PICCOLO - SOLO LIV 4) --- */
+    /* --- 2. IL RAGAZZO (SEPARATO) --- */
     #boyCharacter {
         position: fixed;
-        top: 50px; 
-        left: -400px; 
-        height: 30vh; 
+        top: 50px; /* Altezza fissa */
+        left: -400px; /* Fuori schermo a sinistra */
+        height: 30vh; /* Piccolo come richiesto */
         max-height: 250px;
         z-index: 60;
-        display: none; 
+        display: none; /* Invisibile di default */
         pointer-events: none;
     }
 
@@ -134,7 +112,7 @@
 
     /* POPUP */
     #warningPopup { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 99999; display: none; justify-content: center; align-items: center; flex-direction: column; text-align: center; transition: background 0.1s; }
-    .warning-box { background: white; padding: 25px; border-radius: 15px; border: 4px solid red; max-width: 80%; position: relative; z-index: 100000; transition: all 0.1s; }
+    .warning-box { background: white; padding: 25px; border-radius: 15px; border: 4px solid red; max-width: 80%; position: relative; z-index: 100000; }
     .warning-btn { margin-top: 15px; padding: 10px 30px; background: red; color: white; border: none; font-size: 18px; cursor: pointer; border-radius: 5px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); transition: transform 0.1s; }
     .warning-btn:active { transform: scale(0.95); background: #cc0000; }
 
@@ -190,12 +168,58 @@
     .clue-box { display: none; background: #fff3cd; border: 2px solid #ffeeba; color: #856404; padding: 15px; border-radius: 10px; margin-bottom: 15px; width: 90%; font-size: 16px; animation: slideDown 0.5s; }
     .next-level-btn { display: none; background: #28a745; color: white; }
 
-    /* === STILI SLIDER === */
-    .slider-wrapper { width: 85%; position: relative; padding: 20px 0; margin: 0 auto 20px auto; }
-    .slider-labels { display: flex; justify-content: space-between; width: 100%; margin-bottom: 5px; font-weight: bold; color: #ff4d88; font-size: 18px; }
-    input[type=range].love-slider { -webkit-appearance: none; width: 130%; margin-left: 0; background: transparent; display: block; }
-    input[type=range].love-slider::-webkit-slider-runnable-track { width: 100%; height: 12px; cursor: pointer; background: linear-gradient(to right, #ff4d88 0%, #ff4d88 76.9%, transparent 76.9%); border-radius: 10px; }
-    input[type=range].love-slider::-webkit-slider-thumb { -webkit-appearance: none; height: 28px; width: 28px; border-radius: 50%; background: #fff; border: 4px solid #ff2e6e; cursor: grab; margin-top: -8px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); position: relative; z-index: 2; }
+    /* === STILI SLIDER SISTEMATO === */
+    .slider-wrapper { 
+        width: 85%; 
+        position: relative; 
+        padding: 10px 0; 
+        margin: 0 auto 20px auto; 
+    }
+    
+    .slider-labels { 
+        display: flex; justify-content: space-between; 
+        width: 78%; /* Allineato alla fine della barra colorata */
+        margin-bottom: 10px;
+        font-weight: bold; color: #ff4d88; font-size: 18px;
+    }
+    
+    input[type=range].love-slider {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 130%; /* Più largo per sbordare */
+        height: 15px; 
+        background: transparent;
+        outline: none;
+        margin: 0;
+        display: block;
+    }
+    
+    /* Il binario visibile */
+    input[type=range].love-slider::-webkit-slider-runnable-track {
+        width: 100%;
+        height: 12px;
+        cursor: pointer;
+        /* Colore solido fino al 77% (il 100), poi invisibile */
+        background: linear-gradient(to right, #ff4d88 0%, #ff4d88 77%, rgba(0,0,0,0.05) 77%);
+        border-radius: 10px;
+        border: 1px solid rgba(255, 77, 136, 0.2);
+    }
+
+    /* Il pallino */
+    input[type=range].love-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        height: 30px;
+        width: 30px;
+        background: #ffffff;
+        border: 4px solid #ff2e6e;
+        border-radius: 50%;
+        cursor: grab;
+        margin-top: -10px; /* Centrato */
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        position: relative;
+        z-index: 10;
+    }
 
     @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } 100% { transform: translateX(0); } }
     @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
@@ -537,7 +561,7 @@ function showClue() {
     document.getElementById("clueBox").style.display = "block";
     document.getElementById("nextBtn").style.display = "inline-block";
     
-    // Se siamo nel livello 3, nascondiamo il ragazzo, mostriamo il lupo festante se vuoi, o niente
+    // Se siamo nel livello 3, nascondiamo il ragazzo, mostriamo il lupo festante se vuoi
     if (currentLevel === 3) {
         boy.style.display = 'none';
         wolf.classList.add('wolf-visible'); // Torna il lupo
