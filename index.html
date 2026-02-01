@@ -16,7 +16,7 @@
         align-items: center;
         min-height: 100vh;
         text-align: center;
-        overflow: hidden; /* Mantiene tutto pulito */
+        overflow: hidden;
     }
 
     /* SFONDO ANIMATO */
@@ -46,24 +46,26 @@
         100% { transform: translateY(-100vh) rotate(45deg) scale(1.2); opacity: 0; }
     }
 
-    /* --- STILI PER IL LUPO --- */
+    /* --- STILI PER IL LUPO (LATO DESTRO) --- */
     #wolfCharacter {
         position: fixed;
-        bottom: -50px; /* Un po' più in basso per nascondere il taglio */
-        left: -300px; /* Inizialmente nascosto fuori schermo a sinistra */
-        height: 70vh; /* Altezza relativa allo schermo */
-        max-height: 600px;
-        z-index: 50; /* Sopra lo sfondo, sotto la card */
-        transition: left 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Animazione di entrata elastica */
-        pointer-events: none; /* Non blocca i click */
+        bottom: -20px; 
+        right: -400px; /* Nascosto a destra inizialmente */
+        height: 65vh; /* Altezza dinamica */
+        max-height: 550px;
+        z-index: 50; 
+        transition: right 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s;
+        pointer-events: none; 
+        opacity: 0; /* Invisibile all'inizio */
     }
 
-    /* Classe aggiunta col JS per far entrare il lupo */
+    /* Quando il gioco è attivo, il lupo entra */
     body.game-active #wolfCharacter {
-        left: -50px; /* Si ferma parzialmente visibile a sinistra */
+        right: -40px; /* Entra bene nello schermo (più centrale) */
+        opacity: 1;
     }
 
-    /* --- MODIFICHE ALLA CARD PER L'EFFETTO FUMETTO --- */
+    /* --- LA CARD (FUMETTO A SINISTRA) --- */
     .card {
         background: rgba(255, 255, 255, 0.95);
         padding: 30px;
@@ -78,44 +80,57 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        z-index: 100; /* Card sopra il lupo */
+        z-index: 100;
         transition: all 0.5s ease;
     }
 
-    /* Quando il gioco è attivo, la card si sposta e diventa un fumetto */
+    /* In modalità gioco, la card si sposta a SINISTRA */
     body.game-active .card {
-        margin-left: 250px; /* Fa spazio al lupo */
-        overflow: visible; /* Necessario per far uscire la punta del fumetto */
-        border-color: #ff4d88; /* Bordo più deciso */
+        margin-right: 220px; /* Spinge verso sinistra per fare spazio al lupo */
+        overflow: visible; 
+        border-color: #ff4d88;
     }
 
-    /* La punta bianca del fumetto */
+    /* Punta del fumetto (VERSO DESTRA) */
     body.game-active .card::before {
         content: '';
         position: absolute;
         top: 150px;
-        left: -30px; /* Esce a sinistra */
-        border-width: 15px 30px 15px 0;
+        right: -30px; /* Esce a destra */
+        left: auto;
+        /* Triangolo che punta a destra */
+        border-width: 15px 0 15px 30px;
         border-style: solid;
-        border-color: transparent rgba(255, 255, 255, 0.95) transparent transparent;
+        border-color: transparent transparent transparent rgba(255, 255, 255, 0.95);
         z-index: 1;
     }
 
-    /* Il bordo rosa della punta del fumetto */
+    /* Bordo rosa della punta */
     body.game-active .card::after {
         content: '';
         position: absolute;
         top: 147px;
-        left: -36px; /* Leggermente più esterno per fare il bordo */
-        border-width: 18px 36px 18px 0;
+        right: -36px;
+        left: auto;
+        border-width: 18px 0 18px 36px;
         border-style: solid;
-        border-color: transparent #ff4d88 transparent transparent;
+        border-color: transparent transparent transparent #ff4d88;
         z-index: 0;
     }
+
+    /* Media query per schermi piccoli (Mobile) */
+    @media (max-width: 768px) {
+        body.game-active .card {
+            margin-right: 80px; /* Meno spostamento su mobile */
+        }
+        body.game-active #wolfCharacter {
+            right: -80px; /* Lupo un po' più defilato su mobile */
+            height: 50vh;
+        }
+    }
+
     /* -------------------------------------------------- */
 
-
-    /* SCIA DI CACCA */
     .poop-trail {
         position: absolute;
         font-size: 24px;
@@ -151,7 +166,6 @@
     h1 { font-size: 24px; margin-bottom: 20px; }
     h2 { font-size: 20px; margin-bottom: 15px; }
 
-    /* BOTTONI GENERALI */
     button {
         padding: 12px 24px;
         border-radius: 25px;
@@ -165,7 +179,6 @@
     
     button:active { transform: scale(0.95); }
 
-    /* BOTTONI FASE 1 (Sì/No) */
     .btn-proposal { position: absolute; }
 
     #yesBtn {
@@ -195,7 +208,6 @@
         100% { transform: scale(1); }
     }
 
-    /* CELEBRAZIONE FASE 1 */
     .celebration {
         display: none;
         margin-top: 10px;
@@ -212,12 +224,11 @@
         background: #ffcc00;
         color: #d35400;
         font-size: 18px;
-        display: inline-block; /* Importante */
+        display: inline-block; 
     }
 
-    /* --- STILI PER IL GIOCO (FASE 2) --- */
     #gameSection, #finalSection {
-        display: none; /* Nascosti all'inizio */
+        display: none;
         width: 100%;
         flex-direction: column;
         align-items: center;
@@ -248,13 +259,11 @@
     }
 
     .option-btn:hover { background: #fff5f8; border-color: #ff4d88; }
-    
     .option-btn.correct { background: #d4edda; border-color: #28a745; color: #155724; }
     .option-btn.wrong { background: #f8d7da; border-color: #dc3545; color: #721c24; animation: shake 0.5s; }
 
-    /* INDIZIO */
     .clue-box {
-        display: none; /* Nascosto finché non indovina */
+        display: none;
         background: #fff3cd;
         border: 2px solid #ffeeba;
         color: #856404;
@@ -330,7 +339,7 @@
         </div>
 
         <div class="options-grid" id="optionsContainer">
-            </div>
+        </div>
 
         <div class="clue-box" id="clueBox">
             <strong>✨ BRAVA! Ecco il tuo indizio:</strong><br>
@@ -352,7 +361,7 @@
 </div>
 
 <script>
-// --- DATI DELLA CACCIA AL TESORO (MODIFICA QUI!) ---
+// --- DATI DELLA CACCIA AL TESORO ---
 const questions = [
     {
         question: "Dove ci siamo dati il primo bacio? 😘",
@@ -385,7 +394,6 @@ const questions = [
         clue: "L'ultimo indizio è... addosso a me! Vieni a prendertelo! ❤️"
     }
 ];
-// ---------------------------------------------------
 
 const proposalSection = document.getElementById("proposalSection");
 const gameSection = document.getElementById("gameSection");
@@ -395,11 +403,9 @@ const noBtn = document.getElementById("noBtn");
 const celebration = document.getElementById("celebrationText");
 const mainImage = document.getElementById("mainImage");
 const card = document.getElementById("mainCard");
-const wolf = document.getElementById("wolfCharacter");
 
 let currentLevel = 0;
 
-// --- LOGICA INIZIALE (Sì/No) ---
 yesBtn.addEventListener("click", () => {
     celebration.style.display = "block";
     mainImage.src = "https://i.imgur.com/jRf6Y7R.png"; 
@@ -419,17 +425,14 @@ function launchConfetti() {
     }());
 }
 
-// --- LOGICA DEL GIOCO E DEL LUPO ---
-
 function startGame() {
-    // Attiva la modalità gioco: entra il lupo e la card diventa fumetto
     document.body.classList.add('game-active');
     
     setTimeout(() => {
-        proposalSection.style.display = "none"; // Nasconde la intro
-        gameSection.style.display = "flex";     // Mostra il gioco
+        proposalSection.style.display = "none"; 
+        gameSection.style.display = "flex";     
         loadQuestion();
-    }, 300); // Piccolo ritardo per fluidità
+    }, 300); 
 }
 
 
@@ -473,10 +476,7 @@ function nextLevel() {
     if (currentLevel < questions.length) {
         loadQuestion();
     } else {
-        // GIOCO FINITO
-        // Rimuovi la modalità gioco (il lupo se ne va, il fumetto sparisce)
         document.body.classList.remove('game-active');
-
         gameSection.style.display = "none";
         finalSection.style.display = "flex";
         launchConfetti();
@@ -484,7 +484,6 @@ function nextLevel() {
     }
 }
 
-// --- LOGICA TASTO NO (Cacca 💩) ---
 function dropPoop(x, y) {
     const poop = document.createElement('span');
     poop.textContent = '💩';
@@ -500,7 +499,6 @@ function moveNoButton() {
     const currentTop = noBtn.offsetTop;
     dropPoop(currentLeft + 20, currentTop + 10);
 
-    // Usiamo clientWidth/Height per stare dentro i bordi
     const maxX = card.clientWidth - noBtn.offsetWidth - 30;
     const maxY = card.clientHeight - noBtn.offsetHeight - 30;
     const safeZoneTop = 280; 
