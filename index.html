@@ -19,7 +19,7 @@
         overflow: hidden;
     }
 
-    /* Sfondo cuori */
+    /* SFONDO ANIMATO */
     .heart-bg {
         position: absolute;
         width: 100%;
@@ -46,14 +46,16 @@
         100% { transform: translateY(-100vh) rotate(45deg) scale(1.2); opacity: 0; }
     }
 
+    /* LA CARD PRINCIPALE */
     .card {
         background: rgba(255, 255, 255, 0.95);
-        padding: 40px;
+        padding: 30px;
         border-radius: 30px;
         box-shadow: 0 15px 35px rgba(0,0,0,0.1);
         max-width: 420px;
         width: 90vw;
-        height: 500px; /* Altezza fissa per area di movimento sicura */
+        /* Altezza minima per contenere il gioco */
+        min-height: 550px; 
         position: relative;
         border: 3px solid #ffebf0;
         overflow: hidden;
@@ -61,9 +63,10 @@
         flex-direction: column;
         align-items: center;
         z-index: 10;
+        transition: all 0.5s ease;
     }
 
-    /* Scia di cacca */
+    /* SCIA DI CACCA */
     .poop-trail {
         position: absolute;
         font-size: 24px;
@@ -86,59 +89,55 @@
         border: 5px solid #ff4d88;
         box-shadow: 0 5px 15px rgba(255, 77, 136, 0.3);
         z-index: 20;
+        transition: transform 0.3s;
     }
 
-    h1 {
-        font-size: 24px;
-        margin-bottom: 20px;
+    h1, h2 {
         color: #ff4d88;
         text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
         z-index: 20;
         width: 100%;
     }
+    
+    h1 { font-size: 24px; margin-bottom: 20px; }
+    h2 { font-size: 20px; margin-bottom: 15px; }
 
+    /* BOTTONI GENERALI */
     button {
-        padding: 14px 28px;
+        padding: 12px 24px;
         border-radius: 25px;
         border: none;
-        font-size: 18px;
+        font-size: 16px;
         font-weight: bold;
-        white-space: nowrap;
+        cursor: pointer;
         box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-        position: absolute; /* Fondamentale */
+        transition: transform 0.2s, background 0.3s;
     }
+    
+    button:active { transform: scale(0.95); }
 
-    /* STILI SOLO PER IL TASTO SÌ */
+    /* BOTTONI FASE 1 (Sì/No) */
+    .btn-proposal { position: absolute; }
+
     #yesBtn {
         background: linear-gradient(45deg, #ff4d88, #ff2e6e);
         color: white;
-        top: 380px; /* Posizione fissa iniziale dall'alto */
-        left: 20%;
+        top: 380px; left: 20%;
         z-index: 100;
         animation: pulse 2s infinite;
-        cursor: pointer;
     }
     
-    /* Cursore a cuore SOLO sul sì */
     #yesBtn:hover {
         transform: scale(1.1);
-        cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'  width='40' height='48' viewport='0 0 100 100' style='fill:black;font-size:24px;'><text y='50%'>❤️</text></svg>") 16 0, auto;
+        cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='48' viewport='0 0 100 100' style='fill:black;font-size:24px;'><text y='50%'>❤️</text></svg>") 16 0, auto;
     }
 
-    /* STILI SOLO PER IL TASTO NO */
     #noBtn {
         background-color: #f0f0f0;
         color: #555;
-        top: 380px; /* Allineato col sì inizialmente */
-        left: 60%; 
+        top: 380px; left: 60%; 
         z-index: 100;
-        /* Transizione fluida per il movimento */
         transition: all 0.3s ease-out;
-        cursor: default; /* Cursore normale, niente cuore! */
-    }
-
-    #noBtn:hover {
-        background-color: #e0e0e0;
     }
 
     @keyframes pulse {
@@ -147,21 +146,100 @@
         100% { transform: scale(1); }
     }
 
+    /* CELEBRAZIONE FASE 1 */
     .celebration {
         display: none;
-        margin-top: 30px;
-        font-size: 24px;
+        margin-top: 10px;
+        font-size: 18px;
         color: #ff2e6e;
         font-weight: bold;
         animation: fadeIn 0.5s ease-in;
         z-index: 150;
-        position: relative;
+        width: 100%;
+    }
+
+    .start-game-btn {
+        margin-top: 15px;
+        background: #ffcc00;
+        color: #d35400;
+        font-size: 18px;
+        display: inline-block; /* Importante */
+    }
+
+    /* --- STILI PER IL GIOCO (FASE 2) --- */
+    #gameSection, #finalSection {
+        display: none; /* Nascosti all'inizio */
+        width: 100%;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .question-box {
+        background: #fff0f5;
+        padding: 15px;
+        border-radius: 15px;
+        width: 90%;
+        margin-bottom: 20px;
+        border: 2px dashed #ffb6c1;
+    }
+
+    .options-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .option-btn {
+        background: white;
+        border: 2px solid #ddd;
+        color: #555;
+        width: 100%;
+    }
+
+    .option-btn:hover { background: #fff5f8; border-color: #ff4d88; }
+    
+    .option-btn.correct { background: #d4edda; border-color: #28a745; color: #155724; }
+    .option-btn.wrong { background: #f8d7da; border-color: #dc3545; color: #721c24; animation: shake 0.5s; }
+
+    /* INDIZIO */
+    .clue-box {
+        display: none; /* Nascosto finché non indovina */
+        background: #fff3cd;
+        border: 2px solid #ffeeba;
+        color: #856404;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 15px;
+        width: 90%;
+        font-size: 16px;
+        animation: slideDown 0.5s;
+    }
+
+    .next-level-btn {
+        display: none;
+        background: #28a745;
+        color: white;
+    }
+
+    @keyframes shake {
+        0% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        50% { transform: translateX(5px); }
+        75% { transform: translateX(-5px); }
+        100% { transform: translateX(0); }
+    }
+    
+    @keyframes slideDown {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
     }
     
     @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
+        from { opacity: 0; } to { opacity: 1; }
     }
+
 </style>
 </head>
 
@@ -176,37 +254,116 @@
 </div>
 
 <div class="card" id="mainCard">
-    <img id="mainImage" src="fotooo1.jpg" alt="Amore">
+    
+    <div id="proposalSection" style="width: 100%; display:flex; flex-direction:column; align-items:center;">
+        <img id="mainImage" src="fotooo1.jpg" alt="Amore">
+        <h1 id="mainTitle">Amore mio, vuoi essere la mia Valentine? 💖</h1>
 
-    <h1>Amore mio, vuoi essere la mia Valentine? 💖</h1>
+        <button id="yesBtn" class="btn-proposal">Sì, certo! ❤️</button>
+        <button id="noBtn" class="btn-proposal">No 💩</button>
 
-    <button id="yesBtn">Sì, certo! ❤️</button>
-    <button id="noBtn">No 💩</button>
-
-    <div class="celebration" id="celebrationText">
-        YEEEEE! 💃🕺 Ti amo tantissimo!!! 💕<br>
-        Preparati per una giornata speciale! 😘
+        <div class="celebration" id="celebrationText">
+            YEEEEE! 💃🕺 Ti amo tantissimo!!! 💕<br>
+            Ma non è finita qui... 😏<br>
+            <button class="start-game-btn" onclick="startGame()">Inizia la Caccia al Tesoro! 🕵️‍♀️</button>
+        </div>
     </div>
+
+    <div id="gameSection">
+        <img src="https://media.giphy.com/media/l0HlOaQcLJ2hHpYdy/giphy.gif" style="width:100px; height:100px; border:none; box-shadow:none;" alt="Thinking">
+        <h2 id="levelTitle">Livello 1</h2>
+        
+        <div class="question-box" id="questionText">
+            Caricamento domanda...
+        </div>
+
+        <div class="options-grid" id="optionsContainer">
+            </div>
+
+        <div class="clue-box" id="clueBox">
+            <strong>✨ BRAVA! Ecco il tuo indizio:</strong><br>
+            <span id="clueText">...</span>
+        </div>
+
+        <button class="next-level-btn" id="nextBtn" onclick="nextLevel()">Prossimo Livello ➡️</button>
+    </div>
+
+    <div id="finalSection">
+        <img src="https://i.imgur.com/jRf6Y7R.png" alt="Party">
+        <h1>COMPLIMENTI! 🎉</h1>
+        <p style="font-size: 18px; color: #555;">
+            Hai trovato tutti gli indizi! <br>
+            Ora corri da me per il tuo premio speciale! 🎁💏
+        </p>
+    </div>
+
 </div>
 
 <script>
-const noBtn = document.getElementById("noBtn");
+// --- DATI DELLA CACCIA AL TESORO (MODIFICA QUI!) ---
+// Puoi cambiare le domande, le risposte e gli indizi qui sotto.
+// 'correct': 0 significa la prima risposta, 1 la seconda, 2 la terza.
+
+const questions = [
+    {
+        question: "Dove ci siamo dati il primo bacio? 😘",
+        options: ["Al cinema", "Sotto casa tua", "Al parco", "In macchina"],
+        correct: 1, // È "Sotto casa tua"
+        clue: "Cerca dove tieni le scarpe... c'è un bigliettino nascosto lì! 👟"
+    },
+    {
+        question: "Qual è il mio piatto preferito che cucini tu? 🍝",
+        options: ["Carbonara", "Lasagna", "Tiramisù", "Toast bruciato"],
+        correct: 0, // È "Carbonara"
+        clue: "Controlla dentro il frigo, vicino al latte! 🥛"
+    },
+    {
+        question: "Come si chiama il nostro peluche preferito? 🧸",
+        options: ["Bubu", "Orso", "Pippo", "Stitch"],
+        correct: 3, 
+        clue: "Vai in bagno e guarda dietro lo specchio! 🚿"
+    },
+    {
+        question: "Che giorno ci siamo messi insieme? 📅",
+        options: ["Il 14", "Il 21", "Boh non ricordo", "Il 5"],
+        correct: 1, 
+        clue: "Cerca sotto il tuo cuscino! 🛏️"
+    },
+    {
+        question: "Quanto ti amo da 1 a 10? 📈",
+        options: ["10", "100", "Infinito 🚀", "Millemila"],
+        correct: 2, 
+        clue: "L'ultimo indizio è... addosso a me! Vieni a prendertelo! ❤️"
+    }
+];
+
+// ---------------------------------------------------
+
+const proposalSection = document.getElementById("proposalSection");
+const gameSection = document.getElementById("gameSection");
+const finalSection = document.getElementById("finalSection");
+
 const yesBtn = document.getElementById("yesBtn");
+const noBtn = document.getElementById("noBtn");
 const celebration = document.getElementById("celebrationText");
 const mainImage = document.getElementById("mainImage");
 const card = document.getElementById("mainCard");
 
-// --- LOGICA TASTO SÌ ---
+// Variabili di stato del gioco
+let currentLevel = 0;
+
+// --- LOGICA INIZIALE (Sì/No) ---
+
 yesBtn.addEventListener("click", () => {
     celebration.style.display = "block";
-    mainImage.src = "https://i.imgur.com/jRf6Y7R.png";
+    mainImage.src = "https://i.imgur.com/jRf6Y7R.png"; // Immagine felice
     yesBtn.style.display = "none";
     noBtn.style.display = "none";
-    
-    // Pulizia cacche
     document.querySelectorAll('.poop-trail').forEach(el => el.remove());
+    launchConfetti();
+});
 
-    // Coriandoli
+function launchConfetti() {
     var duration = 3000;
     var end = Date.now() + duration;
     (function frame() {
@@ -214,9 +371,75 @@ yesBtn.addEventListener("click", () => {
       confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 } });
       if (Date.now() < end) requestAnimationFrame(frame);
     }());
-});
+}
 
-// --- LOGICA TASTO NO (Movimento e Cacca) ---
+// --- LOGICA DEL GIOCO ---
+
+function startGame() {
+    proposalSection.style.display = "none"; // Nasconde la intro
+    gameSection.style.display = "flex";     // Mostra il gioco
+    loadQuestion();
+}
+
+function loadQuestion() {
+    const q = questions[currentLevel];
+    document.getElementById("levelTitle").innerText = "Livello " + (currentLevel + 1);
+    document.getElementById("questionText").innerText = q.question;
+    document.getElementById("clueBox").style.display = "none";
+    document.getElementById("nextBtn").style.display = "none";
+    
+    const container = document.getElementById("optionsContainer");
+    container.innerHTML = ""; // Pulisce vecchie opzioni
+
+    q.options.forEach((opt, index) => {
+        const btn = document.createElement("button");
+        btn.innerText = opt;
+        btn.className = "option-btn";
+        btn.onclick = () => checkAnswer(index, btn);
+        container.appendChild(btn);
+    });
+}
+
+function checkAnswer(selectedIndex, btnElement) {
+    const q = questions[currentLevel];
+    
+    if (selectedIndex === q.correct) {
+        // RISPOSTA GIUSTA
+        btnElement.classList.add("correct");
+        
+        // Disabilita tutti i bottoni per non far cliccare ancora
+        const allBtns = document.querySelectorAll(".option-btn");
+        allBtns.forEach(b => b.disabled = true);
+
+        // Mostra indizio
+        document.getElementById("clueText").innerText = q.clue;
+        document.getElementById("clueBox").style.display = "block";
+        document.getElementById("nextBtn").style.display = "inline-block";
+        
+        launchConfetti(); // Un po' di coriandoli per ogni risposta giusta
+    } else {
+        // RISPOSTA SBAGLIATA
+        btnElement.classList.add("wrong");
+        setTimeout(() => {
+            btnElement.classList.remove("wrong"); // Rimuove il rosso dopo un po'
+        }, 500);
+    }
+}
+
+function nextLevel() {
+    currentLevel++;
+    if (currentLevel < questions.length) {
+        loadQuestion();
+    } else {
+        // GIOCO FINITO
+        gameSection.style.display = "none";
+        finalSection.style.display = "flex";
+        launchConfetti();
+        setInterval(launchConfetti, 4000); // Coriandoli infiniti alla fine
+    }
+}
+
+// --- LOGICA TASTO NO (La tua preferita 💩) ---
 
 function dropPoop(x, y) {
     const poop = document.createElement('span');
@@ -229,46 +452,24 @@ function dropPoop(x, y) {
 }
 
 function moveNoButton() {
-    // 1. Prendi posizione attuale per la cacca
     const currentLeft = noBtn.offsetLeft;
     const currentTop = noBtn.offsetTop;
     dropPoop(currentLeft + 20, currentTop + 10);
 
-    // 2. Calcola limiti sicuri
-    const cardRect = card.getBoundingClientRect();
-    const btnRect = noBtn.getBoundingClientRect();
-    
-    // Larghezza e altezza disponibili dentro la card
-    // Sottraiamo la grandezza del bottone e un margine di 20px
     const maxX = card.clientWidth - noBtn.offsetWidth - 20;
     const maxY = card.clientHeight - noBtn.offsetHeight - 20;
+    // Area riservata per la testa (titolo e immagine) per non coprirli
+    const safeZoneTop = 250; 
 
-    // 3. Genera nuove coordinate random
-    // Math.random() * (Massimo - Minimo) + Minimo
     const newX = Math.random() * (maxX - 20) + 20;
-    let newY = Math.random() * (maxY - 20) + 20;
+    let newY = Math.random() * (maxY - safeZoneTop) + safeZoneTop;
 
-    // Evita che finisca sopra la faccia o il titolo (zona alta proibita)
-    // Se capita nella parte alta (primi 180px), lo spingiamo giù
-    if (newY < 180) {
-        newY += 180;
-        // Se spingendolo giù esce dai bordi, correggiamo
-        if (newY > maxY) newY = maxY - 10;
-    }
-
-    // 4. Applica il movimento
     noBtn.style.left = newX + "px";
     noBtn.style.top = newY + "px";
 }
 
-// Attiva il movimento quando il mouse ci passa sopra
 noBtn.addEventListener("mouseover", moveNoButton);
-
-// Attiva il movimento anche al tocco (per smartphone)
-noBtn.addEventListener("touchstart", (e) => {
-    e.preventDefault(); // Impedisce il click
-    moveNoButton();
-});
+noBtn.addEventListener("touchstart", (e) => { e.preventDefault(); moveNoButton(); });
 
 </script>
 
