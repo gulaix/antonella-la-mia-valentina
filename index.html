@@ -4,95 +4,192 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Will you be my Valentine? ❤️</title>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <style>
     body {
         margin: 0;
-        font-family: Arial, Helvetica, sans-serif;
-        background: linear-gradient(135deg, #ffd6e7, #ffeef5);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #fdfbfb, #ebedee); /* Sfondo più neutro per far risaltare i cuori */
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 100vh;
+        min-height: 100vh;
         text-align: center;
+        overflow: hidden;
+        position: relative; /* Necessario per i cuori fluttuanti */
+    }
+
+    /* Animazione cuori fluttuanti nello sfondo */
+    .heart-bg {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+        z-index: -1;
         overflow: hidden;
     }
 
+    .heart-bg span {
+        position: absolute;
+        display: block;
+        width: 20px;
+        height: 20px;
+        background: rgba(255, 192, 203, 0.5);
+        transform: rotate(45deg);
+        animation: animate 25s linear infinite;
+        bottom: -150px;
+    }
+
+    .heart-bg span:before,
+    .heart-bg span:after {
+        content: '';
+        position: absolute;
+        display: block;
+        width: 100%;
+        height: 100%;
+        background: inherit;
+        border-radius: 50%;
+    }
+
+    .heart-bg span:before { top: -50%; left: 0; }
+    .heart-bg span:after { top: 0; left: -50%; }
+
+    @keyframes animate {
+        0% { transform: translateY(0) rotate(45deg) scale(0.3); opacity: 1; }
+        100% { transform: translateY(-100vh) rotate(45deg) scale(1.2); opacity: 0; }
+    }
+
     .card {
-        background: white;
-        padding: 40px;
-        border-radius: 20px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-        max-width: 400px;
+        background: rgba(255, 255, 255, 0.95); /* Leggermente trasparente */
+        padding: 50px;
+        border-radius: 30px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        max-width: 420px;
+        width: 90%; /* Si adatta meglio ai telefoni */
         position: relative;
+        border: 3px solid #ffebf0; /* Un bordo rosa tenue */
+        transition: transform 0.3s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
     }
 
     img {
-        width: 120px;
-        margin-bottom: 20px;
+        width: 140px;
+        height: 140px;
+        object-fit: cover; /* Ritaglia l'immagine in un cerchio perfetto */
+        border-radius: 50%;
+        margin-bottom: 25px;
+        border: 5px solid #ff4d88;
+        box-shadow: 0 5px 15px rgba(255, 77, 136, 0.3);
     }
 
     h1 {
-        font-size: 22px;
-        margin-bottom: 30px;
+        font-size: 26px;
+        margin-bottom: 35px;
+        color: #ff4d88;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
     }
 
     .buttons {
         position: relative;
-        height: 80px;
+        height: 100px;
+        display: flex;
+        justify-content: center;
+        gap: 20px; /* Spazio tra i bottoni */
     }
 
     button {
-        padding: 12px 22px;
-        border-radius: 12px;
+        padding: 14px 28px;
+        border-radius: 25px;
         border: none;
-        font-size: 16px;
+        font-size: 18px;
+        font-weight: bold;
         cursor: pointer;
-        transition: transform 0.2s ease;
-        position: absolute;
+        transition: all 0.3s ease;
+        position: relative; /* Cambiato da absolute per gestire meglio il layout */
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    
+    /* Cursore a cuore sui bottoni */
+    button:hover {
+        cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'  width='40' height='48' viewport='0 0 100 100' style='fill:black;font-size:24px;'><text y='50%'>❤️</text></svg>") 16 0, auto;
     }
 
     #yesBtn {
-        background-color: #ff4d88;
+        background: linear-gradient(45deg, #ff4d88, #ff2e6e);
         color: white;
-        left: 25%;
+        /* Animazione pulsante */
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); box-shadow: 0 4px 10px rgba(255, 77, 136, 0.3); }
+        50% { transform: scale(1.05); box-shadow: 0 8px 20px rgba(255, 77, 136, 0.5); }
+        100% { transform: scale(1); box-shadow: 0 4px 10px rgba(255, 77, 136, 0.3); }
     }
 
     #yesBtn:hover {
-        transform: scale(1.1);
+        transform: scale(1.1) !important; /* Sovrascrive l'animazione al passaggio del mouse */
+        background: linear-gradient(45deg, #ff2e6e, #ff0a4d);
     }
 
     #noBtn {
-        background-color: #ddd;
-        color: black;
-        left: 55%;
+        background-color: #f0f0f0;
+        color: #555;
+        position: absolute; /* Il NO rimane assoluto per poter "scappare" */
+        left: 60%; /* Posizione iniziale */
+    }
+    
+    #noBtn:hover {
+        background-color: #e0e0e0;
     }
 
     .celebration {
         display: none;
-        margin-top: 20px;
-        font-size: 20px;
+        margin-top: 30px;
+        font-size: 24px;
         color: #ff2e6e;
         font-weight: bold;
+        animation: fadeIn 0.5s ease-in;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 </style>
 </head>
 
 <body>
 
+<div class="heart-bg">
+    <span style="left: 10%; animation-duration: 15s; animation-delay: 1s;"></span>
+    <span style="left: 30%; animation-duration: 18s; animation-delay: 3s; scale: 0.8;"></span>
+    <span style="left: 50%; animation-duration: 20s; animation-delay: 0s;"></span>
+    <span style="left: 70%; animation-duration: 17s; animation-delay: 2s; scale: 1.1;"></span>
+    <span style="left: 90%; animation-duration: 19s; animation-delay: 4s; scale: 0.9;"></span>
+    <span style="left: 20%; animation-duration: 22s; animation-delay: 5s;"></span>
+    <span style="left: 80%; animation-duration: 16s; animation-delay: 6s;"></span>
+</div>
+
 <div class="card">
-    <!-- CAMBIA QUI L'IMMAGINE -->
-    <img id="mainImage" src="fotooo1.jpg" alt="cute">
+    <img id="mainImage" src="fotooo1.jpg" alt="Amore">
 
     <h1>Amore mio, vuoi essere la mia Valentine? 💖</h1>
 
     <div class="buttons">
-        <button id="yesBtn">Sì ❤️</button>
+        <button id="yesBtn">Sì, certo! ❤️</button>
         <button id="noBtn">No 🙈</button>
     </div>
 
     <div class="celebration" id="celebrationText">
-        YEEEEE! 💃🕺 Ti amo tantissimo!!! 💕
+        YEEEEE! 💃🕺 Ti amo tantissimo!!! 💕<br>
+        Preparati per una giornata speciale! 😘
     </div>
 </div>
 
@@ -101,33 +198,59 @@ const noBtn = document.getElementById("noBtn");
 const yesBtn = document.getElementById("yesBtn");
 const celebration = document.getElementById("celebrationText");
 const mainImage = document.getElementById("mainImage");
+const buttonsContainer = document.querySelector(".buttons");
 
 // Quando clicca SÌ
 yesBtn.addEventListener("click", () => {
     celebration.style.display = "block";
     mainImage.src = "https://i.imgur.com/jRf6Y7R.png"; // immagine festeggiamento
+    
+    // Nascondi i bottoni
+    buttonsContainer.style.display = "none";
+
+    // Esplosione di coriandoli a forma di cuore!
+    var duration = 3 * 1000;
+    var animationEnd = Date.now() + duration;
+    var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+    function randomInRange(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    var interval = setInterval(function() {
+      var timeLeft = animationEnd - Date.now();
+
+      if (timeLeft <= 0) {
+        return clearInterval(interval);
+      }
+
+      var particleCount = 50 * (timeLeft / duration);
+      // since particles fall down, start a bit higher than random
+      confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }, shapes: ['heart'], colors: ['#ff4d88', '#ff2e6e', '#ffffff'] }));
+      confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }, shapes: ['heart'], colors: ['#ff4d88', '#ff2e6e', '#ffffff'] }));
+    }, 250);
 });
 
 // Funzione per far scappare il bottone NO
 function moveNoButton() {
     const card = document.querySelector(".card");
     const cardRect = card.getBoundingClientRect();
+    const btnRect = noBtn.getBoundingClientRect();
 
-    const maxX = cardRect.width - noBtn.offsetWidth;
-    const maxY = cardRect.height - noBtn.offsetHeight;
+    // Calcola i limiti all'interno della card, con un po' di margine
+    const maxX = cardRect.width - btnRect.width - 40; // 40px di margine
+    const maxY = cardRect.height - btnRect.height - 40;
 
-    const newX = Math.random() * maxX;
-    const newY = Math.random() * maxY;
+    const newX = Math.max(20, Math.random() * maxX); // Minimo 20px dal bordo
+    const newY = Math.max(20, Math.random() * maxY);
 
     noBtn.style.left = newX + "px";
     noBtn.style.top = newY + "px";
 }
 
-// Quando il mouse si avvicina al NO
+// Quando il mouse si avvicina o prova a cliccare il NO
 noBtn.addEventListener("mouseenter", moveNoButton);
-
-// Anche se prova a inseguirlo 😂
-noBtn.addEventListener("mousemove", moveNoButton);
+noBtn.addEventListener("click", moveNoButton); // Per chi usa il touch screen
 </script>
 
 </body>
