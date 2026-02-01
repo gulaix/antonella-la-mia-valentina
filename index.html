@@ -442,7 +442,8 @@ let currentLevel = 0;
 // Variabili per il parlato
 let talkingInterval;
 let stopTalkingTimeout;
-let currentAudio = null; // Per gestire l'oggetto audio dinamicamente
+let currentAudio = null; 
+let lastAudioIndex = -1; // VARIABILE FONDAMENTALE PER RICORDARE
 
 yesBtn.addEventListener("click", () => {
     celebration.style.display = "block";
@@ -477,7 +478,7 @@ function startGame() {
 function stopTalking() {
     clearInterval(talkingInterval);
     clearTimeout(stopTalkingTimeout);
-    wolf.src = "lupocut.jpg"; // Reset bocca chiusa
+    wolf.src = "lupocut.jpg"; // Reset bocca chiusa JPG
     if (currentAudio) {
         currentAudio.pause();
         currentAudio.currentTime = 0;
@@ -489,17 +490,28 @@ function startTalking() {
     // 1. Resetta
     stopTalking();
 
-    // 2. Scegli Audio Random dalla lista
+    // 2. Scegli Audio Random (diverso dal precedente)
     if (audioFiles.length > 0) {
-        const randomSound = audioFiles[Math.floor(Math.random() * audioFiles.length)];
-        currentAudio = new Audio(randomSound);
+        let newIndex;
+        // Se c'è più di un file, forza il cambio
+        if (audioFiles.length > 1) {
+            do {
+                newIndex = Math.floor(Math.random() * audioFiles.length);
+            } while (newIndex === lastAudioIndex); // Continua a pescare se è uguale all'ultimo
+        } else {
+            newIndex = 0;
+        }
+        
+        lastAudioIndex = newIndex; // Salva per la prossima volta
+        
+        currentAudio = new Audio(audioFiles[newIndex]);
         currentAudio.play().catch(e => console.log("Audio bloccato:", e));
     }
 
-    // 3. Calcola durata random tra 4 e 8 secondi (4000 - 8000 ms)
+    // 3. Calcola durata random tra 4 e 8 secondi
     const duration = Math.random() * (8000 - 4000) + 4000;
 
-    // 4. Animazione bocca (cambia ogni 250ms)
+    // 4. Animazione bocca VELOCE (ogni 200ms = 5 volte al secondo)
     let isOpen = false;
     talkingInterval = setInterval(() => {
         if (isOpen) {
@@ -508,7 +520,7 @@ function startTalking() {
             wolf.src = "lupocut1.jpg"; // Bocca aperta
         }
         isOpen = !isOpen;
-    }, 250);
+    }, 200); // 200ms
 
     // 5. Imposta lo stop dopo la durata random
     stopTalkingTimeout = setTimeout(() => {
@@ -517,7 +529,6 @@ function startTalking() {
 }
 
 function loadQuestion() {
-    // Appena carica la domanda, il lupo inizia a parlare!
     startTalking();
 
     const q = questions[currentLevel];
