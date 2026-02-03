@@ -55,21 +55,21 @@
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         z-index: 90000; display: none; pointer-events: none; 
     }
-    .active-disco { display: block !important; animation: discoFlash 0.05s infinite; } /* Velocissimo */
+    .active-disco { display: block !important; animation: discoFlash 0.05s infinite; }
     
-    body.disco-active #warningPopup { background: rgba(0,0,0,0); } /* Sfondo popup trasparente */
-    body.disco-active .warning-box { animation: boxFlash 0.1s infinite; } /* Box popup lampeggia */
+    body.disco-active #warningPopup { background: rgba(0,0,0,0); } 
+    body.disco-active .warning-box { animation: boxFlash 0.1s infinite; } 
 
     /* SFONDO ANIMATO */
     .heart-bg { position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; z-index: -1; }
     .heart-bg span { position: absolute; display: block; width: 20px; height: 20px; background: rgba(255, 255, 255, 0.6); transform: rotate(45deg); animation: animate 25s linear infinite; bottom: -150px; }
     @keyframes animate { 0% { transform: translateY(0) rotate(45deg) scale(0.3); opacity: 1; } 100% { transform: translateY(-100vh) rotate(45deg) scale(1.2); opacity: 0; } }
 
-    /* --- 1. IL LUPO NARRATORE (SEMPRE BASSO A DX) --- */
+    /* --- 1. IL LUPO NARRATORE --- */
     #wolfCharacter { 
         position: fixed; 
         bottom: -20px; 
-        right: -400px; /* Nascosto a destra di default */
+        right: -400px; 
         height: 65vh; 
         max-height: 550px;
         z-index: 50; 
@@ -80,21 +80,20 @@
         transform: translateZ(0); 
     }
 
-    /* Classe per farlo apparire */
     body.game-active #wolfCharacter.wolf-visible { 
         right: -40px; 
         opacity: 1; 
     }
 
-    /* --- 2. IL RAGAZZO (SEPARATO) --- */
+    /* --- 2. IL RAGAZZO --- */
     #boyCharacter {
         position: fixed;
-        top: 50px; /* Altezza fissa */
-        left: -400px; /* Fuori schermo a sinistra */
-        height: 30vh; /* Piccolo come richiesto */
+        top: 50px; 
+        left: -400px; 
+        height: 30vh; 
         max-height: 250px;
         z-index: 60;
-        display: none; /* Invisibile di default */
+        display: none; 
         pointer-events: none;
     }
 
@@ -168,57 +167,54 @@
     .clue-box { display: none; background: #fff3cd; border: 2px solid #ffeeba; color: #856404; padding: 15px; border-radius: 10px; margin-bottom: 15px; width: 90%; font-size: 16px; animation: slideDown 0.5s; }
     .next-level-btn { display: none; background: #28a745; color: white; }
 
-    /* === STILI SLIDER SISTEMATO === */
+    /* === STILI SLIDER TRICKY === */
     .slider-wrapper { 
-        width: 85%; 
+        width: 100%; 
         position: relative; 
-        padding: 10px 0; 
+        padding: 20px 0; 
         margin: 0 auto 20px auto; 
     }
     
     .slider-labels { 
         display: flex; justify-content: space-between; 
-        width: 78%; /* Allineato alla fine della barra colorata */
-        margin-bottom: 10px;
-        font-weight: bold; color: #ff4d88; font-size: 18px;
+        width: 77%; /* Allineato alla fine del segmento colorato */
+        margin-bottom: 5px;
+        font-weight: bold; color: #ff2e6e; font-size: 20px;
+        position: relative; left: 2px;
     }
     
     input[type=range].love-slider {
         -webkit-appearance: none;
-        appearance: none;
-        width: 130%; /* Più largo per sbordare */
-        height: 15px; 
+        width: 130%; /* L'input è più largo */
+        margin-left: 0; 
         background: transparent;
-        outline: none;
-        margin: 0;
         display: block;
     }
     
-    /* Il binario visibile */
+    /* Il binario */
     input[type=range].love-slider::-webkit-slider-runnable-track {
         width: 100%;
-        height: 12px;
+        height: 15px; 
         cursor: pointer;
-        /* Colore solido fino al 77% (il 100), poi invisibile */
-        background: linear-gradient(to right, #ff4d88 0%, #ff4d88 77%, rgba(0,0,0,0.05) 77%);
+        /* Colore solido FUCSIA fino al 77%, poi TRASPARENTE (nessun bordo) */
+        background: linear-gradient(to right, #ff2e6e 0%, #ff2e6e 76.9%, transparent 76.9%);
         border-radius: 10px;
-        border: 1px solid rgba(255, 77, 136, 0.2);
+        border: none; 
     }
 
     /* Il pallino */
     input[type=range].love-slider::-webkit-slider-thumb {
         -webkit-appearance: none;
-        appearance: none;
-        height: 30px;
-        width: 30px;
-        background: #ffffff;
-        border: 4px solid #ff2e6e;
+        height: 28px;
+        width: 28px;
         border-radius: 50%;
+        background: #fff;
+        border: 4px solid #ff2e6e;
         cursor: grab;
-        margin-top: -10px; /* Centrato */
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        margin-top: -8px; /* Centrato */
+        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
         position: relative;
-        z-index: 10;
+        z-index: 2;
     }
 
     @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } 100% { transform: translateX(0); } }
