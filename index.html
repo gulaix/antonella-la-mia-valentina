@@ -3,6 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+
 <title>Will you be my Valentine? ❤️</title>
 <link rel="preload" as="image" href="lupocut.png">
 <link rel="preload" as="image" href="lupocut1.png">
@@ -167,12 +171,15 @@
     .clue-box { display: none; background: #fff3cd; border: 2px solid #ffeeba; color: #856404; padding: 15px; border-radius: 10px; margin-bottom: 15px; width: 90%; font-size: 16px; animation: slideDown 0.5s; }
     .next-level-btn { display: none; background: #28a745; color: white; }
 
-/* === SLIDER NORMALE E PULITO === */
+    /* === SLIDER UNIVERSALE (MOBILE & PC) === */
     .slider-wrapper { 
-        width: 80%; /* Centrato e non troppo largo */
+        width: 85%; /* Un po' più largo per i cellulari */
+        max-width: 400px; /* Non diventa gigante su PC */
         position: relative; 
         margin: 30px auto; 
         height: 50px;
+        /* Impedisce al telefono di scrollare mentre tocchi lo slider */
+        touch-action: none; 
     }
     
     .slider-labels { 
@@ -186,34 +193,51 @@
         top: 0;
         font-weight: bold; 
         color: #ff2e6e; 
-        font-size: 20px;
+        font-size: 18px; 
     }
 
-    /* Lo 0 è all'inizio */
     .label-0 { left: 0; }
     
-    /* Il 100 è posizionato al 77% (perché il max reale è 130) */
-    .label-100 { left: 77%; }
+    /* Il 100 è posizionato al 77% (perché il max reale è 130). Centrato con transform. */
+    .label-100 { 
+        left: 77%; 
+        transform: translateX(-50%); 
+    }
     
     input[type=range].love-slider {
-        -webkit-appearance: none;
+        -webkit-appearance: none; 
+        appearance: none;
         width: 100%; 
         background: transparent;
         display: block;
         margin-top: 5px;
     }
     
-    /* Il binario (SOLIDO e VISIBILE) */
+    /* --- IL BINARIO (TRACK) --- */
+    
+    /* Per Chrome, Safari, Opera, Android */
     input[type=range].love-slider::-webkit-slider-runnable-track {
         width: 100%;
         height: 12px; 
         cursor: pointer;
-        background: #ffb6c1; /* Rosa solido ben visibile */
-        border: 2px solid #ff2e6e; /* Bordo scuro per definirlo bene */
+        background: #ffb6c1; 
+        border: 2px solid #ff2e6e;
+        border-radius: 6px;
+    }
+    
+    /* Per Firefox */
+    input[type=range].love-slider::-moz-range-track {
+        width: 100%;
+        height: 12px; 
+        cursor: pointer;
+        background: #ffb6c1; 
+        border: 2px solid #ff2e6e;
         border-radius: 6px;
     }
 
-    /* Il pallino */
+    /* --- IL PALLINO (THUMB) --- */
+
+    /* Per Chrome, Safari, Opera, Android */
     input[type=range].love-slider::-webkit-slider-thumb {
         -webkit-appearance: none;
         height: 30px;
@@ -222,11 +246,25 @@
         background: #fff;
         border: 4px solid #ff2e6e;
         cursor: grab;
-        margin-top: -11px; /* Centrato verticalmente */
+        /* Centratura verticale precisa */
+        margin-top: -11px; 
         box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         position: relative;
         z-index: 20;
     }
+
+    /* Per Firefox */
+    input[type=range].love-slider::-moz-range-thumb {
+        height: 30px;
+        width: 30px;
+        border: none;
+        border-radius: 50%;
+        background: #fff;
+        border: 4px solid #ff2e6e;
+        cursor: grab;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
     @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } 100% { transform: translateX(0); } }
     @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -294,7 +332,11 @@
 </div>
 
 <script>
+// Lista dei file audio per il lupo
 const audioFiles = ['audio1.mp3', 'audio2.mp3', 'audio3.mp3']; 
+
+// Lista dei file audio scoreggia
+const fartFiles = ['fart1.mp3', 'fart2.mp3', 'fart3.mp3'];
 
 const questions = [
     { question: "La sera in cui ci siamo baciati la prima volta perchè volevo salire da te??", options: ["I piedi", "Per fare segso", "Perchè avevo sete", "Per le coccole"], correct: 3, clue: "Cerca dove tieni le scarpe... c'è un bigliettino nascosto lì! 👟" },
@@ -452,7 +494,7 @@ function startCinematicSequence() {
         setTimeout(() => {
             currentAudio = new Audio('voce.mp3');
             currentAudio.play();
-            
+           
             let isOpen = false;
             cinematicInterval = setInterval(() => {
                 const rand = Math.random();
@@ -480,6 +522,7 @@ function loadQuestion() {
     
     if (currentLevel === 4) questions[4].correct = -1;
     if (currentLevel === 5) questions[5].correct = -1;
+    
     if (currentLevel === 3) sliderLocked = true; 
     
     document.getElementById("levelTitle").innerText = "Livello " + (currentLevel + 1);
@@ -490,7 +533,7 @@ function loadQuestion() {
     const container = document.getElementById("optionsContainer");
     container.innerHTML = ""; 
 
-if (q.type === "slider") {
+    if (q.type === "slider") {
         container.innerHTML = `
             <div class="slider-wrapper">
                 <div class="slider-labels">
@@ -501,12 +544,11 @@ if (q.type === "slider") {
             </div>
             <button class="option-btn" onclick="checkSlider()">Conferma</button>
         `;
-        
         const sliderInput = document.getElementById("loveRange");
         
         sliderInput.oninput = function() {
             const val = parseInt(this.value);
-            // BLOCCO: Se siamo in fase blocco, non superi il 100 (l'etichetta)
+            // Se è bloccato, lo fermiamo a 100
             if (sliderLocked && val > 100) { 
                 this.value = 100; 
             }
@@ -514,7 +556,7 @@ if (q.type === "slider") {
 
         stopEverything(); 
         wolf.classList.remove('wolf-visible'); 
-    }
+    } 
     else {
         q.options.forEach((opt, index) => {
             const btn = document.createElement("button");
@@ -531,11 +573,11 @@ function checkSlider() {
     const slider = document.getElementById("loveRange");
     const val = parseInt(slider.value);
     
-    // Se il valore è inferiore a 125 (quindi non è andata in fondo) -> ERRORE
+    // Se non ha raggiunto almeno 125 (ben oltre il 100) -> ERRORE
     if (val < 125) {
         startCinematicSequence();
     } else {
-        // Se ha trascinato fino in fondo (oltre 125) -> VITTORIA
+        // VITTORIA
         showClue();
     }
 }
@@ -548,7 +590,7 @@ function handleRedirect() {
 function handleSpecialGiulioAnswer(btn) {
     btn.classList.add("correct");
     stopEverything(); 
-    wolf.classList.remove('wolf-visible'); // Nascondi lupo durante il delirio
+    wolf.classList.remove('wolf-visible'); 
     
     discoOverlay.classList.add('active-disco');
     document.body.classList.add('disco-active');
@@ -580,10 +622,10 @@ function showClue() {
     document.getElementById("clueBox").style.display = "block";
     document.getElementById("nextBtn").style.display = "inline-block";
     
-    // Se siamo nel livello 3, nascondiamo il ragazzo, mostriamo il lupo festante se vuoi
+    // Se siamo nel livello 3, nascondiamo il ragazzo, mostriamo il lupo festante
     if (currentLevel === 3) {
         boy.style.display = 'none';
-        wolf.classList.add('wolf-visible'); // Torna il lupo
+        wolf.classList.add('wolf-visible');
     }
     
     launchConfetti(); 
@@ -611,7 +653,7 @@ function triggerError(btnElement, isCinematic = false) {
             errorOverlay.style.display = 'none'; 
             if (isCinematic) {
                 stopEverything(); 
-                sliderLocked = false; 
+                sliderLocked = false; // SBLOCCA LO SLIDER
                 // Finito errore cinematico, torna il lupo normale per riprovare
                 wolf.classList.add('wolf-visible');
             }
@@ -657,7 +699,7 @@ function checkAnswer(selectedIndex, btnElement) {
                 specialBtn.innerText = "Ie chi viristi uancora beddra";
                 specialBtn.className = "option-btn"; 
                 specialBtn.onclick = () => handleSpecialGiulioAnswer(specialBtn);
-                
+               
                 if (allButtons.length >= 2) {
                     container.insertBefore(specialBtn, allButtons[2]);
                 } else {
@@ -693,6 +735,15 @@ function dropPoop(x, y) {
     setTimeout(() => poop.remove(), 1500);
 }
 
+// === NUOVA FUNZIONE PER I SUONI CASUALI ===
+function playRandomFart() {
+    // Sceglie un indice a caso: 0, 1 o 2
+    const randomIndex = Math.floor(Math.random() * fartFiles.length);
+    const audio = new Audio(fartFiles[randomIndex]);
+    // Gestione errore se il browser blocca l'audio
+    audio.play().catch(e => console.log("Audio bloccato:", e));
+}
+
 function moveNoButton() {
     const currentLeft = noBtn.offsetLeft;
     const currentTop = noBtn.offsetTop;
@@ -706,8 +757,23 @@ function moveNoButton() {
     noBtn.style.top = newY + "px";
 }
 
-noBtn.addEventListener("mouseover", moveNoButton);
-noBtn.addEventListener("touchstart", (e) => { e.preventDefault(); moveNoButton(); });
+// EVENT LISTENERS DEL TASTO NO AGGIORNATI
+noBtn.addEventListener("mouseover", () => {
+    moveNoButton();
+    playRandomFart(); // Suono su passaggio mouse
+});
+
+noBtn.addEventListener("touchstart", (e) => { 
+    e.preventDefault(); 
+    moveNoButton();
+    playRandomFart(); // Suono su tocco (mobile)
+});
+
+noBtn.addEventListener("click", () => {
+    // Caso raro in cui riesca a cliccarlo
+    moveNoButton();
+    playRandomFart();
+});
 
 </script>
 
