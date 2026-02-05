@@ -30,9 +30,9 @@
         /* === SFONDO PER COMPUTER (Default) === */
         background-image: url('background.jpeg');
         background-repeat: no-repeat;
-        background-size: cover; /* Copre tutto lo schermo senza ripetersi */
+        background-size: cover; 
         background-position: center;
-        background-attachment: fixed; /* L'immagine sta ferma se scorri */
+        background-attachment: fixed; 
 
         display: flex;
         justify-content: center;
@@ -82,7 +82,7 @@
     #wolfCharacter { 
         position: fixed; 
         bottom: -20px; 
-        right: -400px; 
+        right: -400px; /* Nascosto di default se non ha la classe */
         height: 65vh; 
         max-height: 550px;
         z-index: 50; 
@@ -93,7 +93,8 @@
         transform: translateZ(0); 
     }
 
-    body.game-active #wolfCharacter.wolf-visible { 
+    /* Regola generica per renderlo visibile (PC e Mobile base) */
+    #wolfCharacter.wolf-visible { 
         right: -40px; 
         opacity: 1; 
     }
@@ -110,8 +111,9 @@
         pointer-events: none;
     }
 
-    /* CARD */
+    /* CARD (Versione PC Standard) */
     .card { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); max-width: 420px; width: 90vw; min-height: 550px; position: relative; border: 3px solid #ffebf0; overflow: hidden; display: flex; flex-direction: column; align-items: center; z-index: 10; transition: all 0.5s ease; }
+    
     body.game-active .card { margin-right: 220px; overflow: visible; border-color: #ff4d88; }
     body.game-active .card::before { content: ''; position: absolute; top: 150px; right: -30px; border-width: 15px 0 15px 30px; border-style: solid; border-color: transparent transparent transparent rgba(255, 255, 255, 0.95); z-index: 1; }
     body.game-active .card::after { content: ''; position: absolute; top: 147px; right: -36px; border-width: 18px 0 18px 36px; border-style: solid; border-color: transparent transparent transparent #ff4d88; z-index: 0; }
@@ -136,15 +138,41 @@
 
     /* MEDIA QUERIES MOBILE E SFONDO MOBILE */
     @media (max-width: 768px) {
-        /* === SFONDO PER CELLULARE === */
+        /* SFONDO CELLULARE */
         body {
             background-image: url('background_mobile.jpg') !important;
             background-size: cover;
             background-position: center;
         }
 
-        body.game-active #wolfCharacter.wolf-visible { right: -75px !important; height: 35vh !important; bottom: 20px !important; opacity: 1; }
-        body.game-active .card { margin-right: 90px !important; width: 60vw !important; min-height: 380px !important; padding: 12px !important; margin-left: 5px !important; }
+        /* === MODIFICA CARD INIZIALE (Più piccola e trasparente) === */
+        /* Questa regola vale quando il gioco NON è attivo (fase iniziale) */
+        .card {
+            background: rgba(255, 255, 255, 0.65) !important; /* Molto trasparente */
+            backdrop-filter: blur(5px); /* Effetto vetro sfocato */
+            width: 85vw !important; /* Un po' più stretta */
+            min-height: auto !important; /* Meno alta, si adatta al contenuto */
+            padding: 20px !important;
+            margin-right: 0 !important;
+        }
+
+        /* Quando inizia il gioco, la card diventa più solida per leggere le domande */
+        body.game-active .card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            min-height: 380px !important;
+            margin-right: 90px !important; /* Spazio per il lupo */
+            width: 60vw !important;
+            margin-left: 5px !important;
+        }
+
+        /* LUPO SU MOBILE (Visibile anche all'inizio) */
+        #wolfCharacter.wolf-visible { 
+            right: -75px !important; 
+            height: 35vh !important; 
+            bottom: 20px !important; 
+            opacity: 1; 
+        }
+
         body.game-active.cinematic-active .card { margin-right: 0 !important; margin-top: 150px; }
         body.game-active h2 { font-size: 16px !important; margin-bottom: 8px !important; }
         body.game-active .question-box { font-size: 13px !important; padding: 8px !important; }
@@ -189,8 +217,8 @@
 
     /* === SLIDER UNIVERSALE (MOBILE & PC) === */
     .slider-wrapper { 
-        width: 85%; /* Un po' più largo per i cellulari */
-        max-width: 400px; /* Non diventa gigante su PC */
+        width: 85%; 
+        max-width: 400px; 
         position: relative; 
         margin: 30px auto; 
         height: 50px;
@@ -213,7 +241,6 @@
 
     .label-0 { left: 0; }
     
-    /* Il 100 è posizionato al 77% (max reale 130). Centrato con transform. */
     .label-100 { 
         left: 77%; 
         transform: translateX(-50%); 
@@ -228,7 +255,6 @@
         margin-top: 5px;
     }
     
-    /* --- IL BINARIO (TRACK) --- */
     input[type=range].love-slider::-webkit-slider-runnable-track {
         width: 100%;
         height: 12px; 
@@ -246,7 +272,6 @@
         border-radius: 6px;
     }
 
-    /* --- IL PALLINO (THUMB) --- */
     input[type=range].love-slider::-webkit-slider-thumb {
         -webkit-appearance: none;
         height: 30px;
@@ -306,7 +331,7 @@
     </div>
 </div>
 
-<img src="lupocut.png" id="wolfCharacter" alt="Lupo">
+<img src="lupocut.png" id="wolfCharacter" class="wolf-visible" alt="Lupo">
 <img src="walking.png" id="boyCharacter" alt="Ragazzo">
 
 <div class="card" id="mainCard">
@@ -342,7 +367,6 @@
 </div>
 
 <script>
-// Lista file audio lupo
 const audioFiles = ['audio1.mp3', 'audio2.mp3', 'audio3.mp3']; 
 
 const questions = [
@@ -369,7 +393,6 @@ const errorSound = document.getElementById("errorSound");
 const warningPopup = document.getElementById("warningPopup");
 const discoOverlay = document.getElementById("discoOverlay");
 
-// Prendi i riferimenti audio dal DOM per massima velocità
 const farts = [
     document.getElementById('fart1'),
     document.getElementById('fart2'),
@@ -386,21 +409,18 @@ let wrongAnswersCount = 0;
 let beddraAudio = null; 
 let sliderLocked = true; 
 
-// Variabili per gestire la "raffica" di scoregge
 let isFarting = false;
 let fartCooldown = false;
 
-// TRUCCO: Al primo click/tocco ovunque, sblocca l'audio del browser
 function unlockAudio() {
     farts.forEach(f => {
-        f.volume = 0; // Volume muto
+        f.volume = 0; 
         f.play().then(() => {
-            f.pause(); // Subito pausa
+            f.pause(); 
             f.currentTime = 0;
-            f.volume = 1; // Ripristina volume
+            f.volume = 1; 
         }).catch(() => {});
     });
-    // Rimuove l'evento dopo il primo uso
     document.body.removeEventListener('click', unlockAudio);
     document.body.removeEventListener('touchstart', unlockAudio);
 }
@@ -414,15 +434,13 @@ function stopEverything() {
     if (cinematicInterval) clearInterval(cinematicInterval);
     if (stopTimeout) clearTimeout(stopTimeout);
     
-    // RESET GRAFICA
     document.body.classList.remove('cinematic-active');
     document.body.classList.remove('disco-active');
     discoOverlay.classList.remove('active-disco');
     
-    // Reset Boy
     boy.style.display = 'none';
     
-    // Reset Wolf
+    // Non nascondiamo più il lupo col reset, perché lo vuoi sempre
     wolf.src = "lupocut.png";
 }
 
@@ -458,10 +476,10 @@ function startGame() {
 }
 
 function startTalking() {
-    if (currentLevel === 3) return; // Salta se livello slider
+    if (currentLevel === 3) return;
 
     stopEverything(); 
-    wolf.classList.add('wolf-visible'); // Mostra il lupo
+    wolf.classList.add('wolf-visible'); 
 
     if (audioFiles.length === 0) return;
 
@@ -498,34 +516,28 @@ function startTalking() {
     currentAudio.play().catch(e => console.log("Audio autoplay bloccato:", e));
 }
 
-// --- LOGICA CINEMATICA RAGAZZO ---
 function startCinematicSequence() {
-    stopEverything(); // Nasconde lupo e resetta tutto
+    stopEverything(); 
     
-    // Mostra il ragazzo
     boy.style.display = 'block';
     boy.src = 'walking.png';
     boy.style.left = '-400px'; 
-    boy.style.transition = 'none'; // Reset transizione
-    boy.style.transform = 'scaleX(-1)'; // Guarda a destra
+    boy.style.transition = 'none'; 
+    boy.style.transform = 'scaleX(-1)'; 
 
-    document.body.classList.add('cinematic-active'); // Sposta la card
+    document.body.classList.add('cinematic-active'); 
 
-    // Forza reflow
     void boy.offsetWidth;
 
-    // Start camminata
     boy.style.transition = 'left 5s linear';
     boy.style.left = '50%';
     boy.style.transform = 'translateX(-50%) scaleX(-1)';
 
-    // Quando arriva al centro
     setTimeout(() => {
         boy.style.transition = 'none';
-        boy.style.transform = 'translateX(-50%) scaleX(1)'; // Fronte
+        boy.style.transform = 'translateX(-50%) scaleX(1)'; 
         boy.src = 'stand.png';
 
-        // Attesa 1s prima di parlare
         setTimeout(() => {
             currentAudio = new Audio('voce.mp3');
             currentAudio.play();
@@ -544,7 +556,6 @@ function startCinematicSequence() {
             currentAudio.onended = function() {
                 clearInterval(cinematicInterval);
                 boy.src = 'stand.png'; 
-                // Errore finale
                 triggerError(document.querySelector("#optionsContainer button"), true); 
             };
         }, 1000);
@@ -583,7 +594,6 @@ function loadQuestion() {
         
         sliderInput.oninput = function() {
             const val = parseInt(this.value);
-            // Se è bloccato, lo fermiamo a 100
             if (sliderLocked && val > 100) { 
                 this.value = 100; 
             }
@@ -766,30 +776,22 @@ function dropPoop(x, y) {
     setTimeout(() => poop.remove(), 1500);
 }
 
-// === GESTIONE SCORE + MOVIMENTO ===
 function moveNoButton() {
-    // Se siamo in cooldown (pausa), non fare nulla: evita la raffica
     if (fartCooldown) return;
     
-    // Attiva cooldown: per 150ms non può muoversi di nuovo
     fartCooldown = true;
     setTimeout(() => { fartCooldown = false; }, 150);
 
-    // 1. Riproduci Scoreggia (PROPULSIONE!)
     const randomIndex = Math.floor(Math.random() * farts.length);
     const audio = farts[randomIndex];
     
-    // Clona il nodo audio per poterli sovrapporre se necessario
-    // (Ma col cooldown è gestito bene)
     audio.currentTime = 0;
     audio.play().catch(e => console.log("Audio bloccato:", e));
 
-    // 2. Lascia Cacca (nella vecchia posizione)
     const currentLeft = noBtn.offsetLeft;
     const currentTop = noBtn.offsetTop;
     dropPoop(currentLeft + 20, currentTop + 10);
 
-    // 3. Sposta il bottone (nella nuova posizione)
     const maxX = card.clientWidth - noBtn.offsetWidth - 30;
     const maxY = card.clientHeight - noBtn.offsetHeight - 30;
     const safeZoneTop = 280; 
@@ -799,7 +801,6 @@ function moveNoButton() {
     noBtn.style.top = newY + "px";
 }
 
-// EVENT LISTENERS DEL TASTO NO
 noBtn.addEventListener("mouseover", moveNoButton);
 noBtn.addEventListener("touchstart", (e) => { 
     e.preventDefault(); 
