@@ -2,12 +2,13 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 
 <title>Will you be my Valentine? ❤️</title>
+
 <link rel="preload" as="image" href="lupocut.png">
 <link rel="preload" as="image" href="lupocut1.png">
 <link rel="preload" as="image" href="noo.png">
@@ -15,6 +16,8 @@
 <link rel="preload" as="image" href="stand.png">
 <link rel="preload" as="image" href="standspeak.png">
 <link rel="preload" as="image" href="rare.png">
+<link rel="preload" as="image" href="background.jpeg">
+<link rel="preload" as="image" href="background_mobile.jpg">
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
@@ -23,9 +26,14 @@
         margin: 0;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         background-color: #ffc0cb; 
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150' viewBox='0 0 150 150'%3E%3Cstyle%3E.st%7Bfill:%23fff;opacity:0.8%7D.sh%7Bstroke:%23fff;stroke-width:2;stroke-opacity:0.8;stroke-linecap:round%7D%3C/style%3E%3Ccircle class='st' cx='20' cy='20' r='2'/%3E%3Ccircle class='st' cx='120' cy='40' r='3'/%3E%3Ccircle class='st' cx='70' cy='90' r='2'/%3E%3Ccircle class='st' cx='10' cy='110' r='3'/%3E%3Ccircle class='st' cx='140' cy='130' r='2'/%3E%3Ccircle class='st' cx='50' cy='140' r='1.5'/%3E%3Ccircle class='st' cx='90' cy='10' r='2'/%3E%3Cpath class='sh' d='M40,10 L80,30'/%3E%3Ccircle fill='%23fff' opacity='0.9' cx='80' cy='30' r='3.5'/%3E%3Cpath class='sh' d='M100,70 L130,100'/%3E%3Ccircle fill='%23fff' opacity='0.9' cx='130' cy='100' r='3'/%3E%3C/svg%3E");
-        background-repeat: repeat;
-        background-size: 150px 150px;
+        
+        /* === SFONDO PER COMPUTER (Default) === */
+        background-image: url('background.jpeg');
+        background-repeat: no-repeat;
+        background-size: cover; /* Copre tutto lo schermo senza ripetersi */
+        background-position: center;
+        background-attachment: fixed; /* L'immagine sta ferma se scorri */
+
         display: flex;
         justify-content: center;
         align-items: center;
@@ -33,6 +41,7 @@
         text-align: center;
         overflow: hidden;
         transition: background-color 0.2s;
+        touch-action: manipulation;
     }
 
     /* === ANIMAZIONI DISCO === */
@@ -64,7 +73,7 @@
     body.disco-active #warningPopup { background: rgba(0,0,0,0); } 
     body.disco-active .warning-box { animation: boxFlash 0.1s infinite; } 
 
-    /* SFONDO ANIMATO */
+    /* SFONDO ANIMATO (Cuoricini) */
     .heart-bg { position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; z-index: -1; }
     .heart-bg span { position: absolute; display: block; width: 20px; height: 20px; background: rgba(255, 255, 255, 0.6); transform: rotate(45deg); animation: animate 25s linear infinite; bottom: -150px; }
     @keyframes animate { 0% { transform: translateY(0) rotate(45deg) scale(0.3); opacity: 1; } 100% { transform: translateY(-100vh) rotate(45deg) scale(1.2); opacity: 0; } }
@@ -125,8 +134,15 @@
     .fade-out { opacity: 0; transition: opacity 0.5s ease; }
     @keyframes popIn { 0% { transform: scale(0); } 100% { transform: scale(1); } }
 
-    /* MEDIA QUERIES MOBILE */
+    /* MEDIA QUERIES MOBILE E SFONDO MOBILE */
     @media (max-width: 768px) {
+        /* === SFONDO PER CELLULARE === */
+        body {
+            background-image: url('background_mobile.jpg') !important;
+            background-size: cover;
+            background-position: center;
+        }
+
         body.game-active #wolfCharacter.wolf-visible { right: -75px !important; height: 35vh !important; bottom: 20px !important; opacity: 1; }
         body.game-active .card { margin-right: 90px !important; width: 60vw !important; min-height: 380px !important; padding: 12px !important; margin-left: 5px !important; }
         body.game-active.cinematic-active .card { margin-right: 0 !important; margin-top: 150px; }
@@ -149,10 +165,10 @@
     button { padding: 12px 24px; border-radius: 25px; border: none; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.15); transition: transform 0.2s, background 0.3s; }
     button:active { transform: scale(0.95); }
 
-    .btn-proposal { position: absolute; }
+    .btn-proposal { position: absolute; transition: transform 0.05s linear; }
     #yesBtn { background: linear-gradient(45deg, #ff4d88, #ff2e6e); color: white; top: 380px; left: 20%; z-index: 1000; animation: pulse 2s infinite; cursor: pointer; }
     #yesBtn:hover { transform: scale(1.1); }
-    #noBtn { background-color: #f0f0f0; color: #555; top: 380px; left: 60%; z-index: 1000; transition: all 0.3s ease-out; cursor: pointer; }
+    #noBtn { background-color: #f0f0f0; color: #555; top: 380px; left: 60%; z-index: 1000; transition: all 0.1s ease-out; cursor: pointer; }
     @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
     .celebration { display: none; margin-top: 10px; font-size: 18px; color: #ff2e6e; font-weight: bold; animation: fadeIn 0.5s ease-in; z-index: 150; width: 100%; }
@@ -178,7 +194,6 @@
         position: relative; 
         margin: 30px auto; 
         height: 50px;
-        /* Impedisce al telefono di scrollare mentre tocchi lo slider */
         touch-action: none; 
     }
     
@@ -198,7 +213,7 @@
 
     .label-0 { left: 0; }
     
-    /* Il 100 è posizionato al 77% (perché il max reale è 130). Centrato con transform. */
+    /* Il 100 è posizionato al 77% (max reale 130). Centrato con transform. */
     .label-100 { 
         left: 77%; 
         transform: translateX(-50%); 
@@ -214,8 +229,6 @@
     }
     
     /* --- IL BINARIO (TRACK) --- */
-    
-    /* Per Chrome, Safari, Opera, Android */
     input[type=range].love-slider::-webkit-slider-runnable-track {
         width: 100%;
         height: 12px; 
@@ -224,8 +237,6 @@
         border: 2px solid #ff2e6e;
         border-radius: 6px;
     }
-    
-    /* Per Firefox */
     input[type=range].love-slider::-moz-range-track {
         width: 100%;
         height: 12px; 
@@ -236,8 +247,6 @@
     }
 
     /* --- IL PALLINO (THUMB) --- */
-
-    /* Per Chrome, Safari, Opera, Android */
     input[type=range].love-slider::-webkit-slider-thumb {
         -webkit-appearance: none;
         height: 30px;
@@ -246,14 +255,11 @@
         background: #fff;
         border: 4px solid #ff2e6e;
         cursor: grab;
-        /* Centratura verticale precisa */
         margin-top: -11px; 
         box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         position: relative;
         z-index: 20;
     }
-
-    /* Per Firefox */
     input[type=range].love-slider::-moz-range-thumb {
         height: 30px;
         width: 30px;
@@ -272,6 +278,10 @@
 </head>
 
 <body>
+
+<audio id="fart1" src="fart1.mp3" preload="auto"></audio>
+<audio id="fart2" src="fart2.mp3" preload="auto"></audio>
+<audio id="fart3" src="fart3.mp3" preload="auto"></audio>
 
 <div class="heart-bg">
     <span style="left: 10%; animation-duration: 15s; animation-delay: 1s;"></span>
@@ -332,11 +342,8 @@
 </div>
 
 <script>
-// Lista dei file audio per il lupo
+// Lista file audio lupo
 const audioFiles = ['audio1.mp3', 'audio2.mp3', 'audio3.mp3']; 
-
-// Lista dei file audio scoreggia
-const fartFiles = ['fart1.mp3', 'fart2.mp3', 'fart3.mp3'];
 
 const questions = [
     { question: "La sera in cui ci siamo baciati la prima volta perchè volevo salire da te??", options: ["I piedi", "Per fare segso", "Perchè avevo sete", "Per le coccole"], correct: 3, clue: "Cerca dove tieni le scarpe... c'è un bigliettino nascosto lì! 👟" },
@@ -362,6 +369,13 @@ const errorSound = document.getElementById("errorSound");
 const warningPopup = document.getElementById("warningPopup");
 const discoOverlay = document.getElementById("discoOverlay");
 
+// Prendi i riferimenti audio dal DOM per massima velocità
+const farts = [
+    document.getElementById('fart1'),
+    document.getElementById('fart2'),
+    document.getElementById('fart3')
+];
+
 let currentLevel = 0;
 let currentAudio = null; 
 let talkingInterval = null; 
@@ -371,6 +385,27 @@ let lastAudioIndex = -1;
 let wrongAnswersCount = 0; 
 let beddraAudio = null; 
 let sliderLocked = true; 
+
+// Variabili per gestire la "raffica" di scoregge
+let isFarting = false;
+let fartCooldown = false;
+
+// TRUCCO: Al primo click/tocco ovunque, sblocca l'audio del browser
+function unlockAudio() {
+    farts.forEach(f => {
+        f.volume = 0; // Volume muto
+        f.play().then(() => {
+            f.pause(); // Subito pausa
+            f.currentTime = 0;
+            f.volume = 1; // Ripristina volume
+        }).catch(() => {});
+    });
+    // Rimuove l'evento dopo il primo uso
+    document.body.removeEventListener('click', unlockAudio);
+    document.body.removeEventListener('touchstart', unlockAudio);
+}
+document.body.addEventListener('click', unlockAudio);
+document.body.addEventListener('touchstart', unlockAudio);
 
 function stopEverything() {
     if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; currentAudio.onplay = null; currentAudio.onended = null; }
@@ -573,11 +608,9 @@ function checkSlider() {
     const slider = document.getElementById("loveRange");
     const val = parseInt(slider.value);
     
-    // Se non ha raggiunto almeno 125 (ben oltre il 100) -> ERRORE
     if (val < 125) {
         startCinematicSequence();
     } else {
-        // VITTORIA
         showClue();
     }
 }
@@ -622,7 +655,6 @@ function showClue() {
     document.getElementById("clueBox").style.display = "block";
     document.getElementById("nextBtn").style.display = "inline-block";
     
-    // Se siamo nel livello 3, nascondiamo il ragazzo, mostriamo il lupo festante
     if (currentLevel === 3) {
         boy.style.display = 'none';
         wolf.classList.add('wolf-visible');
@@ -653,8 +685,7 @@ function triggerError(btnElement, isCinematic = false) {
             errorOverlay.style.display = 'none'; 
             if (isCinematic) {
                 stopEverything(); 
-                sliderLocked = false; // SBLOCCA LO SLIDER
-                // Finito errore cinematico, torna il lupo normale per riprovare
+                sliderLocked = false; 
                 wolf.classList.add('wolf-visible');
             }
         }, 500); 
@@ -735,19 +766,30 @@ function dropPoop(x, y) {
     setTimeout(() => poop.remove(), 1500);
 }
 
-// === NUOVA FUNZIONE PER I SUONI CASUALI ===
-function playRandomFart() {
-    // Sceglie un indice a caso: 0, 1 o 2
-    const randomIndex = Math.floor(Math.random() * fartFiles.length);
-    const audio = new Audio(fartFiles[randomIndex]);
-    // Gestione errore se il browser blocca l'audio
-    audio.play().catch(e => console.log("Audio bloccato:", e));
-}
-
+// === GESTIONE SCORE + MOVIMENTO ===
 function moveNoButton() {
+    // Se siamo in cooldown (pausa), non fare nulla: evita la raffica
+    if (fartCooldown) return;
+    
+    // Attiva cooldown: per 150ms non può muoversi di nuovo
+    fartCooldown = true;
+    setTimeout(() => { fartCooldown = false; }, 150);
+
+    // 1. Riproduci Scoreggia (PROPULSIONE!)
+    const randomIndex = Math.floor(Math.random() * farts.length);
+    const audio = farts[randomIndex];
+    
+    // Clona il nodo audio per poterli sovrapporre se necessario
+    // (Ma col cooldown è gestito bene)
+    audio.currentTime = 0;
+    audio.play().catch(e => console.log("Audio bloccato:", e));
+
+    // 2. Lascia Cacca (nella vecchia posizione)
     const currentLeft = noBtn.offsetLeft;
     const currentTop = noBtn.offsetTop;
     dropPoop(currentLeft + 20, currentTop + 10);
+
+    // 3. Sposta il bottone (nella nuova posizione)
     const maxX = card.clientWidth - noBtn.offsetWidth - 30;
     const maxY = card.clientHeight - noBtn.offsetHeight - 30;
     const safeZoneTop = 280; 
@@ -757,22 +799,15 @@ function moveNoButton() {
     noBtn.style.top = newY + "px";
 }
 
-// EVENT LISTENERS DEL TASTO NO AGGIORNATI
-noBtn.addEventListener("mouseover", () => {
-    moveNoButton();
-    playRandomFart(); // Suono su passaggio mouse
-});
-
+// EVENT LISTENERS DEL TASTO NO
+noBtn.addEventListener("mouseover", moveNoButton);
 noBtn.addEventListener("touchstart", (e) => { 
     e.preventDefault(); 
     moveNoButton();
-    playRandomFart(); // Suono su tocco (mobile)
 });
-
-noBtn.addEventListener("click", () => {
-    // Caso raro in cui riesca a cliccarlo
+noBtn.addEventListener("click", (e) => {
+    e.preventDefault();
     moveNoButton();
-    playRandomFart();
 });
 
 </script>
