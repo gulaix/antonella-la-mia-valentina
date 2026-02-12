@@ -18,8 +18,7 @@
 <link rel="preload" as="image" href="rare.png">
 <link rel="preload" as="image" href="background.jpeg">
 <link rel="preload" as="image" href="background_mobile.jpg">
-
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<link rel="preload" as="image" href="mela.png"> <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <style>
     body {
@@ -363,6 +362,7 @@
         <div class="clue-box" id="clueBox">
             <strong>✨ BRAVA! Ecco il tuo indizio:</strong><br>
             <span id="clueText">...</span>
+            <img id="clueImage" src="" style="display:none; max-width: 150px; width: 80%; margin: 10px auto; border-radius: 10px; border: 2px solid #ffcc00;" alt="Indizio">
         </div>
         <button class="next-level-btn" id="nextBtn" onclick="nextLevel()">Prossimo Livello ➡️</button>
     </div>
@@ -379,7 +379,10 @@ const audioFiles = ['audio1.mp3', 'audio2.mp3', 'audio3.mp3'];
 
 const questions = [
     { question: "La sera in cui ci siamo baciati la prima volta perchè volevo salire da te??", options: ["I piedi", "Per fare segso", "Perchè avevo sete", "Per le coccole"], correct: 3, clue: "??: otsot li ovatlo" },
-    { question: "Quando ci siamo messi assieme lupacchiotta??", options: ["24/06/2025", "25/07/2025", "25/06/2025", "24/08/2025"], correct: 1, clue: "bastarda hai sbagliato auuuu , comunque..." },
+    
+    // MODIFICA QUI: Aggiunta la proprietà clueImage
+    { question: "Quando ci siamo messi assieme lupacchiotta??", options: ["24/06/2025", "25/07/2025", "25/06/2025", "24/08/2025"], correct: 1, clue: "bastarda hai sbagliato auuuu , comunque...", clueImage: "mela.png" },
+    
     { question: "Chi è che ha SEMPRE ragione nelle discussioni?", options: ["Tu (Antonella) 🙄", "Io (Giulio) 😎"], correct: 1, clue: "??: v4s0d3ll0sb4ll0", type: "redirect" },
     { question: "Quanto ti amo da 1 a 10? 📈", options: [], correct: 999, clue: "antonella tvb, bevi un bicchiere d'acqua che sarai disidratata auu", type: "slider" },
     { question: "Qual è il mio piatto preferito che cucini tu?", options: ["pasta col tonno", "insalata e limone", "macinato bollito", "i broccoli"], correct: -1, clue: "🇦🇱" },
@@ -670,6 +673,16 @@ function fakeOkButton() { console.log("Cliccato OK, ma è una trappola!"); }
 function showClue() {
     const q = questions[currentLevel];
     document.getElementById("clueText").innerText = q.clue;
+    
+    // MODIFICA QUI: Logica per mostrare l'immagine mela.png se esiste
+    const imgEl = document.getElementById("clueImage");
+    if (q.clueImage) {
+        imgEl.src = q.clueImage;
+        imgEl.style.display = "block";
+    } else {
+        imgEl.style.display = "none";
+    }
+
     document.getElementById("clueBox").style.display = "block";
     document.getElementById("nextBtn").style.display = "inline-block";
    
