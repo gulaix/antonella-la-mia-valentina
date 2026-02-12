@@ -18,7 +18,9 @@
 <link rel="preload" as="image" href="rare.png">
 <link rel="preload" as="image" href="background.jpeg">
 <link rel="preload" as="image" href="background_mobile.jpg">
-<link rel="preload" as="image" href="mela.png"> <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<link rel="preload" as="image" href="mela.png">
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <style>
     body {
@@ -295,6 +297,20 @@
         box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
 
+    /* === STILE PER L'IMMAGINE POPUP === */
+    #imagePopupOverlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.85); z-index: 999999;
+        display: none; justify-content: center; align-items: center; flex-direction: column;
+        animation: fadeIn 0.3s;
+    }
+    #popupImage {
+        max-width: 90%; max-height: 80vh;
+        border: 5px solid white; border-radius: 15px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
     @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } 100% { transform: translateX(0); } }
     @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -321,6 +337,11 @@
 </div>
 
 <div id="discoOverlay"></div>
+
+<div id="imagePopupOverlay" onclick="closeImagePopup()">
+    <img id="popupImage" src="" alt="Sorpresa!">
+    <p style="color:white; font-size: 18px; margin-top:15px; font-weight:bold;">Clicca ovunque per chiudere</p>
+</div>
 
 <div id="warningPopup">
     <div class="warning-box">
@@ -362,7 +383,6 @@
         <div class="clue-box" id="clueBox">
             <strong>✨ BRAVA! Ecco il tuo indizio:</strong><br>
             <span id="clueText">...</span>
-            <img id="clueImage" src="" style="display:none; max-width: 150px; width: 80%; margin: 10px auto; border-radius: 10px; border: 2px solid #ffcc00;" alt="Indizio">
         </div>
         <button class="next-level-btn" id="nextBtn" onclick="nextLevel()">Prossimo Livello ➡️</button>
     </div>
@@ -380,7 +400,7 @@ const audioFiles = ['audio1.mp3', 'audio2.mp3', 'audio3.mp3'];
 const questions = [
     { question: "La sera in cui ci siamo baciati la prima volta perchè volevo salire da te??", options: ["I piedi", "Per fare segso", "Perchè avevo sete", "Per le coccole"], correct: 3, clue: "??: otsot li ovatlo" },
     
-    // MODIFICA QUI: Aggiunta la proprietà clueImage
+    // QUI C'È IL RIFERIMENTO ALL'IMMAGINE CHE APPARIRÀ A TUTTO SCHERMO
     { question: "Quando ci siamo messi assieme lupacchiotta??", options: ["24/06/2025", "25/07/2025", "25/06/2025", "24/08/2025"], correct: 1, clue: "bastarda hai sbagliato auuuu , comunque...", clueImage: "mela.png" },
     
     { question: "Chi è che ha SEMPRE ragione nelle discussioni?", options: ["Tu (Antonella) 🙄", "Io (Giulio) 😎"], correct: 1, clue: "??: v4s0d3ll0sb4ll0", type: "redirect" },
@@ -403,6 +423,8 @@ const errorOverlay = document.getElementById("errorOverlay");
 const errorSound = document.getElementById("errorSound");
 const warningPopup = document.getElementById("warningPopup");
 const discoOverlay = document.getElementById("discoOverlay");
+const imagePopupOverlay = document.getElementById("imagePopupOverlay");
+const popupImage = document.getElementById("popupImage");
 
 const farts = [
     document.getElementById('fart1'),
@@ -674,13 +696,10 @@ function showClue() {
     const q = questions[currentLevel];
     document.getElementById("clueText").innerText = q.clue;
     
-    // MODIFICA QUI: Logica per mostrare l'immagine mela.png se esiste
-    const imgEl = document.getElementById("clueImage");
+    // MOSTRA IL POPUP SE C'È L'IMMAGINE
     if (q.clueImage) {
-        imgEl.src = q.clueImage;
-        imgEl.style.display = "block";
-    } else {
-        imgEl.style.display = "none";
+        popupImage.src = q.clueImage;
+        imagePopupOverlay.style.display = "flex";
     }
 
     document.getElementById("clueBox").style.display = "block";
@@ -692,6 +711,10 @@ function showClue() {
     }
    
     launchConfetti(); 
+}
+
+function closeImagePopup() {
+    imagePopupOverlay.style.display = "none";
 }
 
 function triggerError(btnElement, isCinematic = false) {
