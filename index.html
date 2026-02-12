@@ -370,12 +370,12 @@
 const audioFiles = ['audio1.mp3', 'audio2.mp3', 'audio3.mp3']; 
 
 const questions = [
-    { question: "La sera in cui ci siamo baciati la prima volta perchè volevo salire da te??", options: ["I piedi", "Per fare segso", "Perchè avevo sete", "Per le coccole"], correct: 3, clue: "Cerca dove tieni le scarpe... c'è un bigliettino nascosto lì! 👟" },
-    { question: "Come si chiama il nostro peluche preferito? 🧸", options: ["Bubu", "Orso", "Pippo", "Stitch"], correct: 3, clue: "Vai in bagno e guarda dietro lo specchio! 🚿" },
-    { question: "Chi è che ha SEMPRE ragione nelle discussioni?", options: ["Tu (Antonella) 🙄", "Io (Giulio) 😎"], correct: 1, clue: "Guarda dietro la TV in salotto! 📺", type: "redirect" },
-    { question: "Quanto ti amo da 1 a 10? 📈", options: [], correct: 999, clue: "L'ultimo indizio è... addosso a me! Vieni a prendertelo! ❤️", type: "slider" },
-    { question: "Qual è il mio piatto preferito che cucini tu?", options: ["pasta col tonno", "insalata e limone", "macinato bollito", "i broccoli"], correct: -1, clue: "Controlla dentro il frigo, vicino al latte! 🥛" },
-    { question: "Giulio è il miglior fidanzato a fare i regali??", options: ["SI", "...si", "NO", "forse"], correct: -1, clue: "Cerca sotto il tuo cuscino! 🛏️" }
+    { question: "La sera in cui ci siamo baciati la prima volta perchè volevo salire da te??", options: ["I piedi", "Per fare segso", "Perchè avevo sete", "Per le coccole"], correct: 3, clue: "??: otsot li ovatlo" },
+    { question: "Quando ci siamo messi assieme lupacchiotta??", options: ["24/06/2025", "25/07/2025", "25/06/2025", "24/08/2025"], correct: 1, clue: "bastarda hai sbagliato auuuu , comunque..." },
+    { question: "Chi è che ha SEMPRE ragione nelle discussioni?", options: ["Tu (Antonella) 🙄", "Io (Giulio) 😎"], correct: 1, clue: "??: v4s0d3ll0sb4ll0", type: "redirect" },
+    { question: "Quanto ti amo da 1 a 10? 📈", options: [], correct: 999, clue: "antonella tvb, bevi un bicchiere d'acqua che sarai disidratata auu", type: "slider" },
+    { question: "Qual è il mio piatto preferito che cucini tu?", options: ["pasta col tonno", "insalata e limone", "macinato bollito", "i broccoli"], correct: -1, clue: "🇦🇱" },
+    { question: "Giulio è il miglior fidanzato a fare i regali??", options: ["SI", "...si", "NO", "forse"], correct: -1, clue: "??: veleno" }
 ];
 
 const proposalSection = document.getElementById("proposalSection");
@@ -626,7 +626,7 @@ function checkSlider() {
 }
 
 function handleRedirect() {
-    window.open("https://it.wikipedia.org/wiki/Delirio_di_onnipotenza", "_blank");
+    window.open("https://www.treccani.it/vocabolario/presuntuoso/", "_blank");
     triggerError(null); 
 }
 
@@ -725,7 +725,7 @@ function checkAnswer(selectedIndex, btnElement) {
                 setTimeout(() => {
                     const allBtns = document.querySelectorAll('#optionsContainer .option-btn');
                     const feetBtn = allBtns[3]; 
-                    feetBtn.innerHTML = "i tuoi piedi 🦶";
+                    feetBtn.innerHTML = "i tuoi piedi";
                     questions[4].correct = 3;
                 }, 200);
             }
