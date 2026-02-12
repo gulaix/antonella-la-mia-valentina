@@ -26,7 +26,7 @@
         margin: 0;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         background-color: #ffc0cb; 
-        
+       
         /* === SFONDO PER COMPUTER (Default) === */
         background-image: url('background.jpeg');
         background-repeat: no-repeat;
@@ -69,7 +69,7 @@
         z-index: 90000; display: none; pointer-events: none; 
     }
     .active-disco { display: block !important; animation: discoFlash 0.05s infinite; }
-    
+   
     body.disco-active #warningPopup { background: rgba(0,0,0,0); } 
     body.disco-active .warning-box { animation: boxFlash 0.1s infinite; } 
 
@@ -113,7 +113,7 @@
 
     /* CARD (Versione PC Standard) */
     .card { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); max-width: 420px; width: 90vw; min-height: 550px; position: relative; border: 3px solid #ffebf0; overflow: hidden; display: flex; flex-direction: column; align-items: center; z-index: 10; transition: all 0.5s ease; }
-    
+   
     body.game-active .card { margin-right: 220px; overflow: visible; border-color: #ff4d88; }
     body.game-active .card::before { content: ''; position: absolute; top: 150px; right: -30px; border-width: 15px 0 15px 30px; border-style: solid; border-color: transparent transparent transparent rgba(255, 255, 255, 0.95); z-index: 1; }
     body.game-active .card::after { content: ''; position: absolute; top: 147px; right: -36px; border-width: 18px 0 18px 36px; border-style: solid; border-color: transparent transparent transparent #ff4d88; z-index: 0; }
@@ -209,7 +209,7 @@
     .option-btn:hover { background: #fff5f8; border-color: #ff4d88; }
     .option-btn.correct { background: #d4edda; border-color: #28a745; color: #155724; }
     .option-btn.wrong { background: #f8d7da; border-color: #dc3545; color: #721c24; animation: shake 0.5s; }
-    
+   
     .option-btn.transformed { background: #fff3cd; border-color: #ffc107; font-weight: bold; transform: scale(1.05); transition: all 0.3s ease; }
 
     .clue-box { display: none; background: #fff3cd; border: 2px solid #ffeeba; color: #856404; padding: 15px; border-radius: 10px; margin-bottom: 15px; width: 90%; font-size: 16px; animation: slideDown 0.5s; }
@@ -224,7 +224,7 @@
         height: 50px;
         touch-action: none; 
     }
-    
+   
     .slider-labels { 
         width: 100%;
         height: 30px;
@@ -240,12 +240,12 @@
     }
 
     .label-0 { left: 0; }
-    
+   
     .label-100 { 
         left: 77%; 
         transform: translateX(-50%); 
     }
-    
+   
     input[type=range].love-slider {
         -webkit-appearance: none; 
         appearance: none;
@@ -254,7 +254,7 @@
         display: block;
         margin-top: 5px;
     }
-    
+   
     input[type=range].love-slider::-webkit-slider-runnable-track {
         width: 100%;
         height: 12px; 
@@ -340,9 +340,17 @@
         <h1 id="mainTitle">Amore mio, vuoi essere la mia Valentine? 💖</h1>
         <button id="yesBtn" class="btn-proposal">Sì, certo! ❤️</button>
         <button id="noBtn" class="btn-proposal">No 💩</button>
+        
         <div class="celebration" id="celebrationText">
-            YEEEEE! 💃🕺 Ti amo tantissimo!!! 💕<br>
-            Ma non è finita qui... 😏<br>
+            YEEEEE! 💃🕺 Ti amo tantissimo!!! 💕<br><br>
+            <p style="font-size: 15px; color: #333; margin: 10px 0; line-height: 1.4; background: rgba(255,255,255,0.7); padding: 10px; border-radius: 10px;">
+                aaauuuuu bebi, come regalo di san valentino avevo pensato di lupare... quale miglior
+                regalo se non un bel lupone come me aaauuuu. Poi ho pensato che sarebbe troppo presto perfare uscire allo scoperto tutto il mio egocentrismo nascosto aaaauuuuu bau. Beh vedi fondamentalmente ora ti farò delle domande e se mi rispondi auuuu bene? se
+                csjgdvhawdicsbagkbdb vcbjhgcdbbu deoiyocuyfde (T_T) :-) aaauuuu scs ho le seizures.
+                性 性 中國混蛋 同性戀 我抽搐     aaauuuuuu .
+                <br><br>
+                <b>se rispondi bene alle domande capirai COSA FARE ...  ԅ(≖‿≖ԅ) bau bauuuu!</b>
+            </p>
             <button class="start-game-btn" onclick="startGame()">Inizia la Caccia al Tesoro! 🕵️‍♀️</button>
         </div>
     </div>
@@ -374,7 +382,7 @@ const questions = [
     { question: "Quando ci siamo messi assieme lupacchiotta??", options: ["24/06/2025", "25/07/2025", "25/06/2025", "24/08/2025"], correct: 1, clue: "bastarda hai sbagliato auuuu , comunque..." },
     { question: "Chi è che ha SEMPRE ragione nelle discussioni?", options: ["Tu (Antonella) 🙄", "Io (Giulio) 😎"], correct: 1, clue: "??: v4s0d3ll0sb4ll0", type: "redirect" },
     { question: "Quanto ti amo da 1 a 10? 📈", options: [], correct: 999, clue: "antonella tvb, bevi un bicchiere d'acqua che sarai disidratata auu", type: "slider" },
-    { question: "Qual è il mio piatto preferito che cucini tu?", options: ["pasta col tonno", "insalata e limone", "macinato bollito", "i broccoli"], correct: -1, clue: "??: 🇦🇱" },
+    { question: "Qual è il mio piatto preferito che cucini tu?", options: ["pasta col tonno", "insalata e limone", "macinato bollito", "i broccoli"], correct: -1, clue: "🇦🇱" },
     { question: "Giulio è il miglior fidanzato a fare i regali??", options: ["SI", "...si", "NO", "forse"], correct: -1, clue: "??: veleno" }
 ];
 
@@ -433,13 +441,13 @@ function stopEverything() {
     if (talkingInterval) clearInterval(talkingInterval);
     if (cinematicInterval) clearInterval(cinematicInterval);
     if (stopTimeout) clearTimeout(stopTimeout);
-    
+   
     document.body.classList.remove('cinematic-active');
     document.body.classList.remove('disco-active');
     discoOverlay.classList.remove('active-disco');
-    
+   
     boy.style.display = 'none';
-    
+   
     // Non nascondiamo più il lupo col reset, perché lo vuoi sempre
     wolf.src = "lupocut.png";
 }
@@ -470,7 +478,7 @@ function startGame() {
     document.body.classList.add('game-active');
     setTimeout(() => {
         proposalSection.style.display = "none"; 
-        gameSection.style.display = "flex";     
+        gameSection.style.display = "flex";    
         loadQuestion();
     }, 300); 
 }
@@ -491,7 +499,7 @@ function startTalking() {
         newIndex = 0; 
     }
     lastAudioIndex = newIndex;
-    
+   
     currentAudio = new Audio(audioFiles[newIndex]);
 
     currentAudio.onplay = function() {
@@ -518,7 +526,7 @@ function startTalking() {
 
 function startCinematicSequence() {
     stopEverything(); 
-    
+   
     boy.style.display = 'block';
     boy.src = 'walking.png';
     boy.style.left = '-400px'; 
@@ -565,17 +573,17 @@ function startCinematicSequence() {
 function loadQuestion() {
     const q = questions[currentLevel];
     wrongAnswersCount = 0; 
-    
+   
     if (currentLevel === 4) questions[4].correct = -1;
     if (currentLevel === 5) questions[5].correct = -1;
-    
+   
     if (currentLevel === 3) sliderLocked = true; 
-    
+   
     document.getElementById("levelTitle").innerText = "Livello " + (currentLevel + 1);
     document.getElementById("questionText").innerText = q.question;
     document.getElementById("clueBox").style.display = "none";
     document.getElementById("nextBtn").style.display = "none";
-    
+   
     const container = document.getElementById("optionsContainer");
     container.innerHTML = ""; 
 
@@ -591,7 +599,7 @@ function loadQuestion() {
             <button class="option-btn" onclick="checkSlider()">Conferma</button>
         `;
         const sliderInput = document.getElementById("loveRange");
-        
+       
         sliderInput.oninput = function() {
             const val = parseInt(this.value);
             if (sliderLocked && val > 100) { 
@@ -617,7 +625,7 @@ function loadQuestion() {
 function checkSlider() {
     const slider = document.getElementById("loveRange");
     const val = parseInt(slider.value);
-    
+   
     if (val < 125) {
         startCinematicSequence();
     } else {
@@ -634,7 +642,7 @@ function handleSpecialGiulioAnswer(btn) {
     btn.classList.add("correct");
     stopEverything(); 
     wolf.classList.remove('wolf-visible'); 
-    
+   
     discoOverlay.classList.add('active-disco');
     document.body.classList.add('disco-active');
     warningPopup.style.display = 'flex';
@@ -664,18 +672,18 @@ function showClue() {
     document.getElementById("clueText").innerText = q.clue;
     document.getElementById("clueBox").style.display = "block";
     document.getElementById("nextBtn").style.display = "inline-block";
-    
+   
     if (currentLevel === 3) {
         boy.style.display = 'none';
         wolf.classList.add('wolf-visible');
     }
-    
+   
     launchConfetti(); 
 }
 
 function triggerError(btnElement, isCinematic = false) {
     if(btnElement) btnElement.classList.add("wrong");
-    
+   
     if (!isCinematic) {
         stopEverything();
         wolf.classList.add('wolf-visible'); 
@@ -688,7 +696,7 @@ function triggerError(btnElement, isCinematic = false) {
     errorOverlay.style.display = 'flex';
     errorSound.currentTime = 0;
     errorSound.play();
-    
+   
     errorSound.onended = function() {
         errorOverlay.classList.add('fade-out');
         setTimeout(() => { 
@@ -778,13 +786,13 @@ function dropPoop(x, y) {
 
 function moveNoButton() {
     if (fartCooldown) return;
-    
+   
     fartCooldown = true;
     setTimeout(() => { fartCooldown = false; }, 150);
 
     const randomIndex = Math.floor(Math.random() * farts.length);
     const audio = farts[randomIndex];
-    
+   
     audio.currentTime = 0;
     audio.play().catch(e => console.log("Audio bloccato:", e));
 
