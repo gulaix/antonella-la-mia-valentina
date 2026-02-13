@@ -388,7 +388,7 @@
     </div>
 
     <div id="finalSection">
-        <img src="happy.png" class="main-photo" alt="Party">
+        <img src="happy.jpg" class="main-photo" alt="Party">
         <h1>COMPLIMENTI! 🎉</h1>
         <p style="font-size: 18px; color: #555;">Hai trovato tutti gli indizi! <br>Ora corri da me per il tuo premio speciale! 🎁💏</p>
     </div>
@@ -399,10 +399,10 @@ const audioFiles = ['audio1.mp3', 'audio2.mp3', 'audio3.mp3'];
 
 const questions = [
     { question: "La sera in cui ci siamo baciati la prima volta perchè volevo salire da te??", options: ["I piedi", "Per fare segso", "Perchè avevo sete", "Per le coccole"], correct: 3, clue: "??: otsot li ovatlo" },
-    
+   
     // QUI C'È IL RIFERIMENTO ALL'IMMAGINE CHE APPARIRÀ A TUTTO SCHERMO
     { question: "Quando ci siamo messi assieme lupacchiotta??", options: ["24/06/2025", "25/07/2025", "25/06/2025", "24/08/2025"], correct: 1, clue: "bastarda hai sbagliato auuuu , comunque...", clueImage: "mela.png" },
-    
+   
     { question: "Chi è che ha SEMPRE ragione nelle discussioni?", options: ["Tu (Antonella) 🙄", "Io (Giulio) 😎"], correct: 1, clue: "??: v4s0d3ll0sb4ll0", type: "redirect" },
     { question: "Quanto ti amo da 1 a 10? 📈", options: [], correct: 999, clue: "antonella tvb, bevi un bicchiere d'acqua che sarai disidratata auu", type: "slider" },
     { question: "Qual è il mio piatto preferito che cucini tu?", options: ["pasta col tonno", "insalata e limone", "macinato bollito", "i broccoli"], correct: -1, clue: "🇦🇱" },
@@ -503,7 +503,7 @@ function startGame() {
     document.body.classList.add('game-active');
     setTimeout(() => {
         proposalSection.style.display = "none"; 
-        gameSection.style.display = "flex";    
+        gameSection.style.display = "flex";   
         loadQuestion();
     }, 300); 
 }
@@ -695,7 +695,7 @@ function fakeOkButton() { console.log("Cliccato OK, ma è una trappola!"); }
 function showClue() {
     const q = questions[currentLevel];
     document.getElementById("clueText").innerText = q.clue;
-    
+   
     // MOSTRA IL POPUP SE C'È L'IMMAGINE
     if (q.clueImage) {
         popupImage.src = q.clueImage;
