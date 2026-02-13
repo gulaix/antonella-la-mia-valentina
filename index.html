@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 
-<title>Will you be my Valentine? ❤️</title>
+<title>ANTONELLAAA ciao? ❤️</title>
 
 <link rel="preload" as="image" href="lupocut.png">
 <link rel="preload" as="image" href="lupocut1.png">
@@ -40,7 +40,8 @@
         align-items: center;
         min-height: 100vh;
         text-align: center;
-        overflow: hidden;
+        overflow-x: hidden;
+        overflow-y: auto; /* FIX: Permette di scorrere verso il basso */
         transition: background-color 0.2s;
         touch-action: manipulation;
     }
@@ -113,9 +114,9 @@
     }
 
     /* CARD (Versione PC Standard) */
-    .card { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); max-width: 420px; width: 90vw; min-height: 550px; position: relative; border: 3px solid #ffebf0; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; z-index: 10; transition: all 0.5s ease; }
+    .card { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); max-width: 420px; width: 90vw; min-height: 550px; position: relative; border: 3px solid #ffebf0; overflow: visible; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; z-index: 100; transition: all 0.5s ease; margin: 40px 0; } /* FIX: z-index alzato e overflow visibile */
    
-    body.game-active .card { margin-right: 220px; overflow: visible; border-color: #ff4d88; }
+    body.game-active .card { margin-right: 220px; border-color: #ff4d88; }
     body.game-active .card::before { content: ''; position: absolute; top: 150px; right: -30px; border-width: 15px 0 15px 30px; border-style: solid; border-color: transparent transparent transparent rgba(255, 255, 255, 0.95); z-index: 1; }
     body.game-active .card::after { content: ''; position: absolute; top: 147px; right: -36px; border-width: 18px 0 18px 36px; border-style: solid; border-color: transparent transparent transparent #ff4d88; z-index: 0; }
 
@@ -146,13 +147,12 @@
             background-position: center;
         }
 
-        /* === MODIFICA CARD INIZIALE (Più piccola e trasparente) === */
-        /* Questa regola vale quando il gioco NON è attivo (fase iniziale) */
+        /* === MODIFICA CARD INIZIALE === */
         .card {
-            background: rgba(255, 255, 255, 0.65) !important; /* Molto trasparente */
-            backdrop-filter: blur(5px); /* Effetto vetro sfocato */
-            width: 85vw !important; /* Un po' più stretta */
-            min-height: auto !important; /* Meno alta, si adatta al contenuto */
+            background: rgba(255, 255, 255, 0.65) !important; 
+            backdrop-filter: blur(5px); 
+            width: 85vw !important; 
+            min-height: 480px !important; /* FIX: Altezza fissa per far muovere il tasto NO */
             padding: 20px !important;
             margin-right: 0 !important;
         }
@@ -196,7 +196,7 @@
     button { padding: 12px 24px; border-radius: 25px; border: none; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.15); transition: transform 0.2s, background 0.3s; }
     button:active { transform: scale(0.95); }
 
-    /* CONTENITORE PULSANTI INIZIALI (FIX PER MOBILE) */
+    /* CONTENITORE PULSANTI INIZIALI */
     .buttons-container { display: flex; justify-content: center; gap: 20px; width: 100%; margin-top: 20px; position: relative; z-index: 1000; min-height: 50px;}
 
     .btn-proposal { transition: transform 0.05s linear; position: relative; z-index: 1000; }
@@ -409,7 +409,6 @@ const audioFiles = ['audio1.mp3', 'audio2.mp3', 'audio3.mp3'];
 const questions = [
     { question: "La sera in cui ci siamo baciati la prima volta perchè volevo salire da te??", options: ["I piedi", "Per fare segso", "Perchè avevo sete", "Per le coccole"], correct: 3, clue: "??: otsot li ovatlo" },
    
-    // QUI C'È IL RIFERIMENTO ALL'IMMAGINE CHE APPARIRÀ A TUTTO SCHERMO
     { question: "Quando ci siamo messi assieme lupacchiotta??", options: ["24/06/2025", "25/07/2025", "25/06/2025", "24/08/2025"], correct: 1, clue: "bastarda hai sbagliato auuuu , comunque...", clueImage: "mela.png" },
    
     { question: "Chi è che ha SEMPRE ragione nelle discussioni?", options: ["Tu (Antonella) 🙄", "Io (Giulio) 😎"], correct: 1, clue: "??: v4s0d3ll0sb4ll0", type: "redirect" },
@@ -483,7 +482,6 @@ function stopEverything() {
    
     boy.style.display = 'none';
    
-    // Non nascondiamo più il lupo col reset, perché lo vuoi sempre
     wolf.src = "lupocut.png";
 }
 
@@ -705,7 +703,6 @@ function showClue() {
     const q = questions[currentLevel];
     document.getElementById("clueText").innerText = q.clue;
    
-    // MOSTRA IL POPUP SE C'È L'IMMAGINE
     if (q.clueImage) {
         popupImage.src = q.clueImage;
         imagePopupOverlay.style.display = "flex";
@@ -841,7 +838,6 @@ function moveNoButton() {
     audio.currentTime = 0;
     audio.play().catch(e => console.log("Audio bloccato:", e));
 
-    // Per gestire il cambio di posizionamento da flex ad absolute
     if(noBtn.style.position !== 'absolute') {
         noBtn.style.position = 'absolute';
     }
@@ -853,7 +849,6 @@ function moveNoButton() {
     const maxX = card.clientWidth - noBtn.offsetWidth - 30;
     const maxY = card.clientHeight - noBtn.offsetHeight - 30;
     
-    // Per evitare che salga troppo in alto e copra la foto o il titolo
     const safeZoneTop = document.getElementById('mainTitle').offsetTop + document.getElementById('mainTitle').offsetHeight + 20; 
     
     const newX = Math.max(20, Math.random() * maxX);
