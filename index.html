@@ -40,7 +40,7 @@
         align-items: center;
         min-height: 100vh;
         text-align: center;
-        overflow: hidden; /* FIX: Bloccato totalmente lo scroll della pagina, niente più sfondo bianco */
+        overflow: hidden; 
         transition: background-color 0.2s;
         touch-action: manipulation;
     }
@@ -189,7 +189,8 @@
     button { padding: 12px 24px; border-radius: 25px; border: none; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.15); transition: transform 0.2s, background 0.3s; }
     button:active { transform: scale(0.95); }
 
-    .buttons-container { display: flex; justify-content: center; gap: 20px; width: 100%; margin-top: 15px; position: relative; z-index: 1000; min-height: 50px;}
+    /* FIX DEFINITIVO CONTENITORE: Rimosso position relative, ora il tasto usa solo i bordi della card */
+    .buttons-container { display: flex; justify-content: center; gap: 20px; width: 100%; margin-top: 15px; min-height: 50px;}
 
     .btn-proposal { transition: transform 0.05s linear; position: relative; z-index: 1000; }
     #yesBtn { background: linear-gradient(45deg, #ff4d88, #ff2e6e); color: white; animation: pulse 2s infinite; cursor: pointer; }
@@ -777,15 +778,17 @@ function moveNoButton() {
     dropPoop(currentLeft + 20, currentTop + 10);
 
     let cardW = card.clientWidth || 300;
+    let cardH = card.clientHeight || 450;
     
-    let minX = 10;
-    let maxX = Math.max(minX, cardW - noBtn.offsetWidth - 10);
+    let minX = 15;
+    let maxX = Math.max(minX, cardW - noBtn.offsetWidth - 15);
     
-    // FIX BOTTONE NO: Limitiamo l'area in cui può fuggire in verticale a un range piccolissimo
-    let baseContainer = document.getElementById('initialButtons');
-    let baseTop = baseContainer.offsetTop; 
-    let minY = baseTop - 40; 
-    let maxY = baseTop + 40; 
+    // LIMITAZIONE DI GABBIA: Il tasto scappa ma resta esattamente dentro le mura della card bianca
+    let titleEl = document.getElementById('mainTitle');
+    let safeZoneTop = titleEl.offsetTop + titleEl.offsetHeight + 10; 
+    
+    let minY = Math.max(safeZoneTop, 150); 
+    let maxY = Math.max(minY + 20, cardH - noBtn.offsetHeight - 20);
     
     let newX = Math.floor(Math.random() * (maxX - minX + 1)) + minX;
     let newY = Math.floor(Math.random() * (maxY - minY + 1)) + minY;
