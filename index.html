@@ -41,7 +41,7 @@
         min-height: 100vh;
         text-align: center;
         overflow-x: hidden;
-        overflow-y: auto; /* FIX: Permette di scorrere verso il basso */
+        overflow-y: auto; 
         transition: background-color 0.2s;
         touch-action: manipulation;
     }
@@ -87,7 +87,7 @@
         right: -400px; /* Nascosto di default se non ha la classe */
         height: 65vh; 
         max-height: 550px;
-        z-index: 50; 
+        z-index: 150; /* FIX: Ora il lupo è in primissimo piano... */
         transition: right 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s; 
         pointer-events: none; 
         opacity: 0; 
@@ -114,9 +114,9 @@
     }
 
     /* CARD (Versione PC Standard) */
-    .card { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); max-width: 420px; width: 90vw; min-height: 550px; position: relative; border: 3px solid #ffebf0; overflow: visible; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; z-index: 100; transition: all 0.5s ease; margin: 40px 0; } /* FIX: z-index alzato e overflow visibile */
+    .card { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); max-width: 420px; width: 90vw; min-height: 550px; position: relative; border: 3px solid #ffebf0; overflow: visible; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; z-index: 200; transition: all 0.5s ease; margin: 40px 0; } /* FIX: ...ma la card all'inizio ha priorità 200 per stare sopra al lupo */
    
-    body.game-active .card { margin-right: 220px; border-color: #ff4d88; }
+    body.game-active .card { margin-right: 220px; border-color: #ff4d88; z-index: 100; } /* FIX: Quando inizia il gioco, la card va dietro al lupo (100) */
     body.game-active .card::before { content: ''; position: absolute; top: 150px; right: -30px; border-width: 15px 0 15px 30px; border-style: solid; border-color: transparent transparent transparent rgba(255, 255, 255, 0.95); z-index: 1; }
     body.game-active .card::after { content: ''; position: absolute; top: 147px; right: -36px; border-width: 18px 0 18px 36px; border-style: solid; border-color: transparent transparent transparent #ff4d88; z-index: 0; }
 
@@ -152,7 +152,7 @@
             background: rgba(255, 255, 255, 0.65) !important; 
             backdrop-filter: blur(5px); 
             width: 85vw !important; 
-            min-height: 480px !important; /* FIX: Altezza fissa per far muovere il tasto NO */
+            min-height: 480px !important;
             padding: 20px !important;
             margin-right: 0 !important;
         }
@@ -846,13 +846,18 @@ function moveNoButton() {
     const currentTop = noBtn.offsetTop;
     dropPoop(currentLeft + 20, currentTop + 10);
 
-    const maxX = card.clientWidth - noBtn.offsetWidth - 30;
-    const maxY = card.clientHeight - noBtn.offsetHeight - 30;
+    // FIX: Calcolo super-sicuro per non far sparire il bottone su mobile
+    let cardW = card.clientWidth || 300;
+    let cardH = card.clientHeight || 480;
     
-    const safeZoneTop = document.getElementById('mainTitle').offsetTop + document.getElementById('mainTitle').offsetHeight + 20; 
+    let minX = 10;
+    let maxX = Math.max(minX, cardW - noBtn.offsetWidth - 10);
+    let minY = 160; 
+    let maxY = Math.max(minY, cardH - noBtn.offsetHeight - 10);
     
-    const newX = Math.max(20, Math.random() * maxX);
-    let newY = Math.max(safeZoneTop, Math.random() * maxY);
+    let newX = Math.floor(Math.random() * (maxX - minX + 1)) + minX;
+    let newY = Math.floor(Math.random() * (maxY - minY + 1)) + minY;
+    
     noBtn.style.left = newX + "px";
     noBtn.style.top = newY + "px";
 }
