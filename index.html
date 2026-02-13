@@ -84,10 +84,10 @@
     #wolfCharacter { 
         position: fixed; 
         bottom: -20px; 
-        right: -400px; /* Nascosto di default se non ha la classe */
+        right: -400px; 
         height: 65vh; 
         max-height: 550px;
-        z-index: 150; /* FIX: Ora il lupo è in primissimo piano... */
+        z-index: 150; 
         transition: right 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s; 
         pointer-events: none; 
         opacity: 0; 
@@ -108,15 +108,15 @@
         left: -400px; 
         height: 30vh; 
         max-height: 250px;
-        z-index: 60;
+        z-index: 250; /* FIX: Portato a 250 per stare davanti a TUTTO (card e lupo) */
         display: none; 
         pointer-events: none;
     }
 
     /* CARD (Versione PC Standard) */
-    .card { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); max-width: 420px; width: 90vw; min-height: 550px; position: relative; border: 3px solid #ffebf0; overflow: visible; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; z-index: 200; transition: all 0.5s ease; margin: 40px 0; } /* FIX: ...ma la card all'inizio ha priorità 200 per stare sopra al lupo */
+    .card { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); max-width: 420px; width: 90vw; min-height: 550px; position: relative; border: 3px solid #ffebf0; overflow: visible; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; z-index: 200; transition: all 0.5s ease; margin: 40px 0; } 
    
-    body.game-active .card { margin-right: 220px; border-color: #ff4d88; z-index: 100; } /* FIX: Quando inizia il gioco, la card va dietro al lupo (100) */
+    body.game-active .card { margin-right: 220px; border-color: #ff4d88; z-index: 100; } 
     body.game-active .card::before { content: ''; position: absolute; top: 150px; right: -30px; border-width: 15px 0 15px 30px; border-style: solid; border-color: transparent transparent transparent rgba(255, 255, 255, 0.95); z-index: 1; }
     body.game-active .card::after { content: ''; position: absolute; top: 147px; right: -36px; border-width: 18px 0 18px 36px; border-style: solid; border-color: transparent transparent transparent #ff4d88; z-index: 0; }
 
@@ -140,14 +140,12 @@
 
     /* MEDIA QUERIES MOBILE E SFONDO MOBILE */
     @media (max-width: 768px) {
-        /* SFONDO CELLULARE */
         body {
             background-image: url('background_mobile.jpg') !important;
             background-size: cover;
             background-position: center;
         }
 
-        /* === MODIFICA CARD INIZIALE === */
         .card {
             background: rgba(255, 255, 255, 0.65) !important; 
             backdrop-filter: blur(5px); 
@@ -157,16 +155,14 @@
             margin-right: 0 !important;
         }
 
-        /* Quando inizia il gioco, la card diventa più solida per leggere le domande */
         body.game-active .card {
             background: rgba(255, 255, 255, 0.95) !important;
             min-height: 380px !important;
-            margin-right: 90px !important; /* Spazio per il lupo */
+            margin-right: 90px !important; 
             width: 60vw !important;
             margin-left: 5px !important;
         }
 
-        /* LUPO SU MOBILE (Visibile anche all'inizio) */
         #wolfCharacter.wolf-visible { 
             right: -75px !important; 
             height: 35vh !important; 
@@ -196,7 +192,6 @@
     button { padding: 12px 24px; border-radius: 25px; border: none; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.15); transition: transform 0.2s, background 0.3s; }
     button:active { transform: scale(0.95); }
 
-    /* CONTENITORE PULSANTI INIZIALI */
     .buttons-container { display: flex; justify-content: center; gap: 20px; width: 100%; margin-top: 20px; position: relative; z-index: 1000; min-height: 50px;}
 
     .btn-proposal { transition: transform 0.05s linear; position: relative; z-index: 1000; }
@@ -222,100 +217,20 @@
     .clue-box { display: none; background: #fff3cd; border: 2px solid #ffeeba; color: #856404; padding: 15px; border-radius: 10px; margin-bottom: 15px; width: 90%; font-size: 16px; animation: slideDown 0.5s; }
     .next-level-btn { display: none; background: #28a745; color: white; }
 
-    /* === SLIDER UNIVERSALE (MOBILE & PC) === */
-    .slider-wrapper { 
-        width: 85%; 
-        max-width: 400px; 
-        position: relative; 
-        margin: 30px auto; 
-        height: 50px;
-        touch-action: none; 
-    }
-   
-    .slider-labels { 
-        width: 100%;
-        height: 30px;
-        position: relative;
-    }
-
-    .slider-labels span {
-        position: absolute;
-        top: 0;
-        font-weight: bold; 
-        color: #ff2e6e; 
-        font-size: 18px; 
-    }
-
+    .slider-wrapper { width: 85%; max-width: 400px; position: relative; margin: 30px auto; height: 50px; touch-action: none; }
+    .slider-labels { width: 100%; height: 30px; position: relative; }
+    .slider-labels span { position: absolute; top: 0; font-weight: bold; color: #ff2e6e; font-size: 18px; }
     .label-0 { left: 0; }
+    .label-100 { left: 77%; transform: translateX(-50%); }
    
-    .label-100 { 
-        left: 77%; 
-        transform: translateX(-50%); 
-    }
-   
-    input[type=range].love-slider {
-        -webkit-appearance: none; 
-        appearance: none;
-        width: 100%; 
-        background: transparent;
-        display: block;
-        margin-top: 5px;
-    }
-   
-    input[type=range].love-slider::-webkit-slider-runnable-track {
-        width: 100%;
-        height: 12px; 
-        cursor: pointer;
-        background: #ffb6c1; 
-        border: 2px solid #ff2e6e;
-        border-radius: 6px;
-    }
-    input[type=range].love-slider::-moz-range-track {
-        width: 100%;
-        height: 12px; 
-        cursor: pointer;
-        background: #ffb6c1; 
-        border: 2px solid #ff2e6e;
-        border-radius: 6px;
-    }
+    input[type=range].love-slider { -webkit-appearance: none; appearance: none; width: 100%; background: transparent; display: block; margin-top: 5px; }
+    input[type=range].love-slider::-webkit-slider-runnable-track { width: 100%; height: 12px; cursor: pointer; background: #ffb6c1; border: 2px solid #ff2e6e; border-radius: 6px; }
+    input[type=range].love-slider::-moz-range-track { width: 100%; height: 12px; cursor: pointer; background: #ffb6c1; border: 2px solid #ff2e6e; border-radius: 6px; }
+    input[type=range].love-slider::-webkit-slider-thumb { -webkit-appearance: none; height: 30px; width: 30px; border-radius: 50%; background: #fff; border: 4px solid #ff2e6e; cursor: grab; margin-top: -11px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); position: relative; z-index: 20; }
+    input[type=range].love-slider::-moz-range-thumb { height: 30px; width: 30px; border: none; border-radius: 50%; background: #fff; border: 4px solid #ff2e6e; cursor: grab; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
 
-    input[type=range].love-slider::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        height: 30px;
-        width: 30px;
-        border-radius: 50%;
-        background: #fff;
-        border: 4px solid #ff2e6e;
-        cursor: grab;
-        margin-top: -11px; 
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        position: relative;
-        z-index: 20;
-    }
-    input[type=range].love-slider::-moz-range-thumb {
-        height: 30px;
-        width: 30px;
-        border: none;
-        border-radius: 50%;
-        background: #fff;
-        border: 4px solid #ff2e6e;
-        cursor: grab;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    }
-
-    /* === STILE PER L'IMMAGINE POPUP === */
-    #imagePopupOverlay {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.85); z-index: 999999;
-        display: none; justify-content: center; align-items: center; flex-direction: column;
-        animation: fadeIn 0.3s;
-    }
-    #popupImage {
-        max-width: 90%; max-height: 80vh;
-        border: 5px solid white; border-radius: 15px;
-        box-shadow: 0 0 20px rgba(0,0,0,0.5);
-        animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
+    #imagePopupOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 999999; display: none; justify-content: center; align-items: center; flex-direction: column; animation: fadeIn 0.3s; }
+    #popupImage { max-width: 90%; max-height: 80vh; border: 5px solid white; border-radius: 15px; box-shadow: 0 0 20px rgba(0,0,0,0.5); animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 
     @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } 100% { transform: translateX(0); } }
     @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
@@ -408,9 +323,7 @@ const audioFiles = ['audio1.mp3', 'audio2.mp3', 'audio3.mp3'];
 
 const questions = [
     { question: "La sera in cui ci siamo baciati la prima volta perchè volevo salire da te??", options: ["I piedi", "Per fare segso", "Perchè avevo sete", "Per le coccole"], correct: 3, clue: "??: otsot li ovatlo" },
-   
     { question: "Quando ci siamo messi assieme lupacchiotta??", options: ["24/06/2025", "25/07/2025", "25/06/2025", "24/08/2025"], correct: 1, clue: "bastarda hai sbagliato auuuu , comunque...", clueImage: "mela.png" },
-   
     { question: "Chi è che ha SEMPRE ragione nelle discussioni?", options: ["Tu (Antonella) 🙄", "Io (Giulio) 😎"], correct: 1, clue: "??: v4s0d3ll0sb4ll0", type: "redirect" },
     { question: "Quanto ti amo da 1 a 10???? ", options: [], correct: 999, clue: "antonella tvb, bevi un bicchiere d'acqua che sarai disidratata auu", type: "slider" },
     { question: "Qual è il mio piatto preferito che cucini tu?", options: ["pasta col tonno", "insalata e limone", "macinato bollito", "i broccoli"], correct: -1, clue: "🇦🇱" },
@@ -441,6 +354,9 @@ const farts = [
     document.getElementById('fart3')
 ];
 
+// FIX AUDIO: Carichiamo subito l'audio per sbloccarlo con il primo tocco
+const voceAudio = new Audio('voce.mp3');
+
 let currentLevel = 0;
 let currentAudio = null; 
 let talkingInterval = null; 
@@ -463,6 +379,15 @@ function unlockAudio() {
             f.volume = 1; 
         }).catch(() => {});
     });
+    
+    // Sblocchiamo anche l'audio della voce per i cellulari
+    voceAudio.volume = 0;
+    voceAudio.play().then(() => {
+        voceAudio.pause();
+        voceAudio.currentTime = 0;
+        voceAudio.volume = 1;
+    }).catch(() => {});
+
     document.body.removeEventListener('click', unlockAudio);
     document.body.removeEventListener('touchstart', unlockAudio);
 }
@@ -481,7 +406,6 @@ function stopEverything() {
     discoOverlay.classList.remove('active-disco');
    
     boy.style.display = 'none';
-   
     wolf.src = "lupocut.png";
 }
 
@@ -579,8 +503,8 @@ function startCinematicSequence() {
         boy.src = 'stand.png';
 
         setTimeout(() => {
-            currentAudio = new Audio('voce.mp3');
-            currentAudio.play();
+            currentAudio = voceAudio; // Usiamo l'audio già sbloccato
+            currentAudio.currentTime = 0;
            
             let isOpen = false;
             cinematicInterval = setInterval(() => {
@@ -593,11 +517,24 @@ function startCinematicSequence() {
                 }
             }, 150);
 
-            currentAudio.onended = function() {
-                clearInterval(cinematicInterval);
+            // Funzione di chiusura sicura
+            const endCinematic = () => {
+                if (cinematicInterval) clearInterval(cinematicInterval);
                 boy.src = 'stand.png'; 
                 triggerError(document.querySelector("#optionsContainer button"), true); 
             };
+
+            currentAudio.onended = endCinematic;
+            
+            // Proviamo a fare play, se il browser lo blocca per qualsiasi motivo (o manca il file) attiviamo il piano B
+            let playPromise = currentAudio.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(e => {
+                    console.log("Audio non partito, attivo il timer d'emergenza:", e);
+                    setTimeout(endCinematic, 3500); // Se va in blocco, dopo 3 secondi finisce da solo
+                });
+            }
+            
         }, 1000);
     }, 5000);
 }
@@ -846,7 +783,6 @@ function moveNoButton() {
     const currentTop = noBtn.offsetTop;
     dropPoop(currentLeft + 20, currentTop + 10);
 
-    // FIX: Calcolo super-sicuro per non far sparire il bottone su mobile
     let cardW = card.clientWidth || 300;
     let cardH = card.clientHeight || 480;
     
