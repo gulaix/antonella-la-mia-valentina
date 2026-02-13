@@ -7,7 +7,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 
-<title>ANTONELLAAA ciao? ❤️</title>
+<title>Will you be my Valentine? ❤️</title>
 
 <link rel="preload" as="image" href="lupocut.png">
 <link rel="preload" as="image" href="lupocut1.png">
@@ -113,7 +113,7 @@
     }
 
     /* CARD (Versione PC Standard) */
-    .card { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); max-width: 420px; width: 90vw; min-height: 550px; position: relative; border: 3px solid #ffebf0; overflow: hidden; display: flex; flex-direction: column; align-items: center; z-index: 10; transition: all 0.5s ease; }
+    .card { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); max-width: 420px; width: 90vw; min-height: 550px; position: relative; border: 3px solid #ffebf0; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; z-index: 10; transition: all 0.5s ease; }
    
     body.game-active .card { margin-right: 220px; overflow: visible; border-color: #ff4d88; }
     body.game-active .card::before { content: ''; position: absolute; top: 150px; right: -30px; border-width: 15px 0 15px 30px; border-style: solid; border-color: transparent transparent transparent rgba(255, 255, 255, 0.95); z-index: 1; }
@@ -181,6 +181,8 @@
         body.game-active #gameSection img { width: 40px !important; height: 40px !important; }
         body.game-active .card::before { top: auto !important; bottom: 80px !important; right: -18px !important; border-width: 8px 0 8px 18px !important; }
         body.game-active .card::after { top: auto !important; bottom: 78px !important; right: -22px !important; border-width: 10px 0 10px 22px !important; }
+        
+        .buttons-container { margin-top: 10px; }
     }
 
     .poop-trail { position: absolute; font-size: 24px; pointer-events: none; z-index: 5; animation: fadeOutPoop 1.5s forwards; }
@@ -194,10 +196,14 @@
     button { padding: 12px 24px; border-radius: 25px; border: none; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.15); transition: transform 0.2s, background 0.3s; }
     button:active { transform: scale(0.95); }
 
-    .btn-proposal { position: absolute; transition: transform 0.05s linear; }
-    #yesBtn { background: linear-gradient(45deg, #ff4d88, #ff2e6e); color: white; top: 380px; left: 20%; z-index: 1000; animation: pulse 2s infinite; cursor: pointer; }
+    /* CONTENITORE PULSANTI INIZIALI (FIX PER MOBILE) */
+    .buttons-container { display: flex; justify-content: center; gap: 20px; width: 100%; margin-top: 20px; position: relative; z-index: 1000; min-height: 50px;}
+
+    .btn-proposal { transition: transform 0.05s linear; position: relative; z-index: 1000; }
+    #yesBtn { background: linear-gradient(45deg, #ff4d88, #ff2e6e); color: white; animation: pulse 2s infinite; cursor: pointer; }
     #yesBtn:hover { transform: scale(1.1); }
-    #noBtn { background-color: #f0f0f0; color: #555; top: 380px; left: 60%; z-index: 1000; transition: all 0.1s ease-out; cursor: pointer; }
+    #noBtn { background-color: #f0f0f0; color: #555; transition: all 0.1s ease-out; cursor: pointer; }
+    
     @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
     .celebration { display: none; margin-top: 10px; font-size: 18px; color: #ff2e6e; font-weight: bold; animation: fadeIn 0.5s ease-in; z-index: 150; width: 100%; }
@@ -358,8 +364,11 @@
     <div id="proposalSection" style="width: 100%; display:flex; flex-direction:column; align-items:center;">
         <img id="mainImage" class="main-photo" src="fotooo1.jpg" alt="Amore">
         <h1 id="mainTitle">Antonella, lupastracchiotta mia, vuoi essere la mia Valentina? 💖</h1>
-        <button id="yesBtn" class="btn-proposal">Sì, certo! ❤️</button>
-        <button id="noBtn" class="btn-proposal">No 💩</button>
+        
+        <div class="buttons-container" id="initialButtons">
+            <button id="yesBtn" class="btn-proposal">Sì, certo! ❤️</button>
+            <button id="noBtn" class="btn-proposal">No 💩</button>
+        </div>
         
         <div class="celebration" id="celebrationText">
             AAAUUUUUU💃🕺 <br><br>
@@ -414,6 +423,7 @@ const gameSection = document.getElementById("gameSection");
 const finalSection = document.getElementById("finalSection");
 const yesBtn = document.getElementById("yesBtn");
 const noBtn = document.getElementById("noBtn");
+const initialButtonsContainer = document.getElementById("initialButtons");
 const celebration = document.getElementById("celebrationText");
 const mainImage = document.getElementById("mainImage");
 const card = document.getElementById("mainCard");
@@ -480,8 +490,7 @@ function stopEverything() {
 yesBtn.addEventListener("click", () => {
     celebration.style.display = "block";
     mainImage.src = "fotoamm.jpg"; 
-    yesBtn.style.display = "none";
-    noBtn.style.display = "none";
+    initialButtonsContainer.style.display = "none";
     document.querySelectorAll('.poop-trail').forEach(el => el.remove());
     launchConfetti();
 });
@@ -832,13 +841,21 @@ function moveNoButton() {
     audio.currentTime = 0;
     audio.play().catch(e => console.log("Audio bloccato:", e));
 
+    // Per gestire il cambio di posizionamento da flex ad absolute
+    if(noBtn.style.position !== 'absolute') {
+        noBtn.style.position = 'absolute';
+    }
+
     const currentLeft = noBtn.offsetLeft;
     const currentTop = noBtn.offsetTop;
     dropPoop(currentLeft + 20, currentTop + 10);
 
     const maxX = card.clientWidth - noBtn.offsetWidth - 30;
     const maxY = card.clientHeight - noBtn.offsetHeight - 30;
-    const safeZoneTop = 280; 
+    
+    // Per evitare che salga troppo in alto e copra la foto o il titolo
+    const safeZoneTop = document.getElementById('mainTitle').offsetTop + document.getElementById('mainTitle').offsetHeight + 20; 
+    
     const newX = Math.max(20, Math.random() * maxX);
     let newY = Math.max(safeZoneTop, Math.random() * maxY);
     noBtn.style.left = newX + "px";
