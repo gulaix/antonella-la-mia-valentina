@@ -40,8 +40,7 @@
         align-items: center;
         min-height: 100vh;
         text-align: center;
-        overflow-x: hidden;
-        overflow-y: auto; 
+        overflow: hidden; /* FIX: Bloccato totalmente lo scroll della pagina, niente più sfondo bianco */
         transition: background-color 0.2s;
         touch-action: manipulation;
     }
@@ -95,7 +94,6 @@
         transform: translateZ(0); 
     }
 
-    /* Regola generica per renderlo visibile (PC e Mobile base) */
     #wolfCharacter.wolf-visible { 
         right: -40px; 
         opacity: 1; 
@@ -108,19 +106,18 @@
         left: -400px; 
         height: 30vh; 
         max-height: 250px;
-        z-index: 250; /* FIX: Portato a 250 per stare davanti a TUTTO (card e lupo) */
+        z-index: 250; 
         display: none; 
         pointer-events: none;
     }
 
     /* CARD (Versione PC Standard) */
-    .card { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); max-width: 420px; width: 90vw; min-height: 550px; position: relative; border: 3px solid #ffebf0; overflow: visible; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; z-index: 200; transition: all 0.5s ease; margin: 40px 0; } 
+    .card { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); max-width: 420px; width: 90vw; min-height: 550px; position: relative; border: 3px solid #ffebf0; overflow: visible; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; z-index: 200; transition: all 0.5s ease; } 
    
     body.game-active .card { margin-right: 220px; border-color: #ff4d88; z-index: 100; } 
     body.game-active .card::before { content: ''; position: absolute; top: 150px; right: -30px; border-width: 15px 0 15px 30px; border-style: solid; border-color: transparent transparent transparent rgba(255, 255, 255, 0.95); z-index: 1; }
     body.game-active .card::after { content: ''; position: absolute; top: 147px; right: -36px; border-width: 18px 0 18px 36px; border-style: solid; border-color: transparent transparent transparent #ff4d88; z-index: 0; }
 
-    /* Quando c'è la cinematica (Boy), centra la card */
     body.game-active.cinematic-active .card {
         margin-right: 0 !important; 
         margin-top: 100px; 
@@ -150,7 +147,7 @@
             background: rgba(255, 255, 255, 0.65) !important; 
             backdrop-filter: blur(5px); 
             width: 85vw !important; 
-            min-height: 480px !important;
+            min-height: 380px !important;
             padding: 20px !important;
             margin-right: 0 !important;
         }
@@ -184,15 +181,15 @@
     .poop-trail { position: absolute; font-size: 24px; pointer-events: none; z-index: 5; animation: fadeOutPoop 1.5s forwards; }
     @keyframes fadeOutPoop { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(0.5) translateY(20px); } }
 
-    img.main-photo { width: 140px; height: 140px; object-fit: cover; border-radius: 50%; margin-bottom: 20px; border: 5px solid #ff4d88; box-shadow: 0 5px 15px rgba(255, 77, 136, 0.3); z-index: 20; transition: transform 0.3s; }
+    img.main-photo { width: 140px; height: 140px; object-fit: cover; border-radius: 50%; margin-bottom: 10px; border: 5px solid #ff4d88; box-shadow: 0 5px 15px rgba(255, 77, 136, 0.3); z-index: 20; transition: transform 0.3s; }
     h1, h2 { color: #ff4d88; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); z-index: 20; width: 100%; }
-    h1 { font-size: 24px; margin-bottom: 20px; }
+    h1 { font-size: 22px; margin-bottom: 10px; }
     h2 { font-size: 20px; margin-bottom: 15px; }
 
     button { padding: 12px 24px; border-radius: 25px; border: none; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.15); transition: transform 0.2s, background 0.3s; }
     button:active { transform: scale(0.95); }
 
-    .buttons-container { display: flex; justify-content: center; gap: 20px; width: 100%; margin-top: 20px; position: relative; z-index: 1000; min-height: 50px;}
+    .buttons-container { display: flex; justify-content: center; gap: 20px; width: 100%; margin-top: 15px; position: relative; z-index: 1000; min-height: 50px;}
 
     .btn-proposal { transition: transform 0.05s linear; position: relative; z-index: 1000; }
     #yesBtn { background: linear-gradient(45deg, #ff4d88, #ff2e6e); color: white; animation: pulse 2s infinite; cursor: pointer; }
@@ -286,8 +283,8 @@
         </div>
         
         <div class="celebration" id="celebrationText">
-            AAAUUUUUU💃🕺 <br><br>
-            <p style="font-size: 15px; color: #333; margin: 10px 0; line-height: 1.4; background: rgba(255,255,255,0.7); padding: 10px; border-radius: 10px;">
+            AAAUUUUUU💃🕺 <br>
+            <p style="font-size: 15px; color: #333; margin: 10px 0; line-height: 1.4; background: rgba(255,255,255,0.7); padding: 10px; border-radius: 10px; max-height: 25vh; overflow-y: auto;">
                 aaauuuuu bebi, come regalo di san valentino avevo pensato di lupare... quale miglior
                 regalo se non un bel lupone come me aaauuuu. Poi ho pensato che sarebbe troppo presto perfare uscire allo scoperto tutto il mio egocentrismo nascosto aaaauuuuu bau. Beh vedi fondamentalmente ora ti farò delle domande e se mi rispondi auuuu bene? se
                 csjgdvhawdicsbagkbdb vcbjhgcdbbu deoiyocuyfde (T_T) :-) aaauuuu scs ho le seizures.
@@ -354,7 +351,6 @@ const farts = [
     document.getElementById('fart3')
 ];
 
-// FIX AUDIO: Carichiamo subito l'audio per sbloccarlo con il primo tocco
 const voceAudio = new Audio('voce.mp3');
 
 let currentLevel = 0;
@@ -380,7 +376,6 @@ function unlockAudio() {
         }).catch(() => {});
     });
     
-    // Sblocchiamo anche l'audio della voce per i cellulari
     voceAudio.volume = 0;
     voceAudio.play().then(() => {
         voceAudio.pause();
@@ -503,7 +498,7 @@ function startCinematicSequence() {
         boy.src = 'stand.png';
 
         setTimeout(() => {
-            currentAudio = voceAudio; // Usiamo l'audio già sbloccato
+            currentAudio = voceAudio;
             currentAudio.currentTime = 0;
            
             let isOpen = false;
@@ -517,7 +512,6 @@ function startCinematicSequence() {
                 }
             }, 150);
 
-            // Funzione di chiusura sicura
             const endCinematic = () => {
                 if (cinematicInterval) clearInterval(cinematicInterval);
                 boy.src = 'stand.png'; 
@@ -526,12 +520,11 @@ function startCinematicSequence() {
 
             currentAudio.onended = endCinematic;
             
-            // Proviamo a fare play, se il browser lo blocca per qualsiasi motivo (o manca il file) attiviamo il piano B
             let playPromise = currentAudio.play();
             if (playPromise !== undefined) {
                 playPromise.catch(e => {
                     console.log("Audio non partito, attivo il timer d'emergenza:", e);
-                    setTimeout(endCinematic, 3500); // Se va in blocco, dopo 3 secondi finisce da solo
+                    setTimeout(endCinematic, 3500); 
                 });
             }
             
@@ -784,12 +777,15 @@ function moveNoButton() {
     dropPoop(currentLeft + 20, currentTop + 10);
 
     let cardW = card.clientWidth || 300;
-    let cardH = card.clientHeight || 480;
     
     let minX = 10;
     let maxX = Math.max(minX, cardW - noBtn.offsetWidth - 10);
-    let minY = 160; 
-    let maxY = Math.max(minY, cardH - noBtn.offsetHeight - 10);
+    
+    // FIX BOTTONE NO: Limitiamo l'area in cui può fuggire in verticale a un range piccolissimo
+    let baseContainer = document.getElementById('initialButtons');
+    let baseTop = baseContainer.offsetTop; 
+    let minY = baseTop - 40; 
+    let maxY = baseTop + 40; 
     
     let newX = Math.floor(Math.random() * (maxX - minX + 1)) + minX;
     let newY = Math.floor(Math.random() * (maxY - minY + 1)) + minY;
