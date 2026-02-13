@@ -112,10 +112,11 @@
     }
 
     /* CARD (Versione PC Standard) */
-    .card { background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); max-width: 420px; width: 90vw; min-height: 550px; position: relative; border: 3px solid #ffebf0; overflow: visible; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; z-index: 200; transition: all 0.5s ease; } 
+    /* MODIFICA: background rgba da 0.95 a 0.8 per maggiore trasparenza */
+    .card { background: rgba(255, 255, 255, 0.8); padding: 30px; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); max-width: 420px; width: 90vw; min-height: 550px; position: relative; border: 3px solid #ffebf0; overflow: visible; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; z-index: 200; transition: all 0.5s ease; } 
    
     body.game-active .card { margin-right: 220px; border-color: #ff4d88; z-index: 100; } 
-    body.game-active .card::before { content: ''; position: absolute; top: 150px; right: -30px; border-width: 15px 0 15px 30px; border-style: solid; border-color: transparent transparent transparent rgba(255, 255, 255, 0.95); z-index: 1; }
+    body.game-active .card::before { content: ''; position: absolute; top: 150px; right: -30px; border-width: 15px 0 15px 30px; border-style: solid; border-color: transparent transparent transparent rgba(255, 255, 255, 0.8); z-index: 1; }
     body.game-active .card::after { content: ''; position: absolute; top: 147px; right: -36px; border-width: 18px 0 18px 36px; border-style: solid; border-color: transparent transparent transparent #ff4d88; z-index: 0; }
 
     body.game-active.cinematic-active .card {
@@ -153,7 +154,8 @@
         }
 
         body.game-active .card {
-            background: rgba(255, 255, 255, 0.95) !important;
+            /* MODIFICA: background rgba da 0.95 a 0.8 anche su mobile durante il gioco */
+            background: rgba(255, 255, 255, 0.8) !important;
             min-height: 380px !important;
             margin-right: 90px !important; 
             width: 60vw !important;
@@ -189,7 +191,6 @@
     button { padding: 12px 24px; border-radius: 25px; border: none; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.15); transition: transform 0.2s, background 0.3s; }
     button:active { transform: scale(0.95); }
 
-    /* FIX DEFINITIVO CONTENITORE: Rimosso position relative, ora il tasto usa solo i bordi della card */
     .buttons-container { display: flex; justify-content: center; gap: 20px; width: 100%; margin-top: 15px; min-height: 50px;}
 
     .btn-proposal { transition: transform 0.05s linear; position: relative; z-index: 1000; }
@@ -783,7 +784,6 @@ function moveNoButton() {
     let minX = 15;
     let maxX = Math.max(minX, cardW - noBtn.offsetWidth - 15);
     
-    // LIMITAZIONE DI GABBIA: Il tasto scappa ma resta esattamente dentro le mura della card bianca
     let titleEl = document.getElementById('mainTitle');
     let safeZoneTop = titleEl.offsetTop + titleEl.offsetHeight + 10; 
     
